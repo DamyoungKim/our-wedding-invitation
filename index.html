@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="2026년 12월 12일 토요일, 더채플앳청담 3층 커티지홀에서 결혼합니다.">
+  <title>신랑 ♥ 신부 결혼합니다 — 2026. 12. 12.</title>
+
+  <!-- ============================================================
+       OG(SNS 공유 미리보기) 메타 — 크롤러는 JS를 실행하지 않으므로
+       아래 문구는 config.js 가 아니라 "이 파일에서 직접" 수정해야 합니다.
+       TODO(배포 전 필수):
+         1) GitHub username 확정 후 og:url / og:image 를 절대 URL 로 교체
+            예) og:url   → https://<username>.github.io/
+                og:image → https://<username>.github.io/assets/img/og-image.jpg
+         2) og:title / og:description 의 placeholder 문구를 실제 성함으로 교체
+       ============================================================ -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="신랑 ♥ 신부, 결혼합니다">
+  <meta property="og:description" content="2026년 12월 12일 토요일 · 더채플앳청담 3층 커티지홀">
+  <meta property="og:image" content="./assets/img/og-image.jpg"><!-- TODO: 절대 URL로 교체 -->
+  <meta property="og:url" content=""><!-- TODO: https://<username>.github.io/ -->
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- 커버 이미지 LCP 우선 로드 (계획 M4) -->
+  <link rel="preload" as="image" href="./assets/img/cover.jpg" fetchpriority="high">
+  <!-- 명조(Noto Serif KR) 셀프호스팅 — unicode-range 슬라이스라 쓰인 글자 조각만 다운로드됨 -->
+  <link rel="stylesheet" href="./css/fonts.css">
+  <link rel="stylesheet" href="./css/style.css">
+
+  <!-- FOUC 차단 + 인트로 조기 활성화 (Executor 노트 11)
+       - html에 .js 부여: 인트로/리빌은 .js 하위에서만 동작 (no-JS fail-open)
+       - reduced-motion 이면 인트로 미마운트 (노트 13)
+       - 5초 failsafe를 여기서 "가장 먼저" 무장: main.js가 로드 실패해도 영구 잠금 불가 (노트 10) -->
+  <script>
+    (function () {
+      var de = document.documentElement;
+      de.className += ' js';
+      var reduce = false;
+      try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+      if (!reduce) {
+        de.className += ' intro-active is-locked';
+        window.__introFailsafe = setTimeout(function () {
+          de.className = de.className.replace(/\s*(intro-active|is-locked)/g, '');
+        }, 5000);
+      }
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- ===== 인트로 오프닝 오버레이 (rev.5) — .js + .intro-active 일 때만 표시 ===== -->
+  <div class="intro" id="intro" role="presentation">
+    <div class="intro-inner">
+      <p class="intro-label">WEDDING INVITATION</p>
+      <p class="intro-names">
+        <span data-cfg="groomName">신랑 성함</span>
+        <span class="intro-and">그리고</span>
+        <span data-cfg="brideName">신부 성함</span>
+      </p>
+      <p class="intro-date">2026. 12. 12. SAT</p>
+      <p class="intro-skip-hint">화면을 탭하면 바로 시작됩니다</p>
+    </div>
+  </div>
+
+  <!-- ===== 본문 (인트로 동안 aria-hidden + inert 처리 대상) ===== -->
+  <div class="page" id="page">
+
+    <!-- 1. 커버 -->
+    <section class="cover" id="cover">
+      <div class="cover-photo">
+        <img id="cover-img" src="./assets/img/cover.jpg" alt="신랑 신부 웨딩 사진"
+             fetchpriority="high" decoding="async">
+      </div>
+      <div class="cover-text">
+        <p class="cover-eyebrow">THE MARRIAGE OF</p>
+        <h1 class="cover-names">
+          <span data-cfg="groomName">신랑 성함</span><span class="cover-amp">&middot;</span><span data-cfg="brideName">신부 성함</span>
+        </h1>
+        <p class="cover-date">2026. 12. 12. SAT</p>
+        <p class="cover-time" data-cfg="timeDisplay">시간 추후 안내</p>
+        <p class="cover-venue">더채플앳청담 3층 커티지홀</p>
+      </div>
+    </section>
+
+    <!-- 2. 인사말 -->
+    <section class="section greeting reveal">
+      <p class="eyebrow">INVITATION</p>
+      <h2 class="section-title">소중한 분들을 초대합니다</h2>
+      <div class="ornament" aria-hidden="true"></div>
+      <p class="greeting-body" data-cfg="greeting">인사말 문구를 입력해주세요.
+(js/config.js 의 greeting 값을 수정하면 이 자리에 표시됩니다.)</p>
+    </section>
+
+    <!-- 3. 신랑·신부 / 혼주 소개 + 연락처 -->
+    <section class="section family reveal">
+      <p class="eyebrow">FAMILY</p>
+      <h2 class="section-title">신랑 &amp; 신부</h2>
+      <div class="family-row">
+        <p class="family-parents">
+          <span data-cfg="groomFather">신랑 아버지 성함</span><span class="dot">&middot;</span><span data-cfg="groomMother">신랑 어머니 성함</span>
+          <span class="family-rel">의 아들</span>
+        </p>
+        <p class="family-person"><span class="family-role">신랑</span> <strong data-cfg="groomName">신랑 성함</strong></p>
+        <div class="contact-btns" data-contact="groom"></div>
+      </div>
+      <div class="family-divider" aria-hidden="true"></div>
+      <div class="family-row">
+        <p class="family-parents">
+          <span data-cfg="brideFather">신부 아버지 성함</span><span class="dot">&middot;</span><span data-cfg="brideMother">신부 어머니 성함</span>
+          <span class="family-rel">의 딸</span>
+        </p>
+        <p class="family-person"><span class="family-role">신부</span> <strong data-cfg="brideName">신부 성함</strong></p>
+        <div class="contact-btns" data-contact="bride"></div>
+      </div>
+      <details class="fold parents-contact">
+        <summary>혼주에게 연락하기</summary>
+        <div class="fold-body" id="parents-contact">
+          <p class="placeholder-note">연락처는 추후 안내드립니다.</p>
+        </div>
+      </details>
+    </section>
+
+    <!-- 4. 갤러리 -->
+    <section class="section gallery-section reveal">
+      <p class="eyebrow">GALLERY</p>
+      <h2 class="section-title">우리의 순간들</h2>
+      <div class="gallery" id="gallery">
+        <button type="button" class="gallery-item"><img src="./assets/img/gallery-01.jpg" alt="웨딩 사진 1" loading="lazy" decoding="async"></button>
+        <button type="button" class="gallery-item"><img src="./assets/img/gallery-02.jpg" alt="웨딩 사진 2" loading="lazy" decoding="async"></button>
+        <button type="button" class="gallery-item"><img src="./assets/img/gallery-03.jpg" alt="웨딩 사진 3" loading="lazy" decoding="async"></button>
+        <button type="button" class="gallery-item"><img src="./assets/img/gallery-04.jpg" alt="웨딩 사진 4" loading="lazy" decoding="async"></button>
+        <button type="button" class="gallery-item"><img src="./assets/img/gallery-05.jpg" alt="웨딩 사진 5" loading="lazy" decoding="async"></button>
+      </div>
+    </section>
+
+    <!-- 5. 캘린더 + D-day (2026년 12월, 정적 마크업 — JS 없이도 표시) -->
+    <section class="section calendar-section reveal">
+      <p class="eyebrow">SAVE THE DATE</p>
+      <h2 class="section-title">2026년 12월</h2>
+      <table class="calendar">
+        <caption class="sr-only">2026년 12월 달력, 12일 토요일이 결혼식 날입니다</caption>
+        <thead>
+          <tr><th scope="col">일</th><th scope="col">월</th><th scope="col">화</th><th scope="col">수</th><th scope="col">목</th><th scope="col">금</th><th scope="col">토</th></tr>
+        </thead>
+        <tbody>
+          <tr><td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr>
+          <tr><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td><td class="is-wedding"><span>12</span></td></tr>
+          <tr><td>13</td><td>14</td><td>15</td><td>16</td><td>17</td><td>18</td><td>19</td></tr>
+          <tr><td>20</td><td>21</td><td>22</td><td>23</td><td>24</td><td>25</td><td>26</td></tr>
+          <tr><td>27</td><td>28</td><td>29</td><td>30</td><td>31</td><td></td><td></td></tr>
+        </tbody>
+      </table>
+      <p class="dday-line">
+        <span class="dday-date">2026년 12월 12일 토요일 <span data-cfg="timeDisplay">시간 추후 안내</span></span><br>
+        <strong class="dday-badge" id="dday-badge">D-DAY 계산 중</strong>
+      </p>
+    </section>
+
+    <!-- 6. 오시는 길 -->
+    <section class="section location reveal">
+      <p class="eyebrow">LOCATION</p>
+      <h2 class="section-title">오시는 길</h2>
+      <p class="venue-name" data-cfg="venueName">더채플앳청담</p>
+      <p class="venue-hall" data-cfg="venueHall">3층 커티지홀</p>
+      <p class="venue-address"><span id="venue-address" data-cfg="venueAddress">서울특별시 강남구 선릉로 757</span></p>
+      <p class="venue-tel" id="venue-tel-wrap"><a id="venue-tel" href="tel:0220158888">02-2015-8888</a></p>
+
+      <div class="map-embed" id="map-embed">
+        <div class="map-canvas" id="map-canvas" aria-hidden="true"></div>
+        <div class="map-fallback" id="map-fallback">
+          <span class="map-pin" aria-hidden="true"></span>
+          <p class="map-fallback-name" data-cfg="venueName">더채플앳청담</p>
+          <p class="map-fallback-addr" data-cfg="venueAddress">서울특별시 강남구 선릉로 757</p>
+        </div>
+      </div>
+
+      <div class="map-buttons">
+        <!-- 정적 href = no-JS 폴백. main.js가 config 좌표/장소명으로 다시 씀 (노트 2·3) -->
+        <a class="btn map-btn" id="btn-kakaomap"
+           href="https://map.kakao.com/link/map/%EB%8D%94%EC%B1%84%ED%94%8C%EC%95%B3%EC%B2%AD%EB%8B%B4,37.5223,127.0405">카카오맵</a>
+        <a class="btn map-btn" id="btn-navermap"
+           href="https://map.naver.com/p/search/%EB%8D%94%EC%B1%84%ED%94%8C%EC%95%B3%EC%B2%AD%EB%8B%B4">네이버지도</a>
+        <a class="btn map-btn" id="btn-tmap"
+           href="tmap://search?name=%EB%8D%94%EC%B1%84%ED%94%8C%EC%95%B3%EC%B2%AD%EB%8B%B4">티맵</a>
+      </div>
+      <button type="button" class="btn btn-wide" id="btn-copy-address">주소 복사하기</button>
+    </section>
+
+    <!-- 7. 마음 전하실 곳 -->
+    <section class="section accounts reveal">
+      <p class="eyebrow">WITH LOVE</p>
+      <h2 class="section-title">마음 전하실 곳</h2>
+      <p class="accounts-note">참석이 어려워 축하의 마음을 전하고 싶으신 분들을 위해<br>계좌번호를 기재하였습니다. 너그러운 양해 부탁드립니다.</p>
+      <details class="fold account-group">
+        <summary>신랑측 마음 전하실 곳</summary>
+        <ul class="fold-body account-list" data-accounts="groom">
+          <li class="placeholder-note">계좌 정보는 추후 안내드립니다.</li>
+        </ul>
+      </details>
+      <details class="fold account-group">
+        <summary>신부측 마음 전하실 곳</summary>
+        <ul class="fold-body account-list" data-accounts="bride">
+          <li class="placeholder-note">계좌 정보는 추후 안내드립니다.</li>
+        </ul>
+      </details>
+    </section>
+
+    <!-- 8. 공유하기 -->
+    <section class="section share reveal">
+      <p class="eyebrow">SHARE</p>
+      <h2 class="section-title">청첩장 전하기</h2>
+      <div class="share-buttons">
+        <button type="button" class="btn btn-primary btn-wide" id="btn-share">청첩장 공유하기</button>
+        <button type="button" class="btn btn-wide" id="btn-copy-link">링크 복사하기</button>
+        <!-- 예식 시간 확정(config.wedding.time) 전에는 숨김 — main.js가 노출 (rev.3-A) -->
+        <a class="btn btn-wide is-hidden" id="btn-gcal" href="#">구글 캘린더에 저장</a>
+        <!-- .ics 2순위 보조 — 인앱 WebView 다운로드 제약으로 정식 브라우저 안내 병기 (노트 8) -->
+        <a class="btn btn-wide is-hidden" id="btn-ics" href="#" download="wedding-invitation.ics">캘린더 파일(.ics) 저장</a>
+        <p class="share-note is-hidden" id="ics-note">.ics 저장은 카카오톡 등 인앱 브라우저에서는 동작하지 않을 수 있습니다.<br>Safari·Chrome 등 정식 브라우저에서 이용해주세요.</p>
+      </div>
+    </section>
+
+    <!-- 9. Footer -->
+    <footer class="footer">
+      <p class="footer-names">
+        <span data-cfg="groomName">신랑 성함</span> <span class="footer-amp">&hearts;</span> <span data-cfg="brideName">신부 성함</span>
+      </p>
+      <p class="footer-date">2026. 12. 12. SAT &middot; 더채플앳청담</p>
+      <!-- 뮤팟(Mewpot) 무료 음원 라이선스 조건: 출처 표기 필수 — 삭제하지 마세요 -->
+      <p class="footer-credit">
+        배경음악: 뮤팟 제공 &lsquo;새벽 햇살&rsquo; &middot;
+        <a href="https://mewc.at/songs/6524" target="_blank" rel="noopener">mewc.at/songs/6524</a>
+      </p>
+    </footer>
+  </div><!-- /.page -->
+
+  <!-- BGM 플로팅 토글 — 음원(config.bgm.src) 없으면 hidden 유지 (rev.3-B) -->
+  <button type="button" class="bgm-toggle" id="bgm-toggle" hidden
+          aria-pressed="false" aria-label="배경음악 재생">&#9834;</button>
+  <audio id="bgm" loop preload="none" playsinline></audio>
+
+  <!-- 갤러리 라이트박스 -->
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="사진 크게 보기" hidden>
+    <button type="button" class="lb-close" id="lb-close" aria-label="닫기">&times;</button>
+    <button type="button" class="lb-nav lb-prev" id="lb-prev" aria-label="이전 사진">&#8249;</button>
+    <img class="lb-img" id="lb-img" alt="">
+    <button type="button" class="lb-nav lb-next" id="lb-next" aria-label="다음 사진">&#8250;</button>
+    <p class="lb-counter" id="lb-counter"></p>
+  </div>
+
+  <!-- 토스트 -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="./js/config.js"></script>
+  <script src="./js/main.js"></script>
+</body>
+</html>

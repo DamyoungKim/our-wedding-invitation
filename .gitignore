@@ -1,0 +1,5 @@
+node_modules/
+image/
+.omc/
+package-lock.json
+MP_*.mp3

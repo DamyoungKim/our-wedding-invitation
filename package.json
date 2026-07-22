@@ -1,0 +1,13 @@
+{
+  "name": "wedding-invitation",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "모바일 청첩장 - 이미지 최적화 스크립트 전용 (사이트 자체는 무의존)",
+  "scripts": {
+    "optimize": "node scripts/optimize-images.mjs"
+  },
+  "devDependencies": {
+    "sharp": "^0.35.3"
+  }
+}
