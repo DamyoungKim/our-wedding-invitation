@@ -1,22 +1,33 @@
 /* ============================================================
  * 모바일 청첩장 스타일 (css/style.css)
  * 모바일 우선 320~480px · 480px 초과 중앙 카드 · 라이트 고정
- * 시스템 폰트 스택 + font-weight/letter-spacing 위계
+ * 종이 청첩장(청첩장.pdf) 톤: 흰 바탕 + 버건디 포인트 + 스크립트 영문 제목
  * ============================================================ */
+
+/* 스크립트 영문 제목(Location / Invitation / Date …) — Yellowtail (OFL), 라틴 서브셋 18KB 셀프호스팅 */
+@font-face {
+  font-family: 'Yellowtail';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(../assets/fonts/yellowtail-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
 
 :root {
   color-scheme: light; /* 인앱 강제 다크 반전 방지 (라이트 고정) */
 
-  --bg: #ece6dc;            /* 카드 바깥 배경 */
-  --card: #fbf8f2;          /* 아이보리 카드 */
-  --card-deep: #f4efe6;     /* 살짝 어두운 아이보리(교차 섹션) */
-  --ink: #453f38;           /* 본문 */
-  --ink-soft: #6f6659;      /* 보조 텍스트 (카드 대비 ≈5.3:1, AA) */
-  --ink-faint: #8a7f6e;     /* 희미한 부가 표기 — 푸터 크레딧 등 비정보성 한정 */
-  --accent: #b08d76;        /* 웜 로즈브라운 — 테두리/오너먼트 등 비텍스트 용도 */
-  --accent-deep: #8f6d55;   /* 흰 글자 대비 ≈4.7:1 — 텍스트/CTA 배경용 */
-  --line: #e5dccd;          /* 얇은 구분선 */
-  --sunday: #a45c5c;        /* 일요일 (카드 대비 ≈4.6:1) */
+  --bg: #eeeae8;            /* 카드 바깥 배경 */
+  --card: #ffffff;          /* 종이 청첩장과 같은 흰 카드 */
+  --card-deep: #faf7f6;     /* 살짝 어두운 교차 섹션 */
+  --ink: #262223;           /* 본문 (종이: 검정) */
+  --ink-soft: #5f5859;      /* 보조 텍스트 (흰 배경 대비 ≈7:1) */
+  --ink-faint: #8a8283;     /* 희미한 부가 표기 — 푸터 크레딧 등 비정보성 한정 */
+  --accent: #701018;        /* 버건디 — 종이 청첩장 제목/하트 색 (rgb 112,16,24), 흰 글자 대비 ≈11:1 */
+  --accent-deep: #560c12;   /* 버건디 눌림(active) */
+  --accent-soft: #f6ebec;   /* 버건디 옅은 틴트 (배경) */
+  --line: #e9e3e3;          /* 얇은 구분선 */
+  --sunday: #b4474f;        /* 일요일 (흰 배경 대비 ≈4.9:1) */
 
   --space-1: 0.5rem;
   --space-2: 1rem;
@@ -30,6 +41,8 @@
           Roboto, sans-serif;
   /* 명조(세리프) — 셀프호스팅 Noto Serif KR (css/fonts.css). 미로드 시 시스템 명조로 폴백 */
   --font-serif: "Noto Serif KR", "Nanum Myeongjo", "AppleMyungjo", Batang, serif;
+  /* 스크립트(영문 제목 전용) */
+  --font-script: "Yellowtail", "Brush Script MT", "Snell Roundhand", cursive;
 }
 
 /* ---------- Reset / 기본 ---------- */
@@ -53,6 +66,7 @@ ul { list-style: none; }
   clip: rect(0 0 0 0); white-space: nowrap;
 }
 .is-hidden { display: none !important; }
+[hidden] { display: none !important; }
 .placeholder-note { color: var(--ink-soft); font-size: 0.875rem; }
 
 /* 인트로/라이트박스 스크롤 잠금 — html 레벨 (노트 9: iOS는 body 단독 불충분) */
@@ -64,7 +78,7 @@ html.lb-open, html.lb-open body { overflow: hidden; }
   max-width: 480px;
   margin: 0 auto;
   background: var(--card);
-  box-shadow: 0 0 32px rgba(90, 76, 60, 0.14);
+  box-shadow: 0 0 32px rgba(70, 40, 44, 0.12);
   min-height: 100vh;
 }
 
@@ -74,26 +88,29 @@ html.lb-open, html.lb-open body { overflow: hidden; }
   text-align: center;
   border-top: 1px solid var(--line);
 }
+/* 종이 청첩장의 스크립트 제목 (Invitation / Location / Date) */
 .eyebrow {
-  font-size: 0.6875rem;
-  letter-spacing: 0.42em;
-  text-indent: 0.42em; /* letter-spacing 시각 보정 */
-  color: var(--accent-deep);
-  margin-bottom: var(--space-2);
-  font-weight: 500;
+  font-family: var(--font-script);
+  font-size: 2.125rem;
+  line-height: 1.25;
+  color: var(--accent);
+  margin-bottom: 0.3rem;
+  font-weight: 400;
+  letter-spacing: 0.01em;
 }
 .section-title {
-  font-family: var(--font-serif);
-  font-size: 1.25rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-indent: 0.14em;
+  color: var(--ink-soft);
   margin-bottom: var(--space-3);
 }
 .ornament {
   width: 2.5rem; height: 1px;
   background: var(--accent);
   margin: 0 auto var(--space-3);
-  opacity: 0.55;
+  opacity: 0.45;
 }
 
 /* ============================================================
@@ -120,12 +137,20 @@ html.js.intro-active .intro {
 }
 html.js.intro-active .intro.is-leaving { opacity: 0; pointer-events: none; }
 
+/* rev.6: 문구를 다 읽기도 전에 화면이 넘어간다는 피드백으로 각 줄의 등장 타이밍을
+ * 늦추고 텀을 넉넉히 둠 (전체 유지 시간은 main.js 의 4.4s 타이머와 함께 맞춰져 있음:
+ * label 1.2s → names 2.2s → date 2.8s → skip-hint 3.6s 완료, 이후 ~0.8s 정지 유지) */
 .intro-label {
   font-size: 0.6875rem;
   letter-spacing: 0.5em;
   text-indent: 0.5em;
-  color: var(--accent-deep);
-  animation: introFade 0.9s ease 0.15s both;
+  color: var(--accent);
+  animation: introFade 1s ease 0.2s both;
+}
+/* 320~359px 폭(예: iPhone SE)에서는 0.5em 자간이면 "THE BEGINNING OF FOREVER"가
+ * 289px로 가용폭(264px)을 넘어 2줄로 꺾임 — 실측 후 한 줄에 들어가는 자간으로 축소 */
+@media (max-width: 359px) {
+  .intro-label { letter-spacing: 0.3em; text-indent: 0.3em; }
 }
 .intro-names {
   margin-top: var(--space-3);
@@ -133,7 +158,7 @@ html.js.intro-active .intro.is-leaving { opacity: 0; pointer-events: none; }
   font-size: 1.625rem;
   font-weight: 600;
   letter-spacing: 0.14em;
-  animation: introNames 1.3s cubic-bezier(0.22, 0.61, 0.36, 1) 0.45s both;
+  animation: introNames 1.6s cubic-bezier(0.22, 0.61, 0.36, 1) 0.6s both;
 }
 .intro-and {
   display: block;
@@ -145,12 +170,11 @@ html.js.intro-active .intro.is-leaving { opacity: 0; pointer-events: none; }
 }
 .intro-date {
   margin-top: var(--space-3);
-  font-family: var(--font-serif);
   font-size: 0.875rem;
   letter-spacing: 0.32em;
   text-indent: 0.32em;
   color: var(--ink-soft);
-  animation: introFade 0.9s ease 1.15s both;
+  animation: introFade 1s ease 1.8s both;
 }
 .intro-skip-hint {
   position: absolute;
@@ -159,7 +183,7 @@ html.js.intro-active .intro.is-leaving { opacity: 0; pointer-events: none; }
   font-size: 0.6875rem;
   letter-spacing: 0.14em;
   color: var(--ink-faint);
-  animation: introFade 0.9s ease 1.6s both;
+  animation: introFade 1s ease 2.6s both;
 }
 @keyframes introFade {
   from { opacity: 0; transform: translateY(8px); }
@@ -173,7 +197,7 @@ html.js.intro-active .intro.is-leaving { opacity: 0; pointer-events: none; }
 }
 
 /* ============================================================
- * 1. 커버
+ * 1. 커버 — 종이 청첩장 표지: 영문 성함 / 문구 / 한글 성함 / 일시 / 장소
  * ============================================================ */
 .cover {
   min-height: 100vh;
@@ -191,67 +215,123 @@ html.js.intro-active .intro.is-leaving { opacity: 0; pointer-events: none; }
   width: 100%; height: 100%;
   object-fit: cover;
 }
+/* 사진 없음 상태 — 웨딩 촬영본 도착 전 임시 레이아웃(index.html 참고).
+ * 사진이 돌아오면 이 클래스를 지우기만 하면 위의 사진 있는 레이아웃으로 복귀합니다. */
+.cover.cover--no-photo {
+  justify-content: center;
+  position: relative;
+}
+.cover.cover--no-photo::before,
+.cover.cover--no-photo::after {
+  content: "";
+  position: absolute;
+  left: var(--space-3);
+  right: var(--space-3);
+  border-top: 1px dashed var(--accent);
+  opacity: 0.35;
+}
+.cover.cover--no-photo::before { top: calc(env(safe-area-inset-top, 0px) + var(--space-4)); }
+.cover.cover--no-photo::after  { bottom: calc(env(safe-area-inset-bottom, 0px) + var(--space-4)); }
 .cover-text {
   padding: var(--space-4) var(--space-3)
            calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
   text-align: center;
 }
+.cover-names-en {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  line-height: 1.4;
+}
+.cover-name-en { white-space: nowrap; display: inline-block; }
+.cover-amp {
+  font-family: var(--font-script);
+  font-weight: 400;
+  font-size: 1.15em;
+  color: var(--accent);
+  margin: 0 0.4em 0 0.1em;
+  letter-spacing: 0;
+}
 .cover-eyebrow {
+  margin-top: 0.55rem;
   font-size: 0.625rem;
-  letter-spacing: 0.5em;
-  text-indent: 0.5em;
-  color: var(--accent-deep);
-  margin-bottom: var(--space-2);
+  letter-spacing: 0.42em;
+  text-indent: 0.42em;
+  color: var(--accent);
 }
 .cover-names {
-  font-family: var(--font-serif);
-  font-size: 1.5rem;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-}
-.cover-amp { color: var(--accent); margin: 0 0.55em; font-weight: 300; }
-.cover-date {
   margin-top: var(--space-2);
   font-family: var(--font-serif);
-  font-size: 0.9375rem;
-  letter-spacing: 0.3em;
-  text-indent: 0.3em;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-indent: 0.2em;
+}
+.cover-dot { color: var(--accent); margin: 0 0.4em; font-weight: 300; }
+.cover-date {
+  margin-top: var(--space-2);
+  font-size: 0.875rem;
+  letter-spacing: 0.22em;
+  text-indent: 0.22em;
   color: var(--ink-soft);
 }
-.cover-time { font-size: 0.8125rem; color: var(--ink-soft); margin-top: 0.25rem; }
-.cover-venue { font-size: 0.875rem; color: var(--ink-soft); margin-top: 0.25rem; letter-spacing: 0.06em; }
+.cover-time { display: block; margin-top: 0.15rem; font-size: 0.8125rem; letter-spacing: 0.16em; text-indent: 0.16em; }
+.cover-venue { font-size: 0.875rem; color: var(--ink-soft); margin-top: 0.55rem; letter-spacing: 0.06em; }
 
 /* ============================================================
- * 2. 인사말
+ * 2. 인사말 + 혼주·신랑신부 (종이 청첩장 Invitation 면)
  * ============================================================ */
 .greeting-body {
   white-space: pre-line;
-  font-family: var(--font-serif);
   font-size: 0.9375rem;
-  color: var(--ink-soft);
+  color: var(--ink);
   line-height: 2;
 }
+/* 320px 급 기기: 인사말 한 줄(≤18자)이 강제 줄바꿈 전에 꺾이지 않도록 살짝 축소 */
+@media (max-width: 350px) {
+  .greeting-body { font-size: 0.875rem; }
+}
 
-/* ============================================================
- * 3. 신랑·신부 / 혼주
- * ============================================================ */
-.family-row { padding: var(--space-2) 0; }
-.family-parents { font-size: 0.9375rem; color: var(--ink-soft); }
-.family-parents .dot { margin: 0 0.3em; color: var(--ink-faint); }
-.family-rel { font-size: 0.8125rem; color: var(--ink-faint); margin-left: 0.4em; }
-.family-person { margin-top: 0.35rem; font-size: 1.0625rem; letter-spacing: 0.08em; }
+/* 좌우 2단 + 가운데 세로선 */
+.family-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: stretch;
+  gap: 0 0.6rem;
+  margin-top: var(--space-4);
+}
+.family-col { padding: 0.25rem 0; min-width: 0; }
+.family-divider { width: 1px; background: var(--line); align-self: stretch; }
+.family-parents { font-size: 0.8125rem; color: var(--ink); line-height: 1.75; }
+.family-parents .dot { margin: 0 0.25em; color: var(--ink-faint); }
+.family-rel { color: var(--ink-soft); white-space: nowrap; }
+.family-rel-of { font-size: 0.75em; color: var(--ink-faint); }
+.family-person { margin-top: 0.45rem; font-family: var(--font-serif); font-size: 1.25rem; font-weight: 600; letter-spacing: 0.12em; text-indent: 0.12em; }
 .family-role {
-  font-size: 0.75rem;
-  color: var(--accent-deep);
-  margin-right: 0.5em;
-  letter-spacing: 0.2em;
+  display: block;
+  font-family: var(--font);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--accent);
+  letter-spacing: 0.24em;
+  text-indent: 0.24em;
+  margin-bottom: 0.1rem;
 }
-.family-divider { width: 1px; height: 1.75rem; background: var(--line); margin: var(--space-1) auto; }
+/* 고인(故) 국화 아이콘 — 성함 앞 */
+.deceased-mark {
+  display: inline-block;
+  width: 1em; height: 1em;
+  vertical-align: -0.14em;
+  margin-right: 0.22em;
+  color: var(--ink-soft);
+}
+.deceased-mark svg { width: 100%; height: 100%; display: block; }
 .contact-btns {
-  display: flex; gap: 0.5rem; justify-content: center;
-  margin-top: 0.75rem; flex-wrap: wrap;
+  display: flex; gap: 0.4rem; justify-content: center;
+  margin-top: 0.7rem; flex-wrap: wrap;
 }
-.contact-btn { font-size: 0.8125rem; padding: 0.4rem 1rem; }
+.contact-btn { font-size: 0.75rem; padding: 0.35rem 0.8rem; min-height: 2.25rem; }
 .parents-contact { margin-top: var(--space-3); }
 .parent-row { padding: 0.6rem 0; border-bottom: 1px solid var(--line); }
 .parent-row:last-child { border-bottom: 0; }
@@ -273,16 +353,15 @@ html.js.intro-active .intro.is-leaving { opacity: 0; pointer-events: none; }
   color: var(--ink);
   letter-spacing: 0.04em;
   transition: background 0.2s ease, border-color 0.2s ease;
-  -webkit-tap-highlight-color: rgba(176, 141, 118, 0.15);
+  -webkit-tap-highlight-color: rgba(112, 16, 24, 0.12);
 }
 .btn:active { background: var(--card-deep); }
-/* --accent(#b08d76)+흰 글자는 3.0:1로 AA 미달 → 텍스트 배경은 --accent-deep(4.7:1) */
-.btn-primary { background: var(--accent-deep); border-color: var(--accent-deep); color: #fff; }
-.btn-primary:active { background: #7a5c47; }
+.btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn-primary:active { background: var(--accent-deep); }
 .btn-wide { width: 100%; margin-top: 0.6rem; }
 
 /* ============================================================
- * 4. 갤러리
+ * 3. 갤러리
  * ============================================================ */
 .gallery {
   display: grid;
@@ -307,8 +386,17 @@ html.js.intro-active .intro.is-leaving { opacity: 0; pointer-events: none; }
 .gallery-item:active img { transform: scale(1.03); }
 
 /* ============================================================
- * 5. 캘린더 + D-day
+ * 4. 캘린더 + D-day (종이 청첩장 Date 면: 큰 "12 December" + 하트 마커)
  * ============================================================ */
+.cal-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-bottom: var(--space-2);
+}
+.cal-head-day { font-family: var(--font-serif); font-size: 3rem; font-weight: 600; line-height: 1; color: var(--ink); }
+.cal-head-month { font-size: 0.875rem; letter-spacing: 0.08em; color: var(--ink-soft); }
 .calendar {
   width: 100%;
   max-width: 20rem;
@@ -317,10 +405,10 @@ html.js.intro-active .intro.is-leaving { opacity: 0; pointer-events: none; }
   table-layout: fixed;
 }
 .calendar th {
-  font-size: 0.6875rem;
-  font-weight: 500;
-  color: var(--ink-soft);
-  letter-spacing: 0.1em;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: 0.02em;
   padding-bottom: 0.6rem;
 }
 .calendar td {
@@ -330,34 +418,36 @@ html.js.intro-active .intro.is-leaving { opacity: 0; pointer-events: none; }
   padding: 0.45rem 0;
 }
 .calendar th:first-child, .calendar td:first-child { color: var(--sunday); }
+/* 예식일: 버건디 하트 안의 흰 숫자 (종이 청첩장과 동일) */
 .calendar td.is-wedding span {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.1em; height: 2.1em;
-  border-radius: 50%;
-  background: var(--accent-deep); /* 흰 글자 대비 AA (accent는 3.0:1 미달) */
+  width: 2.5em; height: 2.3em;
+  padding-bottom: 0.15em;
   color: #fff;
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23701018' d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/%3E%3C/svg%3E") center / contain no-repeat;
 }
-.dday-line { margin-top: var(--space-3); font-size: 0.9375rem; color: var(--ink-soft); }
+.dday-line { margin-top: var(--space-3); font-size: 0.9375rem; color: var(--ink); }
 .dday-badge {
   display: inline-block;
   margin-top: 0.6rem;
   font-size: 1.0625rem;
   letter-spacing: 0.18em;
-  color: var(--accent-deep);
+  color: var(--accent);
   font-weight: 600;
 }
 
 /* ============================================================
- * 6. 오시는 길
+ * 5. 오시는 길 (종이 청첩장 Location 면: 약도 + 주소/지하철/셔틀/자가용 표)
  * ============================================================ */
-.venue-name { font-size: 1.0625rem; font-weight: 600; letter-spacing: 0.08em; }
-.venue-hall { font-size: 0.875rem; color: var(--ink-soft); margin-top: 0.15rem; }
-.venue-address { font-size: 0.875rem; color: var(--ink-soft); margin-top: 0.6rem; }
+.venue-name { font-size: 1.0625rem; font-weight: 600; letter-spacing: 0.04em; }
+.venue-hall { font-size: 0.9em; font-weight: 500; color: var(--ink-soft); margin-left: 0.15em; }
+.venue-address { font-size: 0.875rem; color: var(--ink-soft); margin-top: 0.4rem; }
 .venue-tel { font-size: 0.8125rem; margin-top: 0.2rem; }
-.venue-tel a { color: var(--accent-deep); text-decoration: underline; text-underline-offset: 3px; }
+.venue-tel a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
 
 .map-embed {
   position: relative;
@@ -365,11 +455,23 @@ html.js.intro-active .intro.is-leaving { opacity: 0; pointer-events: none; }
   border-radius: var(--radius);
   overflow: hidden;
   border: 1px solid var(--line);
-  background: var(--card-deep);
-  min-height: 13rem;
+  background: #fff;
 }
-.map-canvas { display: none; width: 100%; height: 15rem; }
+.map-canvas { display: none; width: 100%; height: 16rem; }
 .map-embed.has-map .map-canvas { display: block; }
+/* 카카오맵 마커 위 장소명 말풍선 (CustomOverlay) */
+.map-label {
+  background: #fff;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.2;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
 .map-fallback {
   display: flex;
   flex-direction: column;
@@ -389,18 +491,89 @@ html.js.intro-active .intro.is-leaving { opacity: 0; pointer-events: none; }
 .map-fallback-name { font-size: 0.9375rem; font-weight: 600; }
 .map-fallback-addr { font-size: 0.8125rem; color: var(--ink-soft); }
 
+.transport {
+  margin-top: var(--space-3);
+  text-align: left;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 0.35rem 0;
+}
+.transport-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+  padding: 0.65rem 0.25rem;
+}
+.transport-row + .transport-row { border-top: 1px dashed var(--line); }
+/* 라벨(지하철/셔틀버스/자가용) 폭을 고정해 오른쪽 값 칸과 나란히 정렬.
+ * (한글은 단어 사이 공백이 없어 text-align-last:justify 로 양끝 정렬을 시도해도
+ *  Chrome/Blink 에서 글자 사이가 벌어지지 않아 효과가 없음 — 대신 오른쪽 정렬로
+ *  라벨 폭 안에서 값 칸에 가깝게 붙임) */
+.transport dt {
+  flex: 0 0 4.6em;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--ink);
+  line-height: 1.7;
+  text-align: right;
+}
+.transport dd {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 0.875rem;
+  color: var(--ink);
+  line-height: 1.7;
+}
+.transport-note {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+  line-height: 1.55;
+  margin-top: 0.25rem;
+}
+/* 지하철 노선 배지 — 공식 노선색 기준. 흰 글자 대비 4.5:1(AA) 미달 색은 명도만 낮춰 보정
+ * (기본 회색·2호선·3호선 — 검증: 회색 3.75→4.93, 2호선 4.46→5.06, 3호선 3.59→5.24),
+ * 그 외 색은 원래 공식 색 그대로 이미 4.5:1 이상. */
+.line-badge {
+  display: inline-block;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: 0.32em 0.6em;
+  border-radius: 999px;
+  background: #756f6f;
+  color: #fff;
+  margin-right: 0.3em;
+  vertical-align: 0.12em;
+  white-space: nowrap;
+}
+.line-badge[data-line="1호선"]     { background: #0052a4; }
+.line-badge[data-line="2호선"]     { background: #00803b; }
+.line-badge[data-line="3호선"]     { background: #ae520a; }
+.line-badge[data-line="4호선"]     { background: #0079a8; }
+.line-badge[data-line="5호선"]     { background: #7c4f96; }
+.line-badge[data-line="6호선"]     { background: #b0631f; }
+.line-badge[data-line="7호선"]     { background: #5f6a00; }
+.line-badge[data-line="8호선"]     { background: #d0145f; }
+.line-badge[data-line="9호선"]     { background: #7d7250; }
+.line-badge[data-line="수인분당선"] { background: #f5a200; color: #1f1a1a; }
+.line-badge[data-line="신분당선"]   { background: #d4003b; }
+.line-badge[data-line="경의중앙선"] { background: #77c4a3; color: #1f1a1a; }
+.line-badge[data-line="공항철도"]   { background: #0077b3; }
+
 .map-buttons {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 0.5rem;
-  margin-top: var(--space-2);
+  margin-top: var(--space-3);
 }
 /* 320px 3열(셀 내부폭 ≈72px)에서 '네이버지도' 5자가 걸치지 않게
  * 폰트 축소 + nowrap — 폰트/글자 확대에 따른 2줄 꺾임·버튼 높이 불일치 방지 */
 .map-btn { width: 100%; padding: 0.55rem 0.1rem; font-size: 0.8125rem; white-space: nowrap; }
 
 /* ============================================================
- * 7. 마음 전하실 곳 (details 아코디언)
+ * 6. 마음 전하실 곳 (details 아코디언)
  * ============================================================ */
 .accounts-note { font-size: 0.8125rem; color: var(--ink-soft); margin-bottom: var(--space-3); }
 .fold {
@@ -418,7 +591,7 @@ html.js.intro-active .intro.is-leaving { opacity: 0; pointer-events: none; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  -webkit-tap-highlight-color: rgba(176, 141, 118, 0.15);
+  -webkit-tap-highlight-color: rgba(112, 16, 24, 0.12);
 }
 .fold summary::-webkit-details-marker { display: none; }
 .fold summary::after {
@@ -448,13 +621,13 @@ html.js.intro-active .intro.is-leaving { opacity: 0; pointer-events: none; }
 .copy-btn { flex: 0 0 auto; font-size: 0.75rem; padding: 0.35rem 0.85rem; }
 
 /* ============================================================
- * 8. 공유
+ * 7. 공유
  * ============================================================ */
 .share-buttons { max-width: 17.5rem; margin: 0 auto; }
 .share-note { font-size: 0.75rem; color: var(--ink-soft); margin-top: 0.75rem; line-height: 1.6; }
 
 /* ============================================================
- * 9. Footer
+ * 8. Footer
  * ============================================================ */
 .footer {
   border-top: 1px solid var(--line);
@@ -479,11 +652,11 @@ html.js.intro-active .intro.is-leaving { opacity: 0; pointer-events: none; }
   right: calc(env(safe-area-inset-right, 0px) + 0.9rem);
   width: 2.75rem; height: 2.75rem; /* 터치 타깃 44px */
   border-radius: 50%;
-  background: rgba(251, 248, 242, 0.92);
+  background: rgba(255, 255, 255, 0.92);
   border: 1px solid var(--line);
-  box-shadow: 0 2px 10px rgba(90, 76, 60, 0.18);
+  box-shadow: 0 2px 10px rgba(70, 40, 44, 0.18);
   font-size: 1rem;
-  color: var(--accent-deep);
+  color: var(--accent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -493,8 +666,8 @@ html.js.intro-active .intro.is-leaving { opacity: 0; pointer-events: none; }
 html.intro-active .bgm-toggle { z-index: 50; }
 .bgm-toggle.is-hinting { animation: bgmPulse 1.8s ease-in-out infinite; }
 @keyframes bgmPulse {
-  0%, 100% { box-shadow: 0 2px 10px rgba(90, 76, 60, 0.18); }
-  50% { box-shadow: 0 0 0 8px rgba(176, 141, 118, 0.22); }
+  0%, 100% { box-shadow: 0 2px 10px rgba(70, 40, 44, 0.18); }
+  50% { box-shadow: 0 0 0 8px rgba(112, 16, 24, 0.18); }
 }
 
 /* 480px 초과: BGM 버튼을 카드 우측에 정렬 */
@@ -556,7 +729,7 @@ html.intro-active .bgm-toggle { z-index: 50; }
   left: 50%;
   bottom: calc(env(safe-area-inset-bottom, 0px) + 2rem);
   transform: translateX(-50%) translateY(8px);
-  background: rgba(60, 52, 44, 0.94);
+  background: rgba(38, 34, 35, 0.94);
   color: #f7f3ec;
   font-size: 0.8125rem;
   padding: 0.6rem 1.2rem;

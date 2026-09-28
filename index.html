@@ -4,27 +4,28 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="light">
-  <meta name="description" content="2026년 12월 12일 토요일, 더채플앳청담 3층 커티지홀에서 결혼합니다.">
-  <title>신랑 ♥ 신부 결혼합니다 — 2026. 12. 12.</title>
+  <meta name="description" content="김담영 · 박승혜 결혼합니다. 2026년 12월 12일 토요일 오후 12시 30분, 더채플 앳 청담 커티지홀 (3층).">
+  <title>김담영 ♥ 박승혜 결혼합니다 — 2026. 12. 12.</title>
 
   <!-- ============================================================
        OG(SNS 공유 미리보기) 메타 — 크롤러는 JS를 실행하지 않으므로
        아래 문구는 config.js 가 아니라 "이 파일에서 직접" 수정해야 합니다.
-       TODO(배포 전 필수):
-         1) GitHub username 확정 후 og:url / og:image 를 절대 URL 로 교체
-            예) og:url   → https://<username>.github.io/
-                og:image → https://<username>.github.io/assets/img/og-image.jpg
-         2) og:title / og:description 의 placeholder 문구를 실제 성함으로 교체
+       배포 주소: https://damyoungkim.github.io/our-wedding-invitation/
+       (종이 청첩장 QR 코드가 가리키는 주소와 동일)
        ============================================================ -->
   <meta property="og:type" content="website">
-  <meta property="og:title" content="신랑 ♥ 신부, 결혼합니다">
-  <meta property="og:description" content="2026년 12월 12일 토요일 · 더채플앳청담 3층 커티지홀">
-  <meta property="og:image" content="./assets/img/og-image.jpg"><!-- TODO: 절대 URL로 교체 -->
-  <meta property="og:url" content=""><!-- TODO: https://<username>.github.io/ -->
-  <meta name="twitter:card" content="summary_large_image">
+  <meta property="og:title" content="김담영 ♥ 박승혜, 결혼합니다">
+  <meta property="og:description" content="2026년 12월 12일 토요일 오후 12시 30분 · 더채플 앳 청담 커티지홀 (3층)">
+  <!-- ⚠ 임시: 웨딩 촬영본 도착 전까지 OG 이미지 비활성화(파일 없음 → 깨진 미리보기 방지).
+       사진 준비되면 README.md "사진 추가하기" 참고해 아래 두 줄을 되돌리세요. -->
+  <!-- <meta property="og:image" content="https://damyoungkim.github.io/our-wedding-invitation/assets/img/og-image.jpg"> -->
+  <meta property="og:url" content="https://damyoungkim.github.io/our-wedding-invitation/">
+  <!-- <meta name="twitter:card" content="summary_large_image"> -->
+  <meta name="twitter:card" content="summary">
 
-  <!-- 커버 이미지 LCP 우선 로드 (계획 M4) -->
+  <!-- 커버 이미지 LCP 우선 로드 — 사진 준비되면 복원 (README "사진 추가하기" 참고)
   <link rel="preload" as="image" href="./assets/img/cover.jpg" fetchpriority="high">
+  -->
   <!-- 명조(Noto Serif KR) 셀프호스팅 — unicode-range 슬라이스라 쓰인 글자 조각만 다운로드됨 -->
   <link rel="stylesheet" href="./css/fonts.css">
   <link rel="stylesheet" href="./css/style.css">
@@ -32,7 +33,7 @@
   <!-- FOUC 차단 + 인트로 조기 활성화 (Executor 노트 11)
        - html에 .js 부여: 인트로/리빌은 .js 하위에서만 동작 (no-JS fail-open)
        - reduced-motion 이면 인트로 미마운트 (노트 13)
-       - 5초 failsafe를 여기서 "가장 먼저" 무장: main.js가 로드 실패해도 영구 잠금 불가 (노트 10) -->
+       - 7초 failsafe를 여기서 "가장 먼저" 무장: main.js가 로드 실패해도 영구 잠금 불가 (노트 10) -->
   <script>
     (function () {
       var de = document.documentElement;
@@ -43,7 +44,7 @@
         de.className += ' intro-active is-locked';
         window.__introFailsafe = setTimeout(function () {
           de.className = de.className.replace(/\s*(intro-active|is-locked)/g, '');
-        }, 5000);
+        }, 7000);
       }
     })();
   </script>
@@ -53,13 +54,13 @@
   <!-- ===== 인트로 오프닝 오버레이 (rev.5) — .js + .intro-active 일 때만 표시 ===== -->
   <div class="intro" id="intro" role="presentation">
     <div class="intro-inner">
-      <p class="intro-label">WEDDING INVITATION</p>
+      <p class="intro-label" data-cfg="tagline">THE BEGINNING OF FOREVER</p>
       <p class="intro-names">
-        <span data-cfg="groomName">신랑 성함</span>
+        <span data-cfg="groomName">김담영</span>
         <span class="intro-and">그리고</span>
-        <span data-cfg="brideName">신부 성함</span>
+        <span data-cfg="brideName">박승혜</span>
       </p>
-      <p class="intro-date">2026. 12. 12. SAT</p>
+      <p class="intro-date" data-cfg="dateText">2026. 12. 12. SAT</p>
       <p class="intro-skip-hint">화면을 탭하면 바로 시작됩니다</p>
     </div>
   </div>
@@ -67,52 +68,65 @@
   <!-- ===== 본문 (인트로 동안 aria-hidden + inert 처리 대상) ===== -->
   <div class="page" id="page">
 
-    <!-- 1. 커버 -->
-    <section class="cover" id="cover">
-      <div class="cover-photo">
-        <img id="cover-img" src="./assets/img/cover.jpg" alt="신랑 신부 웨딩 사진"
-             fetchpriority="high" decoding="async">
-      </div>
+    <!-- 1. 커버 — 종이 청첩장 표지 구성(영문 성함 / 문구 / 일시 / 장소)
+         ⚠ 임시: 웨딩 촬영본 도착 전까지 사진 없이 텍스트만 표시합니다.
+         사진이 준비되면 README.md "사진 추가하기" 참고해 "cover--no-photo" 클래스를 지우고
+         .cover-photo 블록(README 에 원본 마크업 있음)을 되살리세요. -->
+    <section class="cover cover--no-photo" id="cover">
       <div class="cover-text">
-        <p class="cover-eyebrow">THE MARRIAGE OF</p>
-        <h1 class="cover-names">
-          <span data-cfg="groomName">신랑 성함</span><span class="cover-amp">&middot;</span><span data-cfg="brideName">신부 성함</span>
+        <!-- 좁은 화면에서는 이름 단위로만 줄바꿈 ("DAM YOUNG" / "& SEUNG HYE") -->
+        <h1 class="cover-names-en">
+          <span class="cover-name-en" data-cfg="groomNameEn">DAM YOUNG</span>
+          <span class="cover-name-en"><span class="cover-amp">&amp;</span><span data-cfg="brideNameEn">SEUNG HYE</span></span>
         </h1>
-        <p class="cover-date">2026. 12. 12. SAT</p>
-        <p class="cover-time" data-cfg="timeDisplay">시간 추후 안내</p>
-        <p class="cover-venue">더채플앳청담 3층 커티지홀</p>
+        <p class="cover-eyebrow" data-cfg="tagline">THE BEGINNING OF FOREVER</p>
+        <p class="cover-names">
+          <span data-cfg="groomName">김담영</span><span class="cover-dot">&middot;</span><span data-cfg="brideName">박승혜</span>
+        </p>
+        <p class="cover-date">
+          <span data-cfg="dateText">2026. 12. 12. SAT</span>
+          <span class="cover-time" data-cfg="timeDisplayEn">12:30 PM</span>
+        </p>
+        <p class="cover-venue" data-cfg="venueLine">더채플 앳 청담 커티지홀 (3층)</p>
       </div>
     </section>
 
     <!-- 2. 인사말 -->
     <section class="section greeting reveal">
-      <p class="eyebrow">INVITATION</p>
+      <p class="eyebrow">Invitation</p>
       <h2 class="section-title">소중한 분들을 초대합니다</h2>
       <div class="ornament" aria-hidden="true"></div>
-      <p class="greeting-body" data-cfg="greeting">인사말 문구를 입력해주세요.
-(js/config.js 의 greeting 값을 수정하면 이 자리에 표시됩니다.)</p>
-    </section>
+      <p class="greeting-body" data-cfg="greeting">어릴 적 우연처럼 시작된 인연이
+긴 시간을 지나 귀한 사랑으로 맺어졌습니다.
 
-    <!-- 3. 신랑·신부 / 혼주 소개 + 연락처 -->
-    <section class="section family reveal">
-      <p class="eyebrow">FAMILY</p>
-      <h2 class="section-title">신랑 &amp; 신부</h2>
-      <div class="family-row">
-        <p class="family-parents">
-          <span data-cfg="groomFather">신랑 아버지 성함</span><span class="dot">&middot;</span><span data-cfg="groomMother">신랑 어머니 성함</span>
-          <span class="family-rel">의 아들</span>
-        </p>
-        <p class="family-person"><span class="family-role">신랑</span> <strong data-cfg="groomName">신랑 성함</strong></p>
-        <div class="contact-btns" data-contact="groom"></div>
-      </div>
-      <div class="family-divider" aria-hidden="true"></div>
-      <div class="family-row">
-        <p class="family-parents">
-          <span data-cfg="brideFather">신부 아버지 성함</span><span class="dot">&middot;</span><span data-cfg="brideMother">신부 어머니 성함</span>
-          <span class="family-rel">의 딸</span>
-        </p>
-        <p class="family-person"><span class="family-role">신부</span> <strong data-cfg="brideName">신부 성함</strong></p>
-        <div class="contact-btns" data-contact="bride"></div>
+서로의 가장 오랜 친구이자,
+곁을 지키는 평생의 동반자가 되어
+함께 걸어가려 합니다.
+
+저희의 새로운 시작에
+따뜻한 발걸음으로 함께해 주시어
+자리를 빛내 주시면 감사하겠습니다.</p>
+
+      <!-- 혼주·신랑신부 — 종이 청첩장처럼 좌우 2단 + 가운데 세로선 -->
+      <div class="family-grid">
+        <div class="family-col">
+          <p class="family-parents">
+            <span class="deceased-mark" data-deceased="groomFather" hidden aria-hidden="true"></span><span class="sr-only" data-deceased-sr="groomFather" hidden>고(故)</span><span data-cfg="groomFather">김종근</span><span class="dot">&middot;</span><span class="deceased-mark" data-deceased="groomMother" hidden aria-hidden="true"></span><span class="sr-only" data-deceased-sr="groomMother" hidden>고(故)</span><span data-cfg="groomMother">최연옥</span>
+            <span class="family-rel"><span class="family-rel-of">의</span> <span data-cfg="groomRelation">장남</span></span>
+          </p>
+          <p class="family-person"><span class="family-role">신랑</span> <strong data-cfg="groomName">김담영</strong></p>
+          <div class="contact-btns" data-contact="groom"></div>
+        </div>
+        <div class="family-divider" aria-hidden="true"></div>
+        <div class="family-col">
+          <p class="family-parents">
+            <!-- 종이 청첩장에 국화(故) 표시가 있어 반영 — config.js bride.father.deceased 로 제어 -->
+            <span class="deceased-mark" data-deceased="brideFather" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"><ellipse cx="12" cy="5.4" rx="2.1" ry="4.1"/><ellipse cx="12" cy="5.4" rx="2.1" ry="4.1" transform="rotate(45 12 12)"/><ellipse cx="12" cy="5.4" rx="2.1" ry="4.1" transform="rotate(90 12 12)"/><ellipse cx="12" cy="5.4" rx="2.1" ry="4.1" transform="rotate(135 12 12)"/><ellipse cx="12" cy="5.4" rx="2.1" ry="4.1" transform="rotate(180 12 12)"/><ellipse cx="12" cy="5.4" rx="2.1" ry="4.1" transform="rotate(225 12 12)"/><ellipse cx="12" cy="5.4" rx="2.1" ry="4.1" transform="rotate(270 12 12)"/><ellipse cx="12" cy="5.4" rx="2.1" ry="4.1" transform="rotate(315 12 12)"/></g><circle cx="12" cy="12" r="2.2" fill="currentColor"/></svg></span><span class="sr-only" data-deceased-sr="brideFather">고(故)</span><span data-cfg="brideFather">박광식</span><span class="dot">&middot;</span><span class="deceased-mark" data-deceased="brideMother" hidden aria-hidden="true"></span><span class="sr-only" data-deceased-sr="brideMother" hidden>고(故)</span><span data-cfg="brideMother">서영희</span>
+            <span class="family-rel"><span class="family-rel-of">의</span> <span data-cfg="brideRelation">장녀</span></span>
+          </p>
+          <p class="family-person"><span class="family-role">신부</span> <strong data-cfg="brideName">박승혜</strong></p>
+          <div class="contact-btns" data-contact="bride"></div>
+        </div>
       </div>
       <details class="fold parents-contact">
         <summary>혼주에게 연락하기</summary>
@@ -122,27 +136,22 @@
       </details>
     </section>
 
-    <!-- 4. 갤러리 -->
-    <section class="section gallery-section reveal">
-      <p class="eyebrow">GALLERY</p>
-      <h2 class="section-title">우리의 순간들</h2>
-      <div class="gallery" id="gallery">
-        <button type="button" class="gallery-item"><img src="./assets/img/gallery-01.jpg" alt="웨딩 사진 1" loading="lazy" decoding="async"></button>
-        <button type="button" class="gallery-item"><img src="./assets/img/gallery-02.jpg" alt="웨딩 사진 2" loading="lazy" decoding="async"></button>
-        <button type="button" class="gallery-item"><img src="./assets/img/gallery-03.jpg" alt="웨딩 사진 3" loading="lazy" decoding="async"></button>
-        <button type="button" class="gallery-item"><img src="./assets/img/gallery-04.jpg" alt="웨딩 사진 4" loading="lazy" decoding="async"></button>
-        <button type="button" class="gallery-item"><img src="./assets/img/gallery-05.jpg" alt="웨딩 사진 5" loading="lazy" decoding="async"></button>
-      </div>
-    </section>
+    <!-- 갤러리 섹션 — 웨딩 촬영본 도착 전까지 비활성화.
+         사진이 준비되면 README.md "사진 추가하기" 참고해 복원하세요
+         (css/style.css 의 .gallery 스타일과 js/main.js 의 라이트박스 초기화는 그대로 남아 있습니다). -->
 
-    <!-- 5. 캘린더 + D-day (2026년 12월, 정적 마크업 — JS 없이도 표시) -->
+    <!-- 3. 캘린더 + D-day (2026년 12월, 정적 마크업 — JS 없이도 표시) -->
     <section class="section calendar-section reveal">
-      <p class="eyebrow">SAVE THE DATE</p>
-      <h2 class="section-title">2026년 12월</h2>
+      <p class="eyebrow">Date</p>
+      <h2 class="section-title">2026년 12월 12일 토요일</h2>
+      <p class="cal-head" aria-hidden="true">
+        <span class="cal-head-day">12</span>
+        <span class="cal-head-month">December</span>
+      </p>
       <table class="calendar">
         <caption class="sr-only">2026년 12월 달력, 12일 토요일이 결혼식 날입니다</caption>
         <thead>
-          <tr><th scope="col">일</th><th scope="col">월</th><th scope="col">화</th><th scope="col">수</th><th scope="col">목</th><th scope="col">금</th><th scope="col">토</th></tr>
+          <tr><th scope="col">Sun</th><th scope="col">Mon</th><th scope="col">Tue</th><th scope="col">Wed</th><th scope="col">Thu</th><th scope="col">Fri</th><th scope="col">Sat</th></tr>
         </thead>
         <tbody>
           <tr><td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr>
@@ -153,46 +162,63 @@
         </tbody>
       </table>
       <p class="dday-line">
-        <span class="dday-date">2026년 12월 12일 토요일 <span data-cfg="timeDisplay">시간 추후 안내</span></span><br>
+        <span class="dday-date">2026년 12월 12일 토요일 <span data-cfg="timeDisplay">오후 12시 30분</span></span><br>
         <strong class="dday-badge" id="dday-badge">D-DAY 계산 중</strong>
       </p>
     </section>
 
-    <!-- 6. 오시는 길 -->
+    <!-- 4. 오시는 길 -->
     <section class="section location reveal">
-      <p class="eyebrow">LOCATION</p>
+      <p class="eyebrow">Location</p>
       <h2 class="section-title">오시는 길</h2>
-      <p class="venue-name" data-cfg="venueName">더채플앳청담</p>
-      <p class="venue-hall" data-cfg="venueHall">3층 커티지홀</p>
-      <p class="venue-address"><span id="venue-address" data-cfg="venueAddress">서울특별시 강남구 선릉로 757</span></p>
-      <p class="venue-tel" id="venue-tel-wrap"><a id="venue-tel" href="tel:0220158888">02-2015-8888</a></p>
+      <p class="venue-name"><span data-cfg="venueName">더채플 앳 청담</span> <span class="venue-hall" data-cfg="venueHall">커티지홀 (3층)</span></p>
+      <p class="venue-address"><span id="venue-address" data-cfg="venueAddress">서울 강남구 선릉로 757</span></p>
+      <p class="venue-tel" id="venue-tel-wrap"><a id="venue-tel" href="tel:024211121">02-421-1121</a></p>
 
       <div class="map-embed" id="map-embed">
         <div class="map-canvas" id="map-canvas" aria-hidden="true"></div>
+        <!-- 카카오맵 SDK 로드 실패 시(도메인 미등록·네트워크 차단 등) 대비한 텍스트 전용 폴백 -->
         <div class="map-fallback" id="map-fallback">
           <span class="map-pin" aria-hidden="true"></span>
-          <p class="map-fallback-name" data-cfg="venueName">더채플앳청담</p>
-          <p class="map-fallback-addr" data-cfg="venueAddress">서울특별시 강남구 선릉로 757</p>
+          <p class="map-fallback-name" data-cfg="venueName">더채플 앳 청담</p>
+          <p class="map-fallback-addr" data-cfg="venueAddress">서울 강남구 선릉로 757</p>
         </div>
       </div>
 
+      <!-- 교통 안내 — 종이 청첩장 Location 면. main.js 가 config.venue.transport 로 다시 그림 -->
+      <dl class="transport" id="transport">
+        <div class="transport-row">
+          <dt>지하철</dt>
+          <dd><span class="line-badge" data-line="7호선">7호선</span><span class="line-badge" data-line="수인분당선">수인분당선</span> 강남구청역 3-1번 출구 (도보 9분)</dd>
+        </div>
+        <div class="transport-row">
+          <dt>셔틀버스</dt>
+          <dd>강남구청역 3번 출구 (10분 간격)</dd>
+        </div>
+        <div class="transport-row">
+          <dt>자가용</dt>
+          <dd>90분 무료 주차 (예식장 내부 주차장과 외부 주차장 이용)<small class="transport-note">* 주차장이 다소 혼잡할 수 있으니, 가급적 대중교통 이용을 권장드립니다.</small></dd>
+        </div>
+      </dl>
+
+      <!-- 길찾기(내비) 버튼 — 정적 href = no-JS/데스크톱 폴백. main.js가 config 좌표/장소명으로 다시 쓰고,
+           모바일에서는 앱 스킴(tmap:// nmap:// intent://)을 먼저 시도한 뒤 미설치 시 폴백 (노트 2·3) -->
       <div class="map-buttons">
-        <!-- 정적 href = no-JS 폴백. main.js가 config 좌표/장소명으로 다시 씀 (노트 2·3) -->
-        <a class="btn map-btn" id="btn-kakaomap"
-           href="https://map.kakao.com/link/map/%EB%8D%94%EC%B1%84%ED%94%8C%EC%95%B3%EC%B2%AD%EB%8B%B4,37.5223,127.0405">카카오맵</a>
-        <a class="btn map-btn" id="btn-navermap"
-           href="https://map.naver.com/p/search/%EB%8D%94%EC%B1%84%ED%94%8C%EC%95%B3%EC%B2%AD%EB%8B%B4">네이버지도</a>
         <a class="btn map-btn" id="btn-tmap"
-           href="tmap://search?name=%EB%8D%94%EC%B1%84%ED%94%8C%EC%95%B3%EC%B2%AD%EB%8B%B4">티맵</a>
+           href="tmap://route?goalname=%EB%8D%94%EC%B1%84%ED%94%8C%EC%95%B3%EC%B2%AD%EB%8B%B4&goalx=127.03901&goaly=37.52218">티맵</a>
+        <a class="btn map-btn" id="btn-kakaomap"
+           href="https://map.kakao.com/link/to/%EB%8D%94%EC%B1%84%ED%94%8C%EC%95%B3%EC%B2%AD%EB%8B%B4,37.52218,127.03901">카카오맵</a>
+        <a class="btn map-btn" id="btn-navermap"
+           href="https://map.naver.com/p/entry/place/34120522">네이버지도</a>
       </div>
       <button type="button" class="btn btn-wide" id="btn-copy-address">주소 복사하기</button>
     </section>
 
-    <!-- 7. 마음 전하실 곳 -->
+    <!-- 5. 마음 전하실 곳 -->
     <section class="section accounts reveal">
-      <p class="eyebrow">WITH LOVE</p>
+      <p class="eyebrow">With Love</p>
       <h2 class="section-title">마음 전하실 곳</h2>
-      <p class="accounts-note">참석이 어려워 축하의 마음을 전하고 싶으신 분들을 위해<br>계좌번호를 기재하였습니다. 너그러운 양해 부탁드립니다.</p>
+      <p class="accounts-note">멀리서도 축하의 마음을<br>전하고 싶으신 분들을 위해<br>계좌번호를 안내드립니다.<br><br>소중한 축하를 보내주셔서 감사드리며,<br>따뜻한 마음에 깊이 감사드립니다.</p>
       <details class="fold account-group">
         <summary>신랑측 마음 전하실 곳</summary>
         <ul class="fold-body account-list" data-accounts="groom">
@@ -207,27 +233,12 @@
       </details>
     </section>
 
-    <!-- 8. 공유하기 -->
-    <section class="section share reveal">
-      <p class="eyebrow">SHARE</p>
-      <h2 class="section-title">청첩장 전하기</h2>
-      <div class="share-buttons">
-        <button type="button" class="btn btn-primary btn-wide" id="btn-share">청첩장 공유하기</button>
-        <button type="button" class="btn btn-wide" id="btn-copy-link">링크 복사하기</button>
-        <!-- 예식 시간 확정(config.wedding.time) 전에는 숨김 — main.js가 노출 (rev.3-A) -->
-        <a class="btn btn-wide is-hidden" id="btn-gcal" href="#">구글 캘린더에 저장</a>
-        <!-- .ics 2순위 보조 — 인앱 WebView 다운로드 제약으로 정식 브라우저 안내 병기 (노트 8) -->
-        <a class="btn btn-wide is-hidden" id="btn-ics" href="#" download="wedding-invitation.ics">캘린더 파일(.ics) 저장</a>
-        <p class="share-note is-hidden" id="ics-note">.ics 저장은 카카오톡 등 인앱 브라우저에서는 동작하지 않을 수 있습니다.<br>Safari·Chrome 등 정식 브라우저에서 이용해주세요.</p>
-      </div>
-    </section>
-
-    <!-- 9. Footer -->
+    <!-- 6. Footer -->
     <footer class="footer">
       <p class="footer-names">
-        <span data-cfg="groomName">신랑 성함</span> <span class="footer-amp">&hearts;</span> <span data-cfg="brideName">신부 성함</span>
+        <span data-cfg="groomName">김담영</span> <span class="footer-amp">&hearts;</span> <span data-cfg="brideName">박승혜</span>
       </p>
-      <p class="footer-date">2026. 12. 12. SAT &middot; 더채플앳청담</p>
+      <p class="footer-date"><span data-cfg="dateText">2026. 12. 12. SAT</span> &middot; <span data-cfg="venueName">더채플 앳 청담</span></p>
       <!-- 뮤팟(Mewpot) 무료 음원 라이선스 조건: 출처 표기 필수 — 삭제하지 마세요 -->
       <p class="footer-credit">
         배경음악: 뮤팟 제공 &lsquo;새벽 햇살&rsquo; &middot;

@@ -26,7 +26,7 @@
   try { reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
 
   /* ============================================================
-   * 0. 인트로 해제 — 5s 하드 타임아웃을 "가장 먼저" 무장 (노트 10)
+   * 0. 인트로 해제 — 7s 하드 타임아웃을 "가장 먼저" 무장 (노트 10)
    *    이후 어떤 코드가 throw 해도 영구 잠금이 될 수 없다.
    * ============================================================ */
   var introDone = false;
@@ -49,12 +49,12 @@
       root.classList.remove('intro-active');
     }
   }
-  var introHardTimer = setTimeout(endIntro, 5000); // 독립 무장 (노트 10)
+  var introHardTimer = setTimeout(endIntro, 7000); // 독립 무장 (노트 10)
   // head의 __introFailsafe는 "main.js 로드 실패" 대비용 — 제어권을 잡은 즉시 해제.
   // (head failsafe는 intro-active/is-locked만 제거하고 #page의 aria-hidden/inert는
   //  못 풀므로, 둘 다 살아 있으면 failsafe가 먼저 발화해 오버레이는 사라졌는데
   //  본문은 inert인 "보이는데 죽은 페이지" 구간이 생긴다. 여기부터는 위의
-  //  introHardTimer(endIntro 완전 정리)가 5s 상한을 대체한다.)
+  //  introHardTimer(endIntro 완전 정리)가 7s 상한을 대체한다.)
   try {
     if (window.__introFailsafe) { clearTimeout(window.__introFailsafe); window.__introFailsafe = null; }
   } catch (e) {}
@@ -155,7 +155,9 @@
 
   /* ============================================================
    * 2. 인트로 오프닝 (rev.5, 노트 9~13)
-   *    해제 = max(애니메이션 타이머 ~2.2s, 커버 settle) / 5s 상한(위에서 무장)
+   *    해제 = max(애니메이션 타이머 ~4.4s, 커버 settle) / 7s 상한(위에서 무장)
+   *    (rev.6: 처음 들어왔을 때 문구를 다 읽기 전에 넘어간다는 피드백으로
+   *     2.2s → 4.4s 로 연장 + 각 줄 등장 타이밍도 style.css 쪽에서 함께 늦춤)
    * ============================================================ */
   (function initIntro() {
     if (!root.classList.contains('intro-active')) {
@@ -174,7 +176,9 @@
     function maybeEnd() { if (animDone && coverDone) endIntro(); }
 
     // 애니메이션 분기: animationend 대신 duration 기반 setTimeout (노트 10)
-    setTimeout(function () { animDone = true; maybeEnd(); }, 2200);
+    // 4.4s = 마지막 줄(스킵 힌트, style.css 기준 3.6s에 등장 완료) 이후 ~0.8s 를
+    // 그대로 유지해 다 읽을 시간을 준 뒤 자동으로 넘어감 (탭하면 언제든 즉시 스킵)
+    setTimeout(function () { animDone = true; maybeEnd(); }, 4400);
 
     // 커버 settle: load + error + 동기 complete(캐시) 3경로 (노트 10 — 재방문 역전 방지)
     // HTML 스펙상 broken 이미지도 complete=true → naturalWidth 검사 없이 settled 취급.
@@ -213,27 +217,72 @@
     toastTimer = setTimeout(function () { el.classList.remove('is-show'); }, 2400);
   }
 
+  // 국화(故) 아이콘 — index.html 의 정적 마크업과 동일한 SVG (JS 주입용).
+  // ⚠ bindConfig() 안에서 즉시 쓰이므로 반드시 그 IIFE보다 앞에 있어야 함
+  //   (var 는 선언만 호이스팅되고 대입은 실행 순서를 따르므로, 뒤에 두면
+  //    첫 실행 시 여기 값이 아직 undefined 라 innerHTML 이 문자열 "undefined"가 됨).
+  var FLOWER_SVG =
+    '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
+    '<g fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round">' +
+    '<ellipse cx="12" cy="5.4" rx="2.1" ry="4.1"/>' +
+    '<ellipse cx="12" cy="5.4" rx="2.1" ry="4.1" transform="rotate(45 12 12)"/>' +
+    '<ellipse cx="12" cy="5.4" rx="2.1" ry="4.1" transform="rotate(90 12 12)"/>' +
+    '<ellipse cx="12" cy="5.4" rx="2.1" ry="4.1" transform="rotate(135 12 12)"/>' +
+    '<ellipse cx="12" cy="5.4" rx="2.1" ry="4.1" transform="rotate(180 12 12)"/>' +
+    '<ellipse cx="12" cy="5.4" rx="2.1" ry="4.1" transform="rotate(225 12 12)"/>' +
+    '<ellipse cx="12" cy="5.4" rx="2.1" ry="4.1" transform="rotate(270 12 12)"/>' +
+    '<ellipse cx="12" cy="5.4" rx="2.1" ry="4.1" transform="rotate(315 12 12)"/>' +
+    '</g><circle cx="12" cy="12" r="2.2" fill="currentColor"/></svg>';
+
   /* ============================================================
    * 4. config 텍스트 주입 (placeholder 안전 — HTML 정적 텍스트가 기본값)
    * ============================================================ */
   (function bindConfig() {
-    var timeDisplay = formatTimeDisplay(get(CFG, ['wedding', 'time'], ''));
+    var time = get(CFG, ['wedding', 'time'], '');
+    var timePlaceholder = get(CFG, ['wedding', 'timePlaceholder'], null);
+    var venueName = get(CFG, ['venue', 'name'], null);
+    var venueHall = get(CFG, ['venue', 'hall'], null);
     var bindings = {
       groomName: get(CFG, ['groom', 'name'], null),
       brideName: get(CFG, ['bride', 'name'], null),
+      groomNameEn: get(CFG, ['groom', 'nameEn'], null),
+      brideNameEn: get(CFG, ['bride', 'nameEn'], null),
+      groomRelation: get(CFG, ['groom', 'relation'], null),
+      brideRelation: get(CFG, ['bride', 'relation'], null),
       groomFather: get(CFG, ['groom', 'father', 'name'], null),
       groomMother: get(CFG, ['groom', 'mother', 'name'], null),
       brideFather: get(CFG, ['bride', 'father', 'name'], null),
       brideMother: get(CFG, ['bride', 'mother', 'name'], null),
       greeting: get(CFG, ['greeting'], null),
-      venueName: get(CFG, ['venue', 'name'], null),
-      venueHall: get(CFG, ['venue', 'hall'], null),
+      tagline: get(CFG, ['wedding', 'tagline'], null),
+      dateText: get(CFG, ['wedding', 'dateText'], null),
+      venueName: venueName,
+      venueHall: venueHall,
+      // 커버 한 줄 표기: "더채플 앳 청담 커티지홀 (3층)"
+      venueLine: (venueName || venueHall) ? [venueName, venueHall].filter(Boolean).join(' ') : null,
       venueAddress: get(CFG, ['venue', 'address'], null),
-      timeDisplay: timeDisplay || get(CFG, ['wedding', 'timePlaceholder'], null)
+      timeDisplay: formatTimeDisplay(time) || timePlaceholder,
+      timeDisplayEn: formatTimeDisplayEn(time) || timePlaceholder
     };
     $$('[data-cfg]').forEach(function (el) {
       var key = el.getAttribute('data-cfg');
       if (bindings[key] != null) el.textContent = bindings[key];
+    });
+
+    // 고인(故) 표시 — 혼주 { deceased: true } 이면 성함 앞에 국화 아이콘 + 스크린리더용 "고(故)"
+    var deceased = {
+      groomFather: get(CFG, ['groom', 'father', 'deceased'], false) === true,
+      groomMother: get(CFG, ['groom', 'mother', 'deceased'], false) === true,
+      brideFather: get(CFG, ['bride', 'father', 'deceased'], false) === true,
+      brideMother: get(CFG, ['bride', 'mother', 'deceased'], false) === true
+    };
+    $$('[data-deceased]').forEach(function (el) {
+      var on = deceased[el.getAttribute('data-deceased')];
+      el.hidden = !on;
+      if (on && !el.firstChild) el.innerHTML = FLOWER_SVG;
+    });
+    $$('[data-deceased-sr]').forEach(function (el) {
+      el.hidden = !deceased[el.getAttribute('data-deceased-sr')];
     });
 
     // 예식장 전화 — config 비우면 숨김
@@ -258,6 +307,51 @@
     var h12 = h % 12; if (h12 === 0) h12 = 12;
     return ampm + ' ' + h12 + '시' + (min ? ' ' + min + '분' : '');
   }
+  // 커버용 영문 표기 (종이 청첩장 표지 "12 : 30 PM" 형식) — '12:30' → '12:30 PM'
+  function formatTimeDisplayEn(hhmm) {
+    var m = /^(\d{1,2}):(\d{2})$/.exec(hhmm || '');
+    if (!m) return '';
+    var h = parseInt(m[1], 10);
+    var h12 = h % 12; if (h12 === 0) h12 = 12;
+    return h12 + ':' + m[2] + ' ' + (h < 12 ? 'AM' : 'PM');
+  }
+
+  /* ============================================================
+   * 4-1. 교통 안내 표 (config.venue.transport) — 정적 HTML 이 기본값,
+   *      config 가 있으면 그대로 다시 그림. 노선 배지 색상은 CSS [data-line] 담당.
+   * ============================================================ */
+  (function initTransport() {
+    var dl = doc.getElementById('transport');
+    var rows = get(CFG, ['venue', 'transport'], null);
+    if (!dl || !rows || !rows.length) return;
+    dl.innerHTML = '';
+    rows.forEach(function (r) {
+      if (!r || !r.label) return;
+      var row = doc.createElement('div');
+      row.className = 'transport-row';
+      var dt = doc.createElement('dt');
+      dt.textContent = r.label;
+      var dd = doc.createElement('dd');
+      var lines = r.lines || [];
+      lines.forEach(function (ln) {
+        var b = doc.createElement('span');
+        b.className = 'line-badge';
+        b.setAttribute('data-line', ln);
+        b.textContent = ln;
+        dd.appendChild(b);
+      });
+      if (r.text) dd.appendChild(doc.createTextNode((lines.length ? ' ' : '') + r.text));
+      if (r.note) {
+        var s = doc.createElement('small');
+        s.className = 'transport-note';
+        s.textContent = '* ' + r.note;
+        dd.appendChild(s);
+      }
+      row.appendChild(dt);
+      row.appendChild(dd);
+      dl.appendChild(row);
+    });
+  })();
 
   /* ============================================================
    * 5. 연락처 버튼 (전화/문자) — 번호 없으면 미노출
@@ -427,35 +521,81 @@
    * 9. 오시는 길 — 딥링크(https 보장 경로) + 카카오맵 임베드 (M2·M3, 노트 2·3)
    * ============================================================ */
   (function initMap() {
-    var name = get(CFG, ['venue', 'name'], '더채플앳청담');
+    // 딥링크/검색은 지도 앱 등록명(searchName, 띄어쓰기 없음) 우선 — 화면 표기명은 폴백
+    var name = get(CFG, ['venue', 'searchName'], get(CFG, ['venue', 'name'], '더채플앳청담'));
+    var displayName = get(CFG, ['venue', 'name'], name);
     var addr = get(CFG, ['venue', 'address'], '');
-    var lat = get(CFG, ['venue', 'lat'], 37.5223);
-    var lng = get(CFG, ['venue', 'lng'], 127.0405);
+    var lat = get(CFG, ['venue', 'lat'], 37.52218);
+    var lng = get(CFG, ['venue', 'lng'], 127.03901);
+    var naverPlaceId = get(CFG, ['venue', 'naverPlaceId'], '');
     var enc = encodeURIComponent(name); // 노트 3
+    var ua = navigator.userAgent || '';
+    var isAndroid = /Android/i.test(ua);
+    var isIOS = /iPhone|iPad|iPod/i.test(ua);
 
+    /* 앱 스킴 열기 → 앱 전환이 없으면(미설치·인앱 WebView 차단) 1.5s 뒤 폴백.
+     * cancel 리스너는 1쌍만 상시 등록, 클릭마다 타이머 id만 갱신
+     * ({once:true}를 클릭마다 새로 걸면 앱 전환이 없을 때 스테일 리스너가 누적됨, 노트 2) */
+    var navTimer = null;
+    function navCancel() { if (navTimer) { clearTimeout(navTimer); navTimer = null; } }
+    doc.addEventListener('visibilitychange', navCancel);
+    window.addEventListener('pagehide', navCancel);
+    function armFallback(fallback) {
+      navCancel();
+      navTimer = setTimeout(function () {
+        navTimer = null;
+        if (typeof fallback === 'function') fallback();
+        else if (fallback) window.location.href = fallback;
+      }, 1500);
+    }
+    function openApp(schemeUrl, fallback) {
+      armFallback(fallback);
+      window.location.href = schemeUrl;
+    }
+    // Android 는 intent:// 권장 — 앱이 없으면 Play 스토어(package)로 자동 이동
+    function intentUrl(scheme, path, pkg) {
+      return 'intent://' + path + '#Intent;scheme=' + scheme +
+        ';action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=' + pkg + ';end';
+    }
+
+    // 카카오맵 길찾기 — 공식 URL(https)이라 어디서나 열리고, 앱이 있으면 앱으로 연결됨
     var kakaoBtn = doc.getElementById('btn-kakaomap');
+    if (kakaoBtn) kakaoBtn.href = 'https://map.kakao.com/link/to/' + enc + ',' + lat + ',' + lng;
+
+    // 네이버지도 자동차 길찾기 — 앱 스킴(nmap://) 우선, 실패 시 네이버지도 웹(플레이스 페이지) 폴백
     var naverBtn = doc.getElementById('btn-navermap');
+    if (naverBtn) {
+      var naverWeb = naverPlaceId
+        ? 'https://map.naver.com/p/entry/place/' + encodeURIComponent(naverPlaceId)
+        : 'https://map.naver.com/p/search/' + enc;
+      var naverPath = 'route/car?dlat=' + lat + '&dlng=' + lng + '&dname=' + enc +
+        '&appname=' + encodeURIComponent(window.location.hostname || 'wedding-invitation');
+      naverBtn.href = naverWeb; // no-JS / 데스크톱 폴백
+      naverBtn.addEventListener('click', function (e) {
+        if (isAndroid) {
+          e.preventDefault();
+          openApp(intentUrl('nmap', naverPath, 'com.nhn.android.nmap'), naverWeb);
+        } else if (isIOS) {
+          e.preventDefault();
+          openApp('nmap://' + naverPath, naverWeb);
+        }
+        // 데스크톱: href(웹) 그대로 이동
+      });
+    }
+
+    // 티맵 길안내 — 웹 지도가 없어 앱 스킴만. 미설치 시 Android 는 스토어, iOS 는 안내 토스트
     var tmapBtn = doc.getElementById('btn-tmap');
-    if (kakaoBtn) kakaoBtn.href = 'https://map.kakao.com/link/map/' + enc + ',' + lat + ',' + lng;
-    if (naverBtn) naverBtn.href = 'https://map.naver.com/p/search/' + enc;
     if (tmapBtn) {
-      // 티맵은 웹 지도가 없어 공식 앱 스킴 사용(best-effort). 인앱 WebView에서
-      // 스킴 전환이 무시될 수 있으므로 실패 시 안내 토스트 (노트 2)
-      // cancel 리스너는 1쌍만 상시 등록, 클릭마다 타이머 id만 갱신
-      // ({once:true}를 클릭마다 새로 걸면 앱 전환이 없을 때 스테일 리스너가 누적됨)
-      tmapBtn.href = 'tmap://search?name=' + enc;
-      var tmapTimer = null;
-      var tmapCancel = function () {
-        if (tmapTimer) { clearTimeout(tmapTimer); tmapTimer = null; }
-      };
-      doc.addEventListener('visibilitychange', tmapCancel);
-      window.addEventListener('pagehide', tmapCancel);
-      tmapBtn.addEventListener('click', function () {
-        tmapCancel();
-        tmapTimer = setTimeout(function () {
-          tmapTimer = null;
-          toast('티맵 앱이 설치된 기기에서 열 수 있습니다.');
-        }, 1500);
+      var tmapPath = 'route?goalname=' + enc + '&goalx=' + lng + '&goaly=' + lat;
+      var tmapNoApp = function () { toast('티맵 앱이 설치된 기기에서 열 수 있습니다.'); };
+      tmapBtn.href = 'tmap://' + tmapPath;
+      tmapBtn.addEventListener('click', function (e) {
+        if (isAndroid) {
+          e.preventDefault();
+          openApp(intentUrl('tmap', tmapPath, 'com.skt.tmap.ku'), tmapNoApp);
+        } else {
+          armFallback(tmapNoApp); // href 스킴으로 이동, 앱 전환이 없으면 토스트
+        }
       });
     }
 
@@ -464,7 +604,7 @@
       copyText(addr || name, '주소가 복사되었습니다.');
     });
 
-    // 카카오맵 JS 임베드 — 키 없으면 fallback 블록 유지, SDK 실패 시에도 fallback 유지
+    // 카카오맵 JS 임베드 — 키 없으면 약도(fallback) 유지, SDK 실패 시에도 약도 유지
     var key = get(CFG, ['map', 'kakaoJsKey'], '');
     if (!key) return;
     var sc = doc.createElement('script');
@@ -474,21 +614,28 @@
       try {
         window.kakao.maps.load(function () {
           try {
+            var K = window.kakao.maps;
             var canvas = doc.getElementById('map-canvas');
             var fb = doc.getElementById('map-fallback');
             var embed = doc.getElementById('map-embed');
             if (!canvas) return;
             embed.classList.add('has-map');
             canvas.removeAttribute('aria-hidden');
-            var pos = new window.kakao.maps.LatLng(lat, lng);
-            var map = new window.kakao.maps.Map(canvas, { center: pos, level: 4 });
-            new window.kakao.maps.Marker({ map: map, position: pos });
+            var pos = new K.LatLng(lat, lng);
+            var map = new K.Map(canvas, { center: pos, level: 3 });
+            map.addControl(new K.ZoomControl(), K.ControlPosition.RIGHT);
+            new K.Marker({ map: map, position: pos });
+            // 장소명 말풍선 (textContent 로 만들어 HTML 이스케이프 불필요)
+            var label = doc.createElement('div');
+            label.className = 'map-label';
+            label.textContent = displayName;
+            new K.CustomOverlay({ map: map, position: pos, content: label, yAnchor: 2.4 });
             if (fb) fb.hidden = true;
           } catch (e) { /* fallback 유지 */ }
         });
       } catch (e) { /* fallback 유지 */ }
     };
-    sc.onerror = function () { /* fallback 유지 — 콘솔 에러 없이 안내 블록 표시 */ };
+    sc.onerror = function () { /* fallback 유지 — 콘솔 에러 없이 약도 표시 */ };
     doc.head.appendChild(sc);
   })();
 
@@ -535,86 +682,7 @@
   })();
 
   /* ============================================================
-   * 11. 공유 — navigator.share → 링크 복사 fallback (M11-②)
-   *     구글 캘린더 버튼: 예식 시간 확정 전 숨김 (rev.3-A)
-   * ============================================================ */
-  (function initShare() {
-    var url = window.location.href.split('#')[0];
-    var title = get(CFG, ['share', 'title'], doc.title);
-    var text = get(CFG, ['share', 'text'], '');
-
-    var shareBtn = doc.getElementById('btn-share');
-    var copyBtn = doc.getElementById('btn-copy-link');
-    function copyLink() { copyText(url, '청첩장 링크가 복사되었습니다.'); }
-
-    if (shareBtn) shareBtn.addEventListener('click', function () {
-      if (navigator.share) {
-        navigator.share({ title: title, text: text, url: url })
-          .catch(function () { /* 사용자 취소(AbortError) 등 — 조용히 */ });
-      } else {
-        copyLink(); // 인스타 인앱 등 미지원 환경 fallback
-      }
-    });
-    if (copyBtn) copyBtn.addEventListener('click', copyLink);
-
-    // 구글 캘린더 (인앱 다운로드 제약 회피 — 인앱 기본 동선은 URL 1순위, 노트 8)
-    var gcal = doc.getElementById('btn-gcal');
-    var icsBtn = doc.getElementById('btn-ics');
-    var icsNote = doc.getElementById('ics-note');
-    var time = get(CFG, ['wedding', 'time'], '');
-    var m = /^(\d{1,2}):(\d{2})$/.exec(time);
-    if (!m) return; // 시간 미확정 → 캘린더 버튼(구글/.ics) 숨김 유지
-    var y = get(CFG, ['wedding', 'year'], 2026);
-    var mo = get(CFG, ['wedding', 'month'], 12);
-    var d = get(CFG, ['wedding', 'day'], 12);
-    var dur = get(CFG, ['wedding', 'durationMinutes'], 90);
-    var startUtc = Date.UTC(y, mo - 1, d, parseInt(m[1], 10), parseInt(m[2], 10)) - 9 * 3600e3; // KST→UTC
-    function fmt(ms) {
-      var dt = new Date(ms);
-      function p(n) { return (n < 10 ? '0' : '') + n; }
-      return dt.getUTCFullYear() + p(dt.getUTCMonth() + 1) + p(dt.getUTCDate()) +
-        'T' + p(dt.getUTCHours()) + p(dt.getUTCMinutes()) + '00Z';
-    }
-    var loc = get(CFG, ['venue', 'name'], '') + ' ' + get(CFG, ['venue', 'hall'], '') +
-      ' (' + get(CFG, ['venue', 'address'], '') + ')';
-    if (gcal) {
-      gcal.href = 'https://calendar.google.com/calendar/render?action=TEMPLATE' +
-        '&text=' + encodeURIComponent(title) +
-        '&dates=' + fmt(startUtc) + '/' + fmt(startUtc + dur * 60000) +
-        '&location=' + encodeURIComponent(loc) +
-        '&ctz=Asia/Seoul';
-      gcal.classList.remove('is-hidden');
-    }
-
-    // .ics 보조 링크 (노트 8 / rev.3-A — 2순위. 인앱 WebView에선 다운로드가
-    // 실패할 수 있어 "정식 브라우저에서 이용" 안내 문구를 병기해 노출)
-    if (icsBtn) {
-      var icsEsc = function (s) {
-        return String(s).replace(/\\/g, '\\\\').replace(/;/g, '\\;')
-          .replace(/,/g, '\\,').replace(/\n/g, '\\n');
-      };
-      var ics = [
-        'BEGIN:VCALENDAR',
-        'VERSION:2.0',
-        'PRODID:-//mobile-wedding-invitation//KO',
-        'BEGIN:VEVENT',
-        'UID:wedding-' + fmt(startUtc) + '@invitation',
-        'DTSTAMP:' + fmt(Date.now()),
-        'DTSTART:' + fmt(startUtc),
-        'DTEND:' + fmt(startUtc + dur * 60000),
-        'SUMMARY:' + icsEsc(title),
-        'LOCATION:' + icsEsc(loc),
-        'END:VEVENT',
-        'END:VCALENDAR'
-      ].join('\r\n');
-      icsBtn.href = 'data:text/calendar;charset=utf-8,' + encodeURIComponent(ics);
-      icsBtn.classList.remove('is-hidden');
-      if (icsNote) icsNote.classList.remove('is-hidden');
-    }
-  })();
-
-  /* ============================================================
-   * 12. 스크롤 리빌 (M11-①) — IO 지원 시에만 숨김 클래스 부여
+   * 11. 스크롤 리빌 (M11-①) — IO 지원 시에만 숨김 클래스 부여
    *     (IO 미지원/JS off/reduced-motion → 콘텐츠 항상 표시)
    * ============================================================ */
   (function initReveal() {
