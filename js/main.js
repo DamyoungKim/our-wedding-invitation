@@ -234,6 +234,14 @@
     '<ellipse cx="12" cy="5.4" rx="2.1" ry="4.1" transform="rotate(315 12 12)"/>' +
     '</g><circle cx="12" cy="12" r="2.2" fill="currentColor"/></svg>';
 
+  // 혼주 연락처 모달용 전화/문자 아이콘 — 같은 이유로 initContacts() 보다 앞에 있어야 함
+  var ICON_CALL =
+    '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" ' +
+    'stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M6.6 10.8c1.4 2.8 3.8 5.2 6.6 6.6l2.2-2.2c.3-.3.7-.4 1.1-.3 1.2.4 2.5.6 3.8.6.6 0 1 .4 1 1v3.6c0 .6-.4 1-1 1C10.9 21.1 2.9 13.1 2.9 3.7c0-.6.4-1 1-1H7.5c.6 0 1 .4 1 1 0 1.3.2 2.6.6 3.8.1.4 0 .8-.3 1.1L6.6 10.8Z"/></svg>';
+  var ICON_MSG =
+    '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" ' +
+    'stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M4 5.5h16A1.5 1.5 0 0 1 21.5 7v9a1.5 1.5 0 0 1-1.5 1.5h-9.6L5 21v-3.5H4A1.5 1.5 0 0 1 2.5 16V7A1.5 1.5 0 0 1 4 5.5Z"/></svg>';
+
   /* ============================================================
    * 4. config 텍스트 주입 (placeholder 안전 — HTML 정적 텍스트가 기본값)
    * ============================================================ */
@@ -354,7 +362,7 @@
   })();
 
   /* ============================================================
-   * 5. 연락처 버튼 (전화/문자) — 번호 없으면 미노출
+   * 5. 연락처 — 신랑/신부 본인 버튼 + 혼주 연락처 모달 (번호 없으면 미노출)
    * ============================================================ */
   (function initContacts() {
     function telHref(p) { return 'tel:' + p.replace(/[^+\d]/g, ''); }
@@ -366,6 +374,15 @@
       a.className = 'btn contact-btn' + (cls ? ' ' + cls : '');
       return a;
     }
+    function iconA(href, iconSvg, label) {
+      var a = doc.createElement('a');
+      a.href = href;
+      a.setAttribute('aria-label', label);
+      a.innerHTML = iconSvg;
+      return a;
+    }
+
+    // 신랑/신부 본인 연락처 — family 섹션의 전화/문자 버튼
     [['groom', CFG.groom], ['bride', CFG.bride]].forEach(function (pair) {
       var holder = $('[data-contact="' + pair[0] + '"]');
       var phone = get(pair[1] || {}, ['phone'], '');
@@ -374,53 +391,130 @@
       holder.appendChild(btnA(smsHref(phone), '문자하기'));
     });
 
-    // 혼주 연락처 (details 내부)
-    var box = doc.getElementById('parents-contact');
-    if (!box) return;
-    var rows = [];
-    [['신랑측', CFG.groom], ['신부측', CFG.bride]].forEach(function (side) {
-      [['아버지', get(side[1] || {}, ['father'], {})], ['어머니', get(side[1] || {}, ['mother'], {})]].forEach(function (p) {
-        var name = get(p[1], ['name'], '');
-        var phone = get(p[1], ['phone'], '');
-        if (!phone) return;
-        var row = doc.createElement('div');
-        row.className = 'parent-row';
-        var label = doc.createElement('p');
-        label.className = 'parent-label';
-        label.textContent = side[0] + ' ' + p[0] + ' ' + name;
-        row.appendChild(label);
-        var btns = doc.createElement('div');
-        btns.className = 'contact-btns';
-        btns.appendChild(btnA(telHref(phone), '전화하기'));
-        btns.appendChild(btnA(smsHref(phone), '문자하기'));
-        row.appendChild(btns);
-        rows.push(row);
+    // 혼주 연락처 모달 — 신랑측 | 신부측 2단, 각 칸에 아버지/어머니(번호 있는 분만)
+    var body = doc.getElementById('contact-modal-body');
+    if (body) {
+      var cols = [];
+      [['신랑측', CFG.groom], ['신부측', CFG.bride]].forEach(function (side) {
+        var persons = [];
+        [['아버지', get(side[1] || {}, ['father'], {})], ['어머니', get(side[1] || {}, ['mother'], {})]].forEach(function (p) {
+          var name = get(p[1], ['name'], '');
+          var phone = get(p[1], ['phone'], '');
+          if (!phone) return;
+          persons.push({ role: p[0], name: name, phone: phone });
+        });
+        if (!persons.length) return;
+        var col = doc.createElement('div');
+        col.className = 'contact-modal-col';
+        var h4 = doc.createElement('h4');
+        h4.className = 'contact-modal-side';
+        h4.textContent = side[0];
+        col.appendChild(h4);
+        persons.forEach(function (p) {
+          var wrap = doc.createElement('div');
+          wrap.className = 'contact-modal-person';
+          var nameP = doc.createElement('p');
+          nameP.className = 'contact-modal-name';
+          var roleSpan = doc.createElement('span');
+          roleSpan.className = 'role';
+          roleSpan.textContent = p.role;
+          nameP.appendChild(roleSpan);
+          nameP.appendChild(doc.createTextNode(' ' + p.name));
+          var icons = doc.createElement('div');
+          icons.className = 'contact-modal-icons';
+          icons.appendChild(iconA(telHref(p.phone), ICON_CALL, p.name + ' 전화하기'));
+          icons.appendChild(iconA(smsHref(p.phone), ICON_MSG, p.name + ' 문자하기'));
+          wrap.appendChild(nameP);
+          wrap.appendChild(icons);
+          col.appendChild(wrap);
+        });
+        cols.push(col);
       });
-    });
-    if (rows.length) {
-      box.innerHTML = '';
-      rows.forEach(function (r) { box.appendChild(r); });
+      if (cols.length) {
+        body.innerHTML = '';
+        cols.forEach(function (c) { body.appendChild(c); });
+      }
+    }
+
+    // 모달 열기/닫기 — 라이트박스와 동일한 inert/포커스 패턴 재사용
+    var modal = doc.getElementById('contact-modal');
+    var openBtn = doc.getElementById('btn-open-contact');
+    var closeBtn = doc.getElementById('contact-modal-close');
+    if (modal && openBtn) {
+      var lastFocus = null;
+      function openModal() {
+        lastFocus = doc.activeElement;
+        modal.hidden = false;
+        root.classList.add('modal-open');
+        if (pageEl) { try { pageEl.inert = true; } catch (e) {} }
+        if (closeBtn) closeBtn.focus();
+      }
+      function closeModal() {
+        modal.hidden = true;
+        root.classList.remove('modal-open');
+        if (pageEl) { try { pageEl.inert = false; } catch (e) {} }
+        if (lastFocus && lastFocus.focus) { try { lastFocus.focus(); } catch (e) {} }
+      }
+      openBtn.addEventListener('click', openModal);
+      if (closeBtn) closeBtn.addEventListener('click', closeModal);
+      modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); }); // 배경 닫기
+      doc.addEventListener('keydown', function (e) { if (!modal.hidden && e.key === 'Escape') closeModal(); });
     }
   })();
 
   /* ============================================================
-   * 6. D-day — KST(+09:00) 앵커, floor, 당일 "D-Day" (M6, 노트 4)
+   * 6. D-day — 실시간 카운트다운(일/시/분/초, 1초 간격), KST(+09:00) 앵커 (M6, 노트 4)
    *    한국은 DST 없음 → 고정 +09:00 정확. 브라우저 시간대 무관.
+   *    스크린리더에는 매초 갱신 대신 "D-N일" 정적 문장 1개만 제공(dday-sr).
    * ============================================================ */
   (function initDday() {
-    var el = doc.getElementById('dday-badge');
-    if (!el) return;
+    var elDays = doc.getElementById('cd-days');
+    var elHours = doc.getElementById('cd-hours');
+    var elMins = doc.getElementById('cd-mins');
+    var elSecs = doc.getElementById('cd-secs');
+    var elSr = doc.getElementById('dday-sr');
+    if (!elDays && !elSr) return;
+
     var KST = 9 * 3600e3;
     var y = get(CFG, ['wedding', 'year'], 2026);
     var mo = get(CFG, ['wedding', 'month'], 12);
     var d = get(CFG, ['wedding', 'day'], 12);
-    var targetMidUtc = Date.UTC(y, mo - 1, d) - KST;          // 목표일 KST 자정
-    var nowK = new Date(Date.now() + KST);                     // KST 달력일 추출용
-    var todayMidUtc = Date.UTC(nowK.getUTCFullYear(), nowK.getUTCMonth(), nowK.getUTCDate()) - KST;
-    var diff = Math.floor((targetMidUtc - todayMidUtc) / 86400e3);
-    if (diff > 0) el.textContent = 'D-' + diff;
-    else if (diff === 0) el.textContent = 'D-Day';
-    else el.textContent = 'D+' + Math.abs(diff);
+
+    // 스크린리더용 — 날짜 단위(자정 기준) day-diff 를 1회만 계산해 정적 문장으로 제공
+    if (elSr) {
+      var targetMidUtc = Date.UTC(y, mo - 1, d) - KST;
+      var nowK = new Date(Date.now() + KST);
+      var todayMidUtc = Date.UTC(nowK.getUTCFullYear(), nowK.getUTCMonth(), nowK.getUTCDate()) - KST;
+      var dayDiff = Math.floor((targetMidUtc - todayMidUtc) / 86400e3);
+      elSr.textContent = dayDiff > 0 ? '결혼식까지 D-' + dayDiff + '일 남았습니다.'
+        : dayDiff === 0 ? '오늘이 결혼식 날입니다.'
+        : '결혼식으로부터 ' + Math.abs(dayDiff) + '일이 지났습니다.';
+    }
+    if (!elDays) return; // 카운트다운 서클이 없으면(마크업 변경 등) 여기서 종료
+
+    // 예식 정확 시각(KST) → UTC ms. 시간 미확정(config.wedding.time='')이면 자정 기준
+    var timeStr = get(CFG, ['wedding', 'time'], '');
+    var tm = /^(\d{1,2}):(\d{2})$/.exec(timeStr);
+    var hh = tm ? parseInt(tm[1], 10) : 0;
+    var mm = tm ? parseInt(tm[2], 10) : 0;
+    var targetUtc = Date.UTC(y, mo - 1, d, hh, mm) - KST;
+
+    function pad2(n) { return n < 10 ? '0' + n : String(n); }
+    var timer = null;
+    function tick() {
+      var diff = targetUtc - Date.now();
+      if (diff <= 0) {
+        elDays.textContent = '0'; elHours.textContent = '00'; elMins.textContent = '00'; elSecs.textContent = '00';
+        if (timer) { clearInterval(timer); timer = null; }
+        return;
+      }
+      elDays.textContent = String(Math.floor(diff / 86400000));
+      elHours.textContent = pad2(Math.floor((diff % 86400000) / 3600000));
+      elMins.textContent = pad2(Math.floor((diff % 3600000) / 60000));
+      elSecs.textContent = pad2(Math.floor((diff % 60000) / 1000));
+    }
+    tick();
+    timer = setInterval(tick, 1000);
   })();
 
   /* ============================================================
@@ -650,20 +744,27 @@
       var rows = arr.filter(function (a) { return a && a.number; });
       if (!rows.length) return;
       list.innerHTML = '';
+      // "신랑"/"신부"는 그대로, "아버지"/"어머니" 등은 "신랑 아버지"처럼 측 이름을 앞에 붙임
+      var sideName = pair[0] === 'groom' ? '신랑' : '신부';
       rows.forEach(function (a) {
         var li = doc.createElement('li');
         li.className = 'account-item';
 
         var info = doc.createElement('div');
         info.className = 'account-info';
-        var line1 = doc.createElement('p');
-        line1.className = 'account-line';
-        line1.textContent = (a.bank || '') + ' ' + a.number;
-        var line2 = doc.createElement('p');
-        line2.className = 'account-holder';
-        line2.textContent = (a.label ? a.label + ' · ' : '') + (a.holder || '');
-        info.appendChild(line1);
-        info.appendChild(line2);
+        var label = doc.createElement('p');
+        label.className = 'account-label';
+        label.textContent = (a.label === '신랑' || a.label === '신부') ? a.label
+          : (a.label ? sideName + ' ' + a.label : sideName);
+        var num = doc.createElement('p');
+        num.className = 'account-num';
+        num.textContent = a.number;
+        var holder = doc.createElement('p');
+        holder.className = 'account-holder';
+        holder.textContent = ((a.bank || '') + ' ' + (a.holder || '')).trim();
+        info.appendChild(label);
+        info.appendChild(num);
+        info.appendChild(holder);
 
         var btn = doc.createElement('button');
         btn.type = 'button';

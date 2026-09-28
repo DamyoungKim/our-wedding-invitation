@@ -69,9 +69,10 @@ ul { list-style: none; }
 [hidden] { display: none !important; }
 .placeholder-note { color: var(--ink-soft); font-size: 0.875rem; }
 
-/* 인트로/라이트박스 스크롤 잠금 — html 레벨 (노트 9: iOS는 body 단독 불충분) */
+/* 인트로/라이트박스/모달 스크롤 잠금 — html 레벨 (노트 9: iOS는 body 단독 불충분) */
 html.is-locked, html.is-locked body,
-html.lb-open, html.lb-open body { overflow: hidden; }
+html.lb-open, html.lb-open body,
+html.modal-open, html.modal-open body { overflow: hidden; }
 
 /* ---------- 중앙 카드 레이아웃 ---------- */
 .page {
@@ -332,10 +333,77 @@ html.js.intro-active .intro.is-leaving { opacity: 0; pointer-events: none; }
   margin-top: 0.7rem; flex-wrap: wrap;
 }
 .contact-btn { font-size: 0.75rem; padding: 0.35rem 0.8rem; min-height: 2.25rem; }
-.parents-contact { margin-top: var(--space-3); }
-.parent-row { padding: 0.6rem 0; border-bottom: 1px solid var(--line); }
-.parent-row:last-child { border-bottom: 0; }
-.parent-label { font-size: 0.875rem; color: var(--ink-soft); }
+
+/* ============================================================
+ * 혼주 연락처 모달 — 라이트박스와 같은 전체화면 오버레이 + 중앙 카드 패널
+ * ============================================================ */
+.contact-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 85;
+  background: rgba(38, 34, 35, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-3);
+}
+.contact-modal[hidden] { display: none; }
+.contact-modal-panel {
+  width: 100%;
+  max-width: 22rem;
+  max-height: calc(100dvh - 2 * var(--space-3));
+  overflow-y: auto;
+  background: #fff;
+  border-radius: var(--radius);
+  box-shadow: 0 8px 32px rgba(38, 34, 35, 0.28);
+  text-align: left;
+}
+.contact-modal-head {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.1rem;
+  border-bottom: 1px solid var(--line);
+}
+.contact-modal-head h3 { font-size: 1rem; font-weight: 600; letter-spacing: 0.02em; }
+.contact-modal-close {
+  width: 1.75rem; height: 1.75rem;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: var(--ink-faint);
+  flex: 0 0 auto;
+}
+.contact-modal-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 0.5rem;
+  padding: 1.1rem;
+}
+.contact-modal-body .placeholder-note { grid-column: 1 / -1; text-align: center; }
+.contact-modal-side {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+  text-align: center;
+  margin-bottom: 0.9rem;
+}
+.contact-modal-person { text-align: center; margin-bottom: 1.3rem; }
+.contact-modal-name { font-size: 0.875rem; }
+.contact-modal-name .role { display: block; font-size: 0.75rem; color: var(--ink-soft); margin-bottom: 0.15rem; }
+.contact-modal-icons { display: flex; justify-content: center; gap: 0.6rem; margin-top: 0.5rem; }
+.contact-modal-icons a {
+  width: 2.25rem; height: 2.25rem;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  color: var(--accent);
+}
+.contact-modal-icons svg { width: 1.05rem; height: 1.05rem; }
 
 /* ============================================================
  * 버튼 공통
@@ -430,14 +498,36 @@ html.js.intro-active .intro.is-leaving { opacity: 0; pointer-events: none; }
   font-size: 0.8125rem;
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23701018' d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/%3E%3C/svg%3E") center / contain no-repeat;
 }
-.dday-line { margin-top: var(--space-3); font-size: 0.9375rem; color: var(--ink); }
-.dday-badge {
-  display: inline-block;
-  margin-top: 0.6rem;
-  font-size: 1.0625rem;
-  letter-spacing: 0.18em;
+.dday-date-line { margin-top: var(--space-3); font-size: 0.9375rem; color: var(--ink); }
+/* 실시간 카운트다운 4서클(일/시/분/초) — main.js 가 1초 간격으로 텍스트만 갱신 */
+.countdown {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  max-width: 22rem;
+  margin: var(--space-3) auto 0;
+}
+.countdown-item { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; }
+.countdown-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.4rem; height: 3.4rem;
+  border-radius: 50%;
+  background: var(--accent-soft);
   color: var(--accent);
-  font-weight: 600;
+  font-family: var(--font-serif);
+  font-size: 1.375rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.countdown-label {
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+}
+@media (max-width: 359px) {
+  .countdown-num { width: 3rem; height: 3rem; font-size: 1.1875rem; }
 }
 
 /* ============================================================
@@ -570,7 +660,23 @@ html.js.intro-active .intro.is-leaving { opacity: 0; pointer-events: none; }
 }
 /* 320px 3열(셀 내부폭 ≈72px)에서 '네이버지도' 5자가 걸치지 않게
  * 폰트 축소 + nowrap — 폰트/글자 확대에 따른 2줄 꺾임·버튼 높이 불일치 방지 */
-.map-btn { width: 100%; padding: 0.55rem 0.1rem; font-size: 0.8125rem; white-space: nowrap; }
+.map-btn { width: 100%; padding: 0.55rem 0.1rem; font-size: 0.8125rem; white-space: nowrap; gap: 0.35rem; }
+/* 앱 브랜드 배지(티맵/카카오내비/네이버지도) — 작은 색상 사각/원 안에 흰 글자·아이콘 */
+.map-btn-icon {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.15rem; height: 1.15rem;
+  border-radius: 6px;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  line-height: 1;
+}
+.map-btn-icon svg { width: 68%; height: 68%; }
+.map-btn-icon--tmap { background: #5f27cd; color: #fff; }
+.map-btn-icon--kakao { background: #fee500; color: #3a2929; }
+.map-btn-icon--naver { background: #03c75a; color: #fff; }
 
 /* ============================================================
  * 6. 마음 전하실 곳 (details 아코디언)
@@ -616,8 +722,9 @@ html.js.intro-active .intro.is-leaving { opacity: 0; pointer-events: none; }
 }
 .account-item:last-child { border-bottom: 0; }
 .account-info { min-width: 0; }
-.account-line { font-size: 0.875rem; }
-.account-holder { font-size: 0.75rem; color: var(--ink-soft); }
+.account-label { font-size: 0.8125rem; font-weight: 700; color: var(--accent); }
+.account-num { font-size: 1rem; font-weight: 600; letter-spacing: 0.02em; font-variant-numeric: tabular-nums; margin-top: 0.2rem; }
+.account-holder { font-size: 0.75rem; color: var(--ink-soft); margin-top: 0.15rem; }
 .copy-btn { flex: 0 0 auto; font-size: 0.75rem; padding: 0.35rem 0.85rem; }
 
 /* ============================================================

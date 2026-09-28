@@ -128,12 +128,7 @@
           <div class="contact-btns" data-contact="bride"></div>
         </div>
       </div>
-      <details class="fold parents-contact">
-        <summary>혼주에게 연락하기</summary>
-        <div class="fold-body" id="parents-contact">
-          <p class="placeholder-note">연락처는 추후 안내드립니다.</p>
-        </div>
-      </details>
+      <button type="button" class="btn btn-wide" id="btn-open-contact">혼주에게 연락하기</button>
     </section>
 
     <!-- 갤러리 섹션 — 웨딩 촬영본 도착 전까지 비활성화.
@@ -161,10 +156,27 @@
           <tr><td>27</td><td>28</td><td>29</td><td>30</td><td>31</td><td></td><td></td></tr>
         </tbody>
       </table>
-      <p class="dday-line">
-        <span class="dday-date">2026년 12월 12일 토요일 <span data-cfg="timeDisplay">오후 12시 30분</span></span><br>
-        <strong class="dday-badge" id="dday-badge">D-DAY 계산 중</strong>
-      </p>
+      <p class="dday-date-line">2026년 12월 12일 토요일 <span data-cfg="timeDisplay">오후 12시 30분</span></p>
+      <!-- 실시간 카운트다운(1초 간격) — 스크린리더에는 매초 갱신 대신 아래 sr-only 문장 1개만 제공 -->
+      <p class="sr-only" id="dday-sr">결혼식까지 남은 시간을 계산 중입니다.</p>
+      <div class="countdown" id="countdown" aria-hidden="true">
+        <div class="countdown-item">
+          <span class="countdown-num" id="cd-days">&ndash;</span>
+          <span class="countdown-label">Days</span>
+        </div>
+        <div class="countdown-item">
+          <span class="countdown-num" id="cd-hours">&ndash;</span>
+          <span class="countdown-label">Hours</span>
+        </div>
+        <div class="countdown-item">
+          <span class="countdown-num" id="cd-mins">&ndash;</span>
+          <span class="countdown-label">Minutes</span>
+        </div>
+        <div class="countdown-item">
+          <span class="countdown-num" id="cd-secs">&ndash;</span>
+          <span class="countdown-label">Seconds</span>
+        </div>
+      </div>
     </section>
 
     <!-- 4. 오시는 길 -->
@@ -205,11 +217,14 @@
            모바일에서는 앱 스킴(tmap:// nmap:// intent://)을 먼저 시도한 뒤 미설치 시 폴백 (노트 2·3) -->
       <div class="map-buttons">
         <a class="btn map-btn" id="btn-tmap"
-           href="tmap://route?goalname=%EB%8D%94%EC%B1%84%ED%94%8C%EC%95%B3%EC%B2%AD%EB%8B%B4&goalx=127.03901&goaly=37.52218">티맵</a>
+           href="tmap://route?goalname=%EB%8D%94%EC%B1%84%ED%94%8C%EC%95%B3%EC%B2%AD%EB%8B%B4&goalx=127.03901&goaly=37.52218">
+          <span class="map-btn-icon map-btn-icon--tmap" aria-hidden="true">T</span>티맵</a>
         <a class="btn map-btn" id="btn-kakaomap"
-           href="https://map.kakao.com/link/to/%EB%8D%94%EC%B1%84%ED%94%8C%EC%95%B3%EC%B2%AD%EB%8B%B4,37.52218,127.03901">카카오맵</a>
+           href="https://map.kakao.com/link/to/%EB%8D%94%EC%B1%84%ED%94%8C%EC%95%B3%EC%B2%AD%EB%8B%B4,37.52218,127.03901">
+          <span class="map-btn-icon map-btn-icon--kakao" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 3 4 10h4v9h8v-9h4z"/></svg></span>카카오맵</a>
         <a class="btn map-btn" id="btn-navermap"
-           href="https://map.naver.com/p/entry/place/34120522">네이버지도</a>
+           href="https://map.naver.com/p/entry/place/34120522">
+          <span class="map-btn-icon map-btn-icon--naver" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C7.6 2 4 5.6 4 10c0 5.6 8 12 8 12s8-6.4 8-12c0-4.4-3.6-8-8-8Zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z"/></svg></span>네이버지도</a>
       </div>
       <button type="button" class="btn btn-wide" id="btn-copy-address">주소 복사하기</button>
     </section>
@@ -251,6 +266,19 @@
   <button type="button" class="bgm-toggle" id="bgm-toggle" hidden
           aria-pressed="false" aria-label="배경음악 재생">&#9834;</button>
   <audio id="bgm" loop preload="none" playsinline></audio>
+
+  <!-- 혼주 연락처 모달 — main.js 가 config.groom/bride.father/mother.phone 으로 2단(신랑측/신부측) 구성 -->
+  <div class="contact-modal" id="contact-modal" role="dialog" aria-modal="true" aria-labelledby="contact-modal-title" hidden>
+    <div class="contact-modal-panel">
+      <div class="contact-modal-head">
+        <h3 id="contact-modal-title">혼주에게 연락하기</h3>
+        <button type="button" class="contact-modal-close" id="contact-modal-close" aria-label="닫기">&times;</button>
+      </div>
+      <div class="contact-modal-body" id="contact-modal-body">
+        <p class="placeholder-note">연락처는 추후 안내드립니다.</p>
+      </div>
+    </div>
+  </div>
 
   <!-- 갤러리 라이트박스 -->
   <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="사진 크게 보기" hidden>
