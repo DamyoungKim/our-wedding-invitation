@@ -144,11 +144,13 @@ html.lb-open, html.lb-open body { overflow: hidden; }
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.38) 100%);
   pointer-events: none;
 }
+/* bottom 15% — 인앱 브라우저 하단 툴바(카카오톡 iOS ≈ 44pt + 홈 인디케이터 34pt)가 커버 위에
+ * 겹쳐도 글씨가 가리지 않게 여유를 둠 (375×667 에서 글씨 아래 100px, 390×844 에서 127px) */
 .cover-script {
   position: absolute;
   z-index: 1;
   left: 7%; right: 7%;
-  bottom: 9%;
+  bottom: 15%;
   color: #fffaf5;
 }
 /* 손글씨 SVG — scripts/make-handwriting.mjs 가 index.html 에 생성. 애니메이션은 main.js initHandwriting.
