@@ -32,19 +32,17 @@
   <!-- - html에 .js 부여: 리빌/손글씨 애니메이션은 .js 하위에서만 동작 (no-JS fail-open)
        - 새로고침해도 항상 맨 위(커버)부터 — 손글씨가 써지는 동안 스크롤을 잠그므로, 중간 위치로
          복원된 채 잠기는 일을 막음 (history.scrollRestoration = 'manual')
-       - 커버 사진 높이를 첫 화면 높이(px)로 고정 → --cover-h. 카카오톡 인앱은 스크롤 중 주소창/하단바가
-         접혔다 펴질 때 웹뷰 크기 자체가 바뀌어 vh/svh/dvh가 전부 따라 변하고, iOS WebKit(<Safari 27)은
-         스크롤 앵커링이 없어 커버 높이가 바뀌면 보던 내용이 그만큼 출렁임. 그래서 스크롤 중 높이만
-         바뀌는 resize(주소창 토글)는 무시하고, 너비가 바뀔 때(화면 회전)만 다시 잰다.
-       - 첫 화면 높이 = max(보이는 높이 innerHeight, 100vh, 전체 화면 고정 레이어 높이). 사파리·크롬의
-         100vh 는 주소창이 접혔을 때 기준(큰 뷰포트)이라 주소창 상태와 무관하게 일정 → 사진이 반투명 하단
-         주소창 뒤까지 화면을 꽉 채우고(아래 내용이 먼저 비치지 않음), 당겨서 새로고침해도 크기가 그대로.
-         고정 레이어(position:fixed; top:0; bottom:0)는 다른 청첩장이 인트로 덮개로 쓰는 크기라, 사파리가
-         그쪽을 더 크게 잡더라도 사진이 최소 그만큼은 덮음. 카카오톡처럼 웹뷰 자체가 줄었다 늘었다 하는
-         곳은 세 값이 같음.
-         예외: 맨 위에서 높이가 줄면 반영 — 카카오톡 인앱은 페이지가 뜬 뒤 하단 툴바가 나타나서, 처음 잰
-         높이가 실제 보이는 화면보다 커 커버 아래(손글씨)가 툴바에 가려짐. 맨 위에선 커버 아래 내용이
-         화면 밖이라 출렁임이 보이지 않고, 줄이기만 하므로 이후 툴바 토글에도 다시 바뀌지 않음. -->
+       - 커버 크기는 px 로 고정 (--cover-h 사진 높이, --view-h 손글씨 위치 기준). 카카오톡 인앱은 스크롤 중
+         주소창/하단바가 접혔다 펴질 때 웹뷰 크기 자체가 바뀌어 vh/svh/dvh가 전부 따라 변하고, iOS WebKit
+         (<Safari 27)은 스크롤 앵커링이 없어 커버 높이가 바뀌면 보던 내용이 그만큼 출렁임. 그래서 스크롤 중
+         높이만 바뀌는 resize(주소창 토글)는 무시하고, 너비가 바뀔 때(화면 회전)만 다시 잰다.
+       - 사진 높이(--cover-h) = 폰에선 기기 화면 전체 높이(screen). 사파리 26은 페이지를 반투명 하단 주소창
+         뒤까지 그리는데 innerHeight·100vh·고정 레이어 높이는 그 영역을 다 포함하지 않아 사진이 화면 끝에
+         닿지 않음 → 화면 전체 높이면 어떤 브라우저 UI 가 덮든 사진이 끝까지 참(넘치는 부분은 스크롤 아래).
+         당겨서 새로고침·주소창 상태와도 무관하게 일정. PC(마우스)는 창 높이 기준.
+       - 손글씨 위치(--view-h) = 실제로 보이는 높이(innerHeight). 사진이 화면보다 커도 글씨는 보이는 영역
+         아래 15% 위에 놓여 툴바에 가려지지 않음. 맨 위에서 이 값이 줄면 반영 — 카카오톡 인앱은 페이지가
+         뜬 뒤 하단 툴바가 나타남. 줄이기만 하므로 이후 툴바 토글에도 다시 바뀌지 않음. -->
   <script>
     (function () {
       var de = document.documentElement;
@@ -56,22 +54,29 @@
         de.className += ' hw-pending';
         setTimeout(function () { de.classList.remove('hw-pending'); }, 8000);
       }
-      function screenH() {
-        var vh = document.createElement('div'), fixed = document.createElement('div');
+      var phone = !!(window.matchMedia && matchMedia('(pointer: coarse)').matches && window.screen);
+      function photoH(viewH) {
+        var vh = document.createElement('div');
         vh.style.cssText = 'position:absolute;top:0;width:0;height:100vh;visibility:hidden';
-        fixed.style.cssText = 'position:fixed;top:0;bottom:0;width:0;visibility:hidden';
-        de.appendChild(vh); de.appendChild(fixed);
-        var h = Math.max(window.innerHeight, vh.offsetHeight, fixed.offsetHeight);
-        de.removeChild(vh); de.removeChild(fixed);
+        de.appendChild(vh);
+        var h = Math.max(viewH, vh.offsetHeight);
+        de.removeChild(vh);
+        if (phone) { // iOS 는 회전해도 screen 가로·세로가 안 바뀌므로 방향에 맞춰 고름
+          var a = screen.width, b = screen.height;
+          h = Math.max(h, window.innerWidth <= viewH ? Math.max(a, b) : Math.min(a, b));
+        }
         return h;
       }
-      var coverW = 0, coverH = 0;
+      var coverW = 0, viewH = 0;
+      function set(name, px) { de.style.setProperty(name, px + 'px'); }
       function fixCoverH() {
-        var w = window.innerWidth, h = screenH();
+        var w = window.innerWidth, h = window.innerHeight;
         if (!h) return;
-        if (w !== coverW || (h < coverH && window.scrollY <= 0)) {
-          coverW = w; coverH = h;
-          de.style.setProperty('--cover-h', h + 'px');
+        if (w !== coverW) {
+          coverW = w; viewH = h;
+          set('--view-h', h); set('--cover-h', photoH(h));
+        } else if (h < viewH && window.scrollY <= 0) {
+          viewH = h; set('--view-h', h);
         }
       }
       fixCoverH();
