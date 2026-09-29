@@ -41,7 +41,7 @@ window.WEDDING_CONFIG = {
   wedding: {
     year: 2026, month: 12, day: 12,        // 2026-12-12 (토) — D-day는 KST(+09:00) 앵커로 계산
     dateText: '2026. 12. 12. SAT',
-    tagline: 'THE BEGINNING OF FOREVER',   // 커버/인트로 영문 문구
+    tagline: 'THE BEGINNING OF FOREVER',   // 커버 영문 문구
     time: '12:30',                         // 24시간제 'HH:MM' — 커버/캘린더 표시 + 구글 캘린더 버튼 활성화
     durationMinutes: 90,                   // 구글 캘린더 일정 길이(분)
     timePlaceholder: '시간 추후 안내'

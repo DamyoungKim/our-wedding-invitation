@@ -1,6 +1,6 @@
 /* ============================================================
  * 모바일 청첩장 인터랙션 (js/main.js)
- * 빌드리스 vanilla JS — config 주입 / 인트로 / D-day / 갤러리 /
+ * 빌드리스 vanilla JS — config 주입 / 커버 손글씨 / D-day / 갤러리 /
  * 지도 / 복사 / 공유 / BGM. 인앱 WebView(카톡·네이버·인스타) 1차 타깃.
  * ============================================================ */
 (function () {
@@ -25,39 +25,7 @@
   var reducedMotion = false;
   try { reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
 
-  /* ============================================================
-   * 0. 인트로 해제 — 7s 하드 타임아웃을 "가장 먼저" 무장 (노트 10)
-   *    이후 어떤 코드가 throw 해도 영구 잠금이 될 수 없다.
-   * ============================================================ */
-  var introDone = false;
-  var introEl = doc.getElementById('intro');
   var pageEl = doc.getElementById('page');
-
-  function endIntro() {
-    if (introDone) return;
-    introDone = true;
-    try { if (window.__introFailsafe) clearTimeout(window.__introFailsafe); } catch (e) {}
-    root.classList.remove('is-locked');
-    if (pageEl) {
-      pageEl.removeAttribute('aria-hidden');
-      try { pageEl.inert = false; } catch (e) {}
-    }
-    if (introEl && root.classList.contains('intro-active')) {
-      introEl.classList.add('is-leaving');
-      setTimeout(function () { root.classList.remove('intro-active'); }, 500);
-    } else {
-      root.classList.remove('intro-active');
-    }
-  }
-  var introHardTimer = setTimeout(endIntro, 7000); // 독립 무장 (노트 10)
-  // head의 __introFailsafe는 "main.js 로드 실패" 대비용 — 제어권을 잡은 즉시 해제.
-  // (head failsafe는 intro-active/is-locked만 제거하고 #page의 aria-hidden/inert는
-  //  못 풀므로, 둘 다 살아 있으면 failsafe가 먼저 발화해 오버레이는 사라졌는데
-  //  본문은 inert인 "보이는데 죽은 페이지" 구간이 생긴다. 여기부터는 위의
-  //  introHardTimer(endIntro 완전 정리)가 7s 상한을 대체한다.)
-  try {
-    if (window.__introFailsafe) { clearTimeout(window.__introFailsafe); window.__introFailsafe = null; }
-  } catch (e) {}
 
   /* ============================================================
    * 1. BGM (rev.3-B / rev.4, 노트 5·6·7)
@@ -67,8 +35,6 @@
    *    - 재무장(N1): play().catch() 안에서만 리스너 재등록
    *    - localStorage(N2): 읽기/쓰기 try/catch, OFF 저장 시 자동재생 미무장
    * ============================================================ */
-  var bgmFirstGesture = function () {}; // 인트로 탭에서 직접 호출할 훅 (노트 12)
-
   (function initBgm() {
     var btn = doc.getElementById('bgm-toggle');
     var audio = doc.getElementById('bgm');
@@ -114,7 +80,7 @@
       GESTURES.forEach(function (ev) { doc.removeEventListener(ev, onGesture); });
     }
     function tryAutoPlay() {
-      if (!audio.paused) return; // 이중 트리거(인트로 탭 + 버블) 무해화
+      if (!audio.paused) return; // 이중 트리거(pointerup + click 등) 무해화
       var p = audio.play();
       if (p && typeof p.then === 'function') {
         p.then(function () { setState(true); })
@@ -127,12 +93,6 @@
       arm();
       btn.classList.add('is-hinting'); // "탭하여 음악" 펄스 힌트
     }
-
-    bgmFirstGesture = function () {
-      if (prefGet() != null) return; // N2: 저장값(on/off)이 있으면 best-effort 미발동 — 토글이 경로
-      disarm();
-      tryAutoPlay();
-    };
 
     btn.addEventListener('click', function () {
       disarm(); // 문서 레벨 once 리스너가 뒤이어 재생을 되살리는 것 방지
@@ -154,53 +114,72 @@
   })();
 
   /* ============================================================
-   * 2. 인트로 오프닝 (rev.5, 노트 9~13)
-   *    해제 = max(애니메이션 타이머 ~4.4s, 커버 settle) / 7s 상한(위에서 무장)
-   *    (rev.6: 처음 들어왔을 때 문구를 다 읽기 전에 넘어간다는 피드백으로
-   *     2.2s → 4.4s 로 연장 + 각 줄 등장 타이밍도 style.css 쪽에서 함께 늦춤)
+   * 2. 커버 손글씨 — 글자 윤곽(clipPath) 안에서 같은 윤곽을 굵은 선으로 따라 그려
+   *    (stroke-dashoffset) 한 글자씩 써지게 한 뒤 채움을 켬. SVG 는 scripts/make-handwriting.mjs 가 생성.
+   *    써지는 동안은 스크롤을 잠그고(끝나면 해제), 화면을 탭하면 바로 완성 + 해제, 7s 상한.
+   *    모션 줄이기 / Web Animations 미지원이면 아무것도 안 해서 채워진 글씨가 그대로 보이고 잠금도 없음.
    * ============================================================ */
-  (function initIntro() {
-    if (!root.classList.contains('intro-active')) {
-      // reduced-motion 등으로 미마운트 — 하드 타이머만 정리
-      clearTimeout(introHardTimer);
-      introDone = true;
-      return;
+  (function initHandwriting() {
+    var svg = $('#cover .hw');
+    var cover = doc.getElementById('cover');
+    if (!svg || !cover || reducedMotion || typeof svg.animate !== 'function') return;
+    var strokes = $$('.hw-stroke', svg);
+    var fill = $('.hw-fill', svg);
+    var lens = strokes.map(function (p) { return p.getTotalLength(); });
+    var total = lens.reduce(function (a, b) { return a + b; }, 0);
+    if (!fill || !total) return;
+    strokes.forEach(function (p, i) {
+      p.style.strokeDasharray = lens[i] + 'px';
+      p.style.strokeDashoffset = lens[i] + 'px';
+    });
+    svg.classList.add('is-writing');
+
+    // 스크롤 잠금 — iOS 는 overflow:hidden 만으로 부족해 touchmove 도 막음 (passive:false 필수)
+    function blockTouch(e) { e.preventDefault(); }
+    root.classList.add('is-locked');
+    doc.addEventListener('touchmove', blockTouch, { passive: false });
+
+    var anims = [];
+    var done = false;
+    function finish() {
+      if (done) return;
+      done = true;
+      anims.forEach(function (a) { a.finish(); });
+      svg.classList.remove('is-writing');
+      root.classList.remove('is-locked');
+      doc.removeEventListener('touchmove', blockTouch, { passive: false });
+      cover.removeEventListener('click', finish);
     }
-    if (pageEl) {
-      pageEl.setAttribute('aria-hidden', 'true'); // 노트 13
-      try { pageEl.inert = true; } catch (e) {}
-    }
+    cover.addEventListener('click', finish);   // 탭 = 건너뛰기 (배경음악 첫 탭 재생과 같은 제스처)
+    setTimeout(finish, 7000);                  // 어떤 경우에도 7s 뒤엔 잠금 해제
 
-    var animDone = false;
-    var coverDone = false;
-    function maybeEnd() { if (animDone && coverDone) endIntro(); }
-
-    // 애니메이션 분기: animationend 대신 duration 기반 setTimeout (노트 10)
-    // 4.4s = 마지막 줄(스킵 힌트, style.css 기준 3.6s에 등장 완료) 이후 ~0.8s 를
-    // 그대로 유지해 다 읽을 시간을 준 뒤 자동으로 넘어감 (탭하면 언제든 즉시 스킵)
-    setTimeout(function () { animDone = true; maybeEnd(); }, 4400);
-
-    // 커버 settle: load + error + 동기 complete(캐시) 3경로 (노트 10 — 재방문 역전 방지)
-    // HTML 스펙상 broken 이미지도 complete=true → naturalWidth 검사 없이 settled 취급.
-    // (main.js 실행 전에 이미 error로 settle된 404 커버가 load/error 재발화 없이
-    //  5s 하드캡까지 인트로를 잠그는 구멍 방지 — AC rev.5 ② settle=[load|error|cached])
-    var cover = doc.getElementById('cover-img');
-    function coverSettled() { coverDone = true; maybeEnd(); }
-    if (!cover || cover.complete) {
-      coverDone = true;
-    } else {
-      cover.addEventListener('load', coverSettled);
-      cover.addEventListener('error', coverSettled);
-    }
-
-    if (introEl) {
-      // 탭 = 즉시 스킵 + 같은 신뢰 제스처로 BGM 트리거. stopPropagation 금지 (노트 12)
-      introEl.addEventListener('click', function () {
-        endIntro();
-        bgmFirstGesture();
+    var WRITE_MS = 2800;            // 문구 전체를 쓰는 시간
+    var speed = total / WRITE_MS;   // 펜 속도 — 획이 긴 글자는 오래, 짧은 글자는 짧게
+    function write() {
+      if (done) return;             // 사진 기다리는 사이 탭으로 건너뛴 경우
+      var t = 0;
+      strokes.forEach(function (p, i) {
+        var dur = Math.max(90, lens[i] / speed);
+        anims.push(p.animate([{ strokeDashoffset: lens[i] + 'px' }, { strokeDashoffset: '0px' }],
+          { duration: dur, delay: t, easing: 'ease-in-out', fill: 'forwards' }));
+        t += dur * 0.8;             // 앞 글자가 끝나기 조금 전에 다음 글자 시작(이어 쓰기)
       });
-      // 스크롤 잠금 보강: CSS(touch-action:none) + passive:false touchmove (노트 9)
-      introEl.addEventListener('touchmove', function (e) { e.preventDefault(); }, { passive: false });
+      var last = fill.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 600, delay: t, fill: 'forwards' });
+      anims.push(last);
+      last.onfinish = finish;
+      // 끝 이벤트는 화면이 그려질 때만 오므로(앱 전환 등으로 가려지면 안 옴) 계산된 종료 시각에 타이머로도 해제
+      setTimeout(finish, t + 600 + 100);
+    }
+
+    // 사진이 뜬 뒤에 쓰기 시작(빈 화면 위에서 써지지 않게) — 캐시·오류 포함, 최대 1.5s 대기
+    var img = doc.getElementById('cover-img');
+    var started = false;
+    function start() { if (!started) { started = true; setTimeout(write, 300); } }
+    if (!img || img.complete) start();
+    else {
+      img.addEventListener('load', start);
+      img.addEventListener('error', start);
+      setTimeout(start, 1500);
     }
   })();
 
@@ -491,7 +470,7 @@
       lb.hidden = false;
       root.classList.add('lb-open');
       // aria-modal 선언과 키보드 포커스 동작 정합 — 배경 #page 포커스 유출 차단
-      // (인트로에서 쓰는 inert 패턴 재사용, 미지원 브라우저는 graceful degradation)
+      // (inert 미지원 브라우저는 graceful degradation)
       if (pageEl) { try { pageEl.inert = true; } catch (e) {} }
       var closeBtn = doc.getElementById('lb-close');
       if (closeBtn) closeBtn.focus();

@@ -3,11 +3,13 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "모바일 청첩장 - 이미지 최적화 스크립트 전용 (사이트 자체는 무의존)",
+  "description": "모바일 청첩장 - 이미지 최적화 / 손글씨 생성 스크립트 전용 (사이트 자체는 무의존)",
   "scripts": {
-    "optimize": "node scripts/optimize-images.mjs"
+    "optimize": "node scripts/optimize-images.mjs",
+    "handwriting": "node scripts/make-handwriting.mjs"
   },
   "devDependencies": {
+    "opentype.js": "^1.3.4",
     "sharp": "^0.35.3"
   }
 }

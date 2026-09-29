@@ -36,10 +36,12 @@
   --space-5: 4.25rem;
 
   --radius: 10px;
-  --font: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
-          Pretendard, "Noto Sans KR", "Malgun Gothic", "Segoe UI",
+  /* 고딕(기본) — 셀프호스팅 Pretendard (css/fonts.css). 버튼·계좌·연락처·달력 등 작은 UI 글자.
+   * 기기 기본 글꼴에 맡기면 PC·일부 안드로이드에서 맑은 고딕/사용자 글꼴로 바뀌어 투박해 보임 */
+  --font: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+          "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Segoe UI",
           Roboto, sans-serif;
-  /* 명조(세리프) — 셀프호스팅 Noto Serif KR (css/fonts.css). 미로드 시 시스템 명조로 폴백 */
+  /* 명조(세리프) — 셀프호스팅 Noto Serif KR (css/fonts.css). 제목·인사말 등 "읽는 글". 미로드 시 시스템 명조로 폴백 */
   --font-serif: "Noto Serif KR", "Nanum Myeongjo", "AppleMyungjo", Batang, serif;
   /* 스크립트(영문 제목 전용) */
   --font-script: "Yellowtail", "Brush Script MT", "Snell Roundhand", cursive;
@@ -65,11 +67,16 @@ ul { list-style: none; }
   position: absolute; width: 1px; height: 1px; overflow: hidden;
   clip: rect(0 0 0 0); white-space: nowrap;
 }
+/* 명조로 쓰는 "읽는 글" — 제목·인사말·혼주·일시 문장. 나머지(작은 UI 글자)는 body 의 Pretendard.
+ * 성함(.cover-names 등)·큰 숫자는 각 규칙에서 따로 명조 지정 */
+.section-title, .greeting-body, .family-parents,
+.cover-eyebrow, .cover-date, .cover-venue,
+.cal-head-month, .dday-date-line, .venue-name, .accounts-note { font-family: var(--font-serif); }
 .is-hidden { display: none !important; }
 [hidden] { display: none !important; }
 .placeholder-note { color: var(--ink-soft); font-size: 0.875rem; }
 
-/* 인트로/라이트박스 스크롤 잠금 — html 레벨 (노트 9: iOS는 body 단독 불충분) */
+/* 커버 손글씨가 써지는 동안 / 라이트박스 스크롤 잠금 — html 레벨 (노트 9: iOS는 body 단독 불충분) */
 html.is-locked, html.is-locked body,
 html.lb-open, html.lb-open body { overflow: hidden; }
 
@@ -101,8 +108,8 @@ html.lb-open, html.lb-open body { overflow: hidden; }
 .section-title {
   font-size: 0.9375rem;
   font-weight: 500;
-  letter-spacing: 0.14em;
-  text-indent: 0.14em;
+  letter-spacing: 0.08em;
+  text-indent: 0.08em;
   color: var(--ink-soft);
   margin-bottom: var(--space-3);
 }
@@ -114,126 +121,46 @@ html.lb-open, html.lb-open body { overflow: hidden; }
 }
 
 /* ============================================================
- * 인트로 오버레이 (rev.5) — .js + .intro-active 하위에서만 표시
- * JS off → 클래스 자체가 없어 잠금/오버레이 없음 (fail-open)
+ * 1. 커버 — 첫 화면 가득 사진 + 손글씨, 그 아래 종이 청첩장 표지(영문 성함 / 문구 / 일시 / 장소)
  * ============================================================ */
-.intro { display: none; }
-html.js.intro-active .intro {
-  display: flex;
-  position: fixed;
-  inset: 0;
-  z-index: 60;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  background: var(--card);
-  touch-action: none;            /* 노트 9 */
-  overscroll-behavior: none;
-  min-height: 100vh;
-  min-height: 100svh;            /* 노트 13 — fixed 오버레이라 높이가 바뀌어도 본문은 밀리지 않음 */
-  opacity: 1;
-  transition: opacity 0.5s ease;
-  padding: var(--space-3);
-}
-html.js.intro-active .intro.is-leaving { opacity: 0; pointer-events: none; }
-
-/* rev.6: 문구를 다 읽기도 전에 화면이 넘어간다는 피드백으로 각 줄의 등장 타이밍을
- * 늦추고 텀을 넉넉히 둠 (전체 유지 시간은 main.js 의 4.4s 타이머와 함께 맞춰져 있음:
- * label 1.2s → names 2.2s → date 2.8s → skip-hint 3.6s 완료, 이후 ~0.8s 정지 유지) */
-.intro-label {
-  font-size: 0.6875rem;
-  letter-spacing: 0.5em;
-  text-indent: 0.5em;
-  color: var(--accent);
-  animation: introFade 1s ease 0.2s both;
-}
-/* 320~359px 폭(예: iPhone SE)에서는 0.5em 자간이면 "THE BEGINNING OF FOREVER"가
- * 289px로 가용폭(264px)을 넘어 2줄로 꺾임 — 실측 후 한 줄에 들어가는 자간으로 축소 */
-@media (max-width: 359px) {
-  .intro-label { letter-spacing: 0.3em; text-indent: 0.3em; }
-}
-.intro-names {
-  margin-top: var(--space-3);
-  font-family: var(--font-serif);
-  font-size: 1.625rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  animation: introNames 1.6s cubic-bezier(0.22, 0.61, 0.36, 1) 0.6s both;
-}
-.intro-and {
-  display: block;
-  font-size: 0.8125rem;
-  font-weight: 400;
-  color: var(--ink-soft);
-  letter-spacing: 0.3em;
-  margin: 0.4rem 0;
-}
-.intro-date {
-  margin-top: var(--space-3);
-  font-size: 0.875rem;
-  letter-spacing: 0.32em;
-  text-indent: 0.32em;
-  color: var(--ink-soft);
-  animation: introFade 1s ease 1.8s both;
-}
-.intro-skip-hint {
-  position: absolute;
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 1.5rem);
-  left: 0; right: 0;
-  font-size: 0.6875rem;
-  letter-spacing: 0.14em;
-  color: var(--ink-faint);
-  animation: introFade 1s ease 2.6s both;
-}
-@keyframes introFade {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: none; }
-}
-/* letter-spacing/blur 애니메이션 금지 — 매 프레임 레이아웃 재계산/필터 비용으로
- * 저사양 기기 첫 화면 버벅임 유발. 합성 단계만 쓰는 opacity+scale로 대체. */
-@keyframes introNames {
-  from { opacity: 0; transform: scale(1.04); }
-  to   { opacity: 1; transform: none; }
-}
-
-/* ============================================================
- * 1. 커버 — 종이 청첩장 표지: 영문 성함 / 문구 / 한글 성함 / 일시 / 장소
- * ============================================================ */
-/* 커버 높이는 뷰포트 단위 대신 --cover-h(첫 화면 높이 px)로 고정 — 이유는 index.html <head> 스크립트 주석.
+/* 사진 높이는 뷰포트 단위 대신 --cover-h(첫 화면 높이 px)로 고정 — 이유는 index.html <head> 스크립트 주석.
  * JS가 없으면 100vh 폴백. 인앱 툴바 토글로 변할 수 있는 값(vh 단위, env(safe-area-inset-*))을 커버 안에 두지 않음. */
-.cover {
-  min-height: 100vh;
-  min-height: var(--cover-h, 100vh);
-  display: flex;
-  flex-direction: column;
-}
 .cover-photo {
-  flex: 1 1 auto;
-  min-height: 60vh;
-  min-height: calc(var(--cover-h, 100vh) * 0.6);
+  position: relative;
+  height: 100vh;
+  height: var(--cover-h, 100vh);
   overflow: hidden;
+  background: var(--line);
 }
 .cover-photo img {
   width: 100%; height: 100%;
   object-fit: cover;
 }
-/* 사진 없음 상태 — 웨딩 촬영본 도착 전 임시 레이아웃(index.html 참고).
- * 사진이 돌아오면 이 클래스를 지우기만 하면 위의 사진 있는 레이아웃으로 복귀합니다. */
-.cover.cover--no-photo {
-  justify-content: center;
-  position: relative;
-}
-.cover.cover--no-photo::before,
-.cover.cover--no-photo::after {
+/* 손글씨가 밝은 사진 위에서도 읽히도록 아래쪽만 살짝 어둡게 */
+.cover-photo::after {
   content: "";
   position: absolute;
-  left: var(--space-3);
-  right: var(--space-3);
-  border-top: 1px dashed var(--accent);
-  opacity: 0.35;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.38) 100%);
+  pointer-events: none;
 }
-.cover.cover--no-photo::before { top: calc(env(safe-area-inset-top, 0px) + var(--space-4)); }
-.cover.cover--no-photo::after  { bottom: calc(env(safe-area-inset-bottom, 0px) + var(--space-4)); }
+.cover-script {
+  position: absolute;
+  z-index: 1;
+  left: 7%; right: 7%;
+  bottom: 9%;
+  color: #fffaf5;
+}
+/* 손글씨 SVG — scripts/make-handwriting.mjs 가 index.html 에 생성. 애니메이션은 main.js initHandwriting.
+ * JS가 없거나 모션 줄이기 설정이면 .is-writing 이 붙지 않아 채워진 글씨가 그대로 보임 */
+.hw {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.35));
+}
+.hw.is-writing .hw-fill { opacity: 0; }
 .cover-text {
   padding: var(--space-4) var(--space-3);
   text-align: center;
@@ -289,9 +216,9 @@ html.js.intro-active .intro.is-leaving { opacity: 0; pointer-events: none; }
   color: var(--ink);
   line-height: 2;
 }
-/* 320px 급 기기: 인사말 한 줄(≤18자)이 강제 줄바꿈 전에 꺾이지 않도록 살짝 축소 */
+/* 320px 급 기기: 인사말 가장 긴 줄(22자, 명조 기준 270px > 264px)이 강제 줄바꿈 전에 꺾이지 않도록 축소 */
 @media (max-width: 350px) {
-  .greeting-body { font-size: 0.875rem; }
+  .greeting-body { font-size: 0.875rem; letter-spacing: -0.03em; }
 }
 
 /* 좌우 2단 + 가운데 세로선 */
@@ -733,8 +660,6 @@ html.js.intro-active .intro.is-leaving { opacity: 0; pointer-events: none; }
   justify-content: center;
 }
 .bgm-toggle[hidden] { display: none; }
-/* 인트로 활성 중 토글은 오버레이(z-index:60) "아래" — 가려짐 허용 (Executor 노트 12) */
-html.intro-active .bgm-toggle { z-index: 50; }
 /* 힌트 펄스 — box-shadow 를 애니메이션하면 고정(fixed) 버튼을 매 프레임 다시 그려야 해서
  * 스크롤 중 버벅임의 원인이 됨. 버튼 위에 겹친 링(::after)의 transform/opacity 만 움직여
  * 합성(compositor) 단계에서 처리되게 함. */
