@@ -120,14 +120,16 @@
    *    모션 줄이기 / Web Animations 미지원이면 아무것도 안 해서 채워진 글씨가 그대로 보이고 잠금도 없음.
    * ============================================================ */
   (function initHandwriting() {
+    // 커버 아래 이름·일시 표시 (head 스크립트가 붙인 hw-pending 제거) — 애니메이션을 못 하는 경우에도 호출
+    function showCoverText() { root.classList.remove('hw-pending'); }
     var svg = $('#cover .hw');
     var cover = doc.getElementById('cover');
-    if (!svg || !cover || reducedMotion || typeof svg.animate !== 'function') return;
+    if (!svg || !cover || reducedMotion || typeof svg.animate !== 'function') return showCoverText();
     var strokes = $$('.hw-stroke', svg);
     var fill = $('.hw-fill', svg);
     var lens = strokes.map(function (p) { return p.getTotalLength(); });
     var total = lens.reduce(function (a, b) { return a + b; }, 0);
-    if (!fill || !total) return;
+    if (!fill || !total) return showCoverText();
     strokes.forEach(function (p, i) {
       p.style.strokeDasharray = lens[i] + 'px';
       p.style.strokeDashoffset = lens[i] + 'px';
@@ -146,6 +148,7 @@
       done = true;
       anims.forEach(function (a) { a.finish(); });
       svg.classList.remove('is-writing');
+      showCoverText();
       root.classList.remove('is-locked');
       doc.removeEventListener('touchmove', blockTouch, { passive: false });
       cover.removeEventListener('click', finish);

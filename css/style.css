@@ -166,7 +166,10 @@ html.lb-open, html.lb-open body { overflow: hidden; }
 .cover-text {
   padding: var(--space-4) var(--space-3);
   text-align: center;
+  transition: opacity 0.8s ease;
 }
+/* 손글씨가 써지는 동안엔 사진만 보이게 — 다 써지면 서서히 나타남 (hw-pending: index.html <head> 스크립트) */
+html.hw-pending .cover-text { opacity: 0; }
 .cover-names-en {
   font-family: var(--font-serif);
   font-size: 1.25rem;
