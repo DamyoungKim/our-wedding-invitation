@@ -362,18 +362,12 @@
   })();
 
   /* ============================================================
-   * 5. 연락처 — 신랑/신부 본인 버튼 + 혼주 연락처 모달 (번호 없으면 미노출)
+   * 5. 연락하기 — 신랑측(신랑·아버지·어머니) | 신부측(신부·아버지·어머니)
+   *    "마음 전하실 곳" 아래 아코디언 2개, 각 줄에 전화/문자 아이콘. 번호 없으면 미표시.
    * ============================================================ */
   (function initContacts() {
     function telHref(p) { return 'tel:' + p.replace(/[^+\d]/g, ''); }
     function smsHref(p) { return 'sms:' + p.replace(/[^+\d]/g, ''); }
-    function btnA(href, label, cls) {
-      var a = doc.createElement('a');
-      a.href = href;
-      a.textContent = label;
-      a.className = 'btn contact-btn' + (cls ? ' ' + cls : '');
-      return a;
-    }
     function iconA(href, iconSvg, label) {
       var a = doc.createElement('a');
       a.href = href;
@@ -382,84 +376,40 @@
       return a;
     }
 
-    // 신랑/신부 본인 연락처 — family 섹션의 전화/문자 버튼
-    [['groom', CFG.groom], ['bride', CFG.bride]].forEach(function (pair) {
-      var holder = $('[data-contact="' + pair[0] + '"]');
-      var phone = get(pair[1] || {}, ['phone'], '');
-      if (!holder || !phone) return;
-      holder.appendChild(btnA(telHref(phone), '전화하기'));
-      holder.appendChild(btnA(smsHref(phone), '문자하기'));
-    });
-
-    // 혼주 연락처 모달 — 신랑측 | 신부측 2단, 각 칸에 아버지/어머니(번호 있는 분만)
-    var body = doc.getElementById('contact-modal-body');
-    if (body) {
-      var cols = [];
-      [['신랑측', CFG.groom], ['신부측', CFG.bride]].forEach(function (side) {
-        var persons = [];
-        [['아버지', get(side[1] || {}, ['father'], {})], ['어머니', get(side[1] || {}, ['mother'], {})]].forEach(function (p) {
-          var name = get(p[1], ['name'], '');
-          var phone = get(p[1], ['phone'], '');
-          if (!phone) return;
-          persons.push({ role: p[0], name: name, phone: phone });
-        });
-        if (!persons.length) return;
-        var col = doc.createElement('div');
-        col.className = 'contact-modal-col';
-        var h4 = doc.createElement('h4');
-        h4.className = 'contact-modal-side';
-        h4.textContent = side[0];
-        col.appendChild(h4);
-        persons.forEach(function (p) {
-          var wrap = doc.createElement('div');
-          wrap.className = 'contact-modal-person';
-          var nameP = doc.createElement('p');
-          nameP.className = 'contact-modal-name';
-          var roleSpan = doc.createElement('span');
-          roleSpan.className = 'role';
-          roleSpan.textContent = p.role;
-          nameP.appendChild(roleSpan);
-          nameP.appendChild(doc.createTextNode(' ' + p.name));
-          var icons = doc.createElement('div');
-          icons.className = 'contact-modal-icons';
-          icons.appendChild(iconA(telHref(p.phone), ICON_CALL, p.name + ' 전화하기'));
-          icons.appendChild(iconA(smsHref(p.phone), ICON_MSG, p.name + ' 문자하기'));
-          wrap.appendChild(nameP);
-          wrap.appendChild(icons);
-          col.appendChild(wrap);
-        });
-        cols.push(col);
+    [['groom', '신랑', CFG.groom], ['bride', '신부', CFG.bride]].forEach(function (side) {
+      var key = side[0], selfRole = side[1], data = side[2];
+      var list = $('[data-contacts="' + key + '"]');
+      if (!list) return;
+      var persons = [];
+      var selfPhone = get(data || {}, ['phone'], '');
+      if (selfPhone) persons.push({ role: selfRole, name: get(data || {}, ['name'], ''), phone: selfPhone });
+      [['아버지', get(data || {}, ['father'], {})], ['어머니', get(data || {}, ['mother'], {})]].forEach(function (p) {
+        var name = get(p[1], ['name'], '');
+        var phone = get(p[1], ['phone'], '');
+        if (!phone) return;
+        persons.push({ role: p[0], name: name, phone: phone });
       });
-      if (cols.length) {
-        body.innerHTML = '';
-        cols.forEach(function (c) { body.appendChild(c); });
-      }
-    }
-
-    // 모달 열기/닫기 — 라이트박스와 동일한 inert/포커스 패턴 재사용
-    var modal = doc.getElementById('contact-modal');
-    var openBtn = doc.getElementById('btn-open-contact');
-    var closeBtn = doc.getElementById('contact-modal-close');
-    if (modal && openBtn) {
-      var lastFocus = null;
-      function openModal() {
-        lastFocus = doc.activeElement;
-        modal.hidden = false;
-        root.classList.add('modal-open');
-        if (pageEl) { try { pageEl.inert = true; } catch (e) {} }
-        if (closeBtn) closeBtn.focus();
-      }
-      function closeModal() {
-        modal.hidden = true;
-        root.classList.remove('modal-open');
-        if (pageEl) { try { pageEl.inert = false; } catch (e) {} }
-        if (lastFocus && lastFocus.focus) { try { lastFocus.focus(); } catch (e) {} }
-      }
-      openBtn.addEventListener('click', openModal);
-      if (closeBtn) closeBtn.addEventListener('click', closeModal);
-      modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); }); // 배경 닫기
-      doc.addEventListener('keydown', function (e) { if (!modal.hidden && e.key === 'Escape') closeModal(); });
-    }
+      if (!persons.length) return;
+      list.innerHTML = '';
+      persons.forEach(function (p) {
+        var li = doc.createElement('li');
+        li.className = 'contact-item';
+        var nameDiv = doc.createElement('div');
+        nameDiv.className = 'contact-name';
+        var roleSpan = doc.createElement('span');
+        roleSpan.className = 'role';
+        roleSpan.textContent = p.role;
+        nameDiv.appendChild(roleSpan);
+        nameDiv.appendChild(doc.createTextNode(p.name));
+        var icons = doc.createElement('div');
+        icons.className = 'contact-icons';
+        icons.appendChild(iconA(telHref(p.phone), ICON_CALL, p.name + ' 전화하기'));
+        icons.appendChild(iconA(smsHref(p.phone), ICON_MSG, p.name + ' 문자하기'));
+        li.appendChild(nameDiv);
+        li.appendChild(icons);
+        list.appendChild(li);
+      });
+    });
   })();
 
   /* ============================================================
@@ -725,6 +675,23 @@
             label.textContent = displayName;
             new K.CustomOverlay({ map: map, position: pos, content: label, yAnchor: 2.4 });
             if (fb) fb.hidden = true;
+
+            // 탭하기 전까지 지도 조작 잠금 — 스크롤하다 손가락이 지도 위를 지날 때
+            // 지도가 터치를 가로채 스크롤이 버벅이는 문제 방지 (노트: 지도 위 투명 덮개가
+            // 탭 전까지 모든 터치를 먼저 받아 지도로는 아예 전달되지 않게 함).
+            // setDraggable/setZoomable(false)는 덮개가 실패할 경우를 대비한 이중 안전장치.
+            map.setDraggable(false);
+            map.setZoomable(false);
+            var veil = doc.getElementById('map-tap-veil');
+            if (veil) {
+              veil.hidden = false;
+              veil.addEventListener('click', function activateMap() {
+                map.setDraggable(true);
+                map.setZoomable(true);
+                veil.hidden = true; // DOM에서 안 지우고 hidden 처리 — 재활성 필요해지면 재사용 가능
+                veil.removeEventListener('click', activateMap);
+              });
+            }
           } catch (e) { /* fallback 유지 */ }
         });
       } catch (e) { /* fallback 유지 */ }

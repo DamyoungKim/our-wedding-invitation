@@ -14,7 +14,7 @@ window.WEDDING_CONFIG = {
     name: '김담영',
     nameEn: 'DAM YOUNG',             // 커버 영문 표기 (종이 청첩장 표지)
     relation: '장남',                // 혼주 성함 뒤 관계 표기 (장남/차남/아들 …)
-    phone: '',                       // 예: '010-1234-5678' (비우면 버튼 숨김)
+    phone: '010-4202-7810',
     father: { name: '김종근', phone: '010-3756-9127' },
     mother: { name: '최연옥', phone: '010-8309-8715' }
   },
@@ -24,7 +24,7 @@ window.WEDDING_CONFIG = {
     name: '박승혜',
     nameEn: 'SEUNG HYE',
     relation: '장녀',
-    phone: '',
+    phone: '010-5711-1799',
     // deceased: true → 성함 앞에 국화(故) 표시. 종이 청첩장에 표시되어 있어 반영함.
     //   ⚠ 표시가 잘못됐다면 이 줄을 지우거나 false 로 바꾸세요.
     father: { name: '박광식', phone: '', deceased: true },
@@ -93,8 +93,9 @@ window.WEDDING_CONFIG = {
    * 한 쪽의 계좌가 모두 비어 있으면 "추후 안내" 문구가 유지됩니다. */
   accounts: {
     groom: [
-      { label: '신랑', bank: '국민은행', number: '991502-01-127980', holder: '김담영' }
-      // 필요 시 추가: { label: '아버지', bank: '은행명', number: '계좌번호', holder: '김종근' }
+      { label: '신랑', bank: '국민은행', number: '991502-01-127980', holder: '김담영' },
+      { label: '아버지', bank: '농협', number: '003-02-188830', holder: '김종근' }
+      // 필요 시 추가: { label: '어머니', bank: '은행명', number: '계좌번호', holder: '최연옥' }
     ],
     bride: [
       { label: '신부', bank: '하나은행', number: '59991040722607', holder: '박승혜' }

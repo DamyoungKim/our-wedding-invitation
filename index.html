@@ -115,7 +115,6 @@
             <span class="family-rel"><span class="family-rel-of">의</span> <span data-cfg="groomRelation">장남</span></span>
           </p>
           <p class="family-person"><span class="family-role">신랑</span> <strong data-cfg="groomName">김담영</strong></p>
-          <div class="contact-btns" data-contact="groom"></div>
         </div>
         <div class="family-divider" aria-hidden="true"></div>
         <div class="family-col">
@@ -125,10 +124,8 @@
             <span class="family-rel"><span class="family-rel-of">의</span> <span data-cfg="brideRelation">장녀</span></span>
           </p>
           <p class="family-person"><span class="family-role">신부</span> <strong data-cfg="brideName">박승혜</strong></p>
-          <div class="contact-btns" data-contact="bride"></div>
         </div>
       </div>
-      <button type="button" class="btn btn-wide" id="btn-open-contact">혼주에게 연락하기</button>
     </section>
 
     <!-- 갤러리 섹션 — 웨딩 촬영본 도착 전까지 비활성화.
@@ -189,6 +186,12 @@
 
       <div class="map-embed" id="map-embed">
         <div class="map-canvas" id="map-canvas" aria-hidden="true"></div>
+        <!-- 지도 위 투명 덮개 — 처음엔 지도를 눌러야만(제스처가 아니라 탭이어야) 움직이게 해서
+             화면을 내리다 손가락이 지도 위를 지나갈 때 스크롤이 지도에 먹혀 버벅이는 걸 막음.
+             한 번 탭하면 이 버튼을 DOM에서 제거해 그다음부터는 바로 지도가 반응함 (main.js) -->
+        <button type="button" class="map-tap-veil" id="map-tap-veil" aria-label="지도를 눌러 움직이기" hidden>
+          <span>지도를 눌러 움직일 수 있어요</span>
+        </button>
         <!-- 카카오맵 SDK 로드 실패 시(도메인 미등록·네트워크 차단 등) 대비한 텍스트 전용 폴백 -->
         <div class="map-fallback" id="map-fallback">
           <span class="map-pin" aria-hidden="true"></span>
@@ -246,6 +249,19 @@
           <li class="placeholder-note">계좌 정보는 추후 안내드립니다.</li>
         </ul>
       </details>
+      <p class="section-title contact-heading">연락하기</p>
+      <details class="fold contact-group">
+        <summary>신랑측</summary>
+        <ul class="fold-body contact-list" data-contacts="groom">
+          <li class="placeholder-note">연락처는 추후 안내드립니다.</li>
+        </ul>
+      </details>
+      <details class="fold contact-group">
+        <summary>신부측</summary>
+        <ul class="fold-body contact-list" data-contacts="bride">
+          <li class="placeholder-note">연락처는 추후 안내드립니다.</li>
+        </ul>
+      </details>
     </section>
 
     <!-- 6. Footer -->
@@ -266,19 +282,6 @@
   <button type="button" class="bgm-toggle" id="bgm-toggle" hidden
           aria-pressed="false" aria-label="배경음악 재생">&#9834;</button>
   <audio id="bgm" loop preload="none" playsinline></audio>
-
-  <!-- 혼주 연락처 모달 — main.js 가 config.groom/bride.father/mother.phone 으로 2단(신랑측/신부측) 구성 -->
-  <div class="contact-modal" id="contact-modal" role="dialog" aria-modal="true" aria-labelledby="contact-modal-title" hidden>
-    <div class="contact-modal-panel">
-      <div class="contact-modal-head">
-        <h3 id="contact-modal-title">혼주에게 연락하기</h3>
-        <button type="button" class="contact-modal-close" id="contact-modal-close" aria-label="닫기">&times;</button>
-      </div>
-      <div class="contact-modal-body" id="contact-modal-body">
-        <p class="placeholder-note">연락처는 추후 안내드립니다.</p>
-      </div>
-    </div>
-  </div>
 
   <!-- 갤러리 라이트박스 -->
   <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="사진 크게 보기" hidden>
