@@ -33,11 +33,24 @@
   <!-- FOUC 차단 + 인트로 조기 활성화 (Executor 노트 11)
        - html에 .js 부여: 인트로/리빌은 .js 하위에서만 동작 (no-JS fail-open)
        - reduced-motion 이면 인트로 미마운트 (노트 13)
-       - 7초 failsafe를 여기서 "가장 먼저" 무장: main.js가 로드 실패해도 영구 잠금 불가 (노트 10) -->
+       - 7초 failsafe를 여기서 "가장 먼저" 무장: main.js가 로드 실패해도 영구 잠금 불가 (노트 10)
+       - 커버 높이를 첫 화면 높이(px)로 고정 → --cover-h. 카카오톡 인앱은 스크롤 중 주소창/하단바가
+         접혔다 펴질 때 웹뷰 크기 자체가 바뀌어 vh/svh/dvh가 전부 따라 변하고, iOS WebKit(<Safari 27)은
+         스크롤 앵커링이 없어 커버 높이가 바뀌면 보던 내용이 그만큼 출렁임. 그래서 높이만 바뀌는
+         resize(주소창 토글)는 무시하고, 너비가 바뀔 때(화면 회전)만 다시 잰다. -->
   <script>
     (function () {
       var de = document.documentElement;
       de.className += ' js';
+      var coverW = 0;
+      function fixCoverH() {
+        var w = window.innerWidth, h = window.innerHeight;
+        if (!h || w === coverW) return;
+        coverW = w;
+        de.style.setProperty('--cover-h', h + 'px');
+      }
+      fixCoverH();
+      window.addEventListener('resize', fixCoverH);
       var reduce = false;
       try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
       if (!reduce) {

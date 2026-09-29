@@ -130,11 +130,7 @@ html.js.intro-active .intro {
   touch-action: none;            /* 노트 9 */
   overscroll-behavior: none;
   min-height: 100vh;
-  /* dvh(동적 뷰포트) 대신 svh(최소 뷰포트) 사용 — 카카오톡 등 인앱 브라우저에서
-   * 스크롤 중 상단 주소창이 접혔다 펴졌다 할 때 dvh는 그때마다 실시간으로 다시
-   * 계산돼 레이아웃이 출렁이는 버벅임을 유발함. svh는 주소창이 "펼쳐진" 상태
-   * 기준으로 고정돼 있어 툴바가 나타나도 재계산 없이 화면이 그대로 유지됨 */
-  min-height: 100svh;            /* 노트 13 */
+  min-height: 100svh;            /* 노트 13 — fixed 오버레이라 높이가 바뀌어도 본문은 밀리지 않음 */
   opacity: 1;
   transition: opacity 0.5s ease;
   padding: var(--space-3);
@@ -203,19 +199,18 @@ html.js.intro-active .intro.is-leaving { opacity: 0; pointer-events: none; }
 /* ============================================================
  * 1. 커버 — 종이 청첩장 표지: 영문 성함 / 문구 / 한글 성함 / 일시 / 장소
  * ============================================================ */
+/* 커버 높이는 뷰포트 단위 대신 --cover-h(첫 화면 높이 px)로 고정 — 이유는 index.html <head> 스크립트 주석.
+ * JS가 없으면 100vh 폴백. 인앱 툴바 토글로 변할 수 있는 값(vh 단위, env(safe-area-inset-*))을 커버 안에 두지 않음. */
 .cover {
   min-height: 100vh;
-  /* dvh 대신 svh — 인앱 브라우저 주소창 접힘/펼침마다 실시간 재계산되는 dvh는
-   * 스크롤할 때 커버 섹션 높이가 계속 바뀌어 화면이 출렁이는 버벅임을 유발함.
-   * svh는 주소창이 펼쳐진 상태 기준 고정값이라 재계산이 없음 (인트로와 동일 이유) */
-  min-height: 100svh;
+  min-height: var(--cover-h, 100vh);
   display: flex;
   flex-direction: column;
 }
 .cover-photo {
   flex: 1 1 auto;
   min-height: 60vh;
-  min-height: 60svh;
+  min-height: calc(var(--cover-h, 100vh) * 0.6);
   overflow: hidden;
 }
 .cover-photo img {
@@ -240,8 +235,7 @@ html.js.intro-active .intro.is-leaving { opacity: 0; pointer-events: none; }
 .cover.cover--no-photo::before { top: calc(env(safe-area-inset-top, 0px) + var(--space-4)); }
 .cover.cover--no-photo::after  { bottom: calc(env(safe-area-inset-bottom, 0px) + var(--space-4)); }
 .cover-text {
-  padding: var(--space-4) var(--space-3)
-           calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
+  padding: var(--space-4) var(--space-3);
   text-align: center;
 }
 .cover-names-en {
@@ -741,10 +735,21 @@ html.js.intro-active .intro.is-leaving { opacity: 0; pointer-events: none; }
 .bgm-toggle[hidden] { display: none; }
 /* 인트로 활성 중 토글은 오버레이(z-index:60) "아래" — 가려짐 허용 (Executor 노트 12) */
 html.intro-active .bgm-toggle { z-index: 50; }
-.bgm-toggle.is-hinting { animation: bgmPulse 1.8s ease-in-out infinite; }
+/* 힌트 펄스 — box-shadow 를 애니메이션하면 고정(fixed) 버튼을 매 프레임 다시 그려야 해서
+ * 스크롤 중 버벅임의 원인이 됨. 버튼 위에 겹친 링(::after)의 transform/opacity 만 움직여
+ * 합성(compositor) 단계에서 처리되게 함. */
+.bgm-toggle.is-hinting::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 50%;
+  border: 2px solid rgba(112, 16, 24, 0.3);
+  pointer-events: none;
+  animation: bgmPulse 1.8s ease-out infinite;
+}
 @keyframes bgmPulse {
-  0%, 100% { box-shadow: 0 2px 10px rgba(70, 40, 44, 0.18); }
-  50% { box-shadow: 0 0 0 8px rgba(112, 16, 24, 0.18); }
+  from { transform: scale(1); opacity: 0.9; }
+  to   { transform: scale(1.4); opacity: 0; }
 }
 
 /* 480px 초과: BGM 버튼을 카드 우측에 정렬 */
@@ -771,7 +776,7 @@ html.intro-active .bgm-toggle { z-index: 50; }
 .lb-img {
   max-width: calc(100vw - 4.5rem);
   max-height: 78vh;
-  max-height: 78svh;              /* dvh 대신 svh 이유는 위 커버/인트로 주석 참고 */
+  max-height: 78svh;
   object-fit: contain;
   border-radius: 4px;
 }
