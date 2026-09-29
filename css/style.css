@@ -130,7 +130,11 @@ html.js.intro-active .intro {
   touch-action: none;            /* 노트 9 */
   overscroll-behavior: none;
   min-height: 100vh;
-  min-height: 100dvh;            /* 노트 13 */
+  /* dvh(동적 뷰포트) 대신 svh(최소 뷰포트) 사용 — 카카오톡 등 인앱 브라우저에서
+   * 스크롤 중 상단 주소창이 접혔다 펴졌다 할 때 dvh는 그때마다 실시간으로 다시
+   * 계산돼 레이아웃이 출렁이는 버벅임을 유발함. svh는 주소창이 "펼쳐진" 상태
+   * 기준으로 고정돼 있어 툴바가 나타나도 재계산 없이 화면이 그대로 유지됨 */
+  min-height: 100svh;            /* 노트 13 */
   opacity: 1;
   transition: opacity 0.5s ease;
   padding: var(--space-3);
@@ -201,14 +205,17 @@ html.js.intro-active .intro.is-leaving { opacity: 0; pointer-events: none; }
  * ============================================================ */
 .cover {
   min-height: 100vh;
-  min-height: 100dvh;            /* 주소창 확장/축소 잘림 방지 */
+  /* dvh 대신 svh — 인앱 브라우저 주소창 접힘/펼침마다 실시간 재계산되는 dvh는
+   * 스크롤할 때 커버 섹션 높이가 계속 바뀌어 화면이 출렁이는 버벅임을 유발함.
+   * svh는 주소창이 펼쳐진 상태 기준 고정값이라 재계산이 없음 (인트로와 동일 이유) */
+  min-height: 100svh;
   display: flex;
   flex-direction: column;
 }
 .cover-photo {
   flex: 1 1 auto;
   min-height: 60vh;
-  min-height: 60dvh;
+  min-height: 60svh;
   overflow: hidden;
 }
 .cover-photo img {
@@ -764,7 +771,7 @@ html.intro-active .bgm-toggle { z-index: 50; }
 .lb-img {
   max-width: calc(100vw - 4.5rem);
   max-height: 78vh;
-  max-height: 78dvh;
+  max-height: 78svh;              /* dvh 대신 svh 이유는 위 커버/인트로 주석 참고 */
   object-fit: contain;
   border-radius: 4px;
 }
