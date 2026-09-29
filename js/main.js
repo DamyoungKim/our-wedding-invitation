@@ -751,4 +751,28 @@
     els.forEach(function (el) { io.observe(el); });
   })();
 
+  /* ============================================================
+   * 12. ?debug — 커버 크기 측정 기록을 화면 위에 표시 (폰 인앱에서 원인 확인용).
+   *     주소 뒤에 ?debug 를 붙였을 때만 동작. 기록은 index.html <head> 스크립트가 남김
+   * ============================================================ */
+  (function initDebug() {
+    if (!/[?&]debug\b/.test(location.search)) return;
+    var box = doc.createElement('pre');
+    box.style.cssText = 'position:fixed;left:0;right:0;top:0;z-index:99;margin:0;padding:6px 8px;' +
+      'font:11px/1.35 monospace;color:#7CFC7C;background:rgba(0,0,0,.75);white-space:pre-wrap;pointer-events:none';
+    doc.body.appendChild(box);
+    var photo = $('.cover-photo');
+    function render() {
+      var cs = getComputedStyle(root);
+      box.textContent = navigator.userAgent.slice(-60) +
+        '\nscreen ' + screen.width + 'x' + screen.height + ' | now ' + innerWidth + 'x' + innerHeight + ' y' + Math.round(scrollY) +
+        '\n--cover-h ' + cs.getPropertyValue('--cover-h') + ' --view-h ' + cs.getPropertyValue('--view-h') +
+        ' | photo ' + (photo ? Math.round(photo.getBoundingClientRect().height) : '-') +
+        '\nms event w h cover view\n' +
+        (window.__coverLog || []).slice(-12).map(function (r) { return r.join(' '); }).join('\n');
+    }
+    render();
+    setInterval(render, 300);
+  })();
+
 })();

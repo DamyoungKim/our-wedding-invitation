@@ -39,7 +39,7 @@
        - 사진 높이(--cover-h) = 폰에선 기기 화면 전체 높이(screen). 사파리 26은 페이지를 반투명 하단 주소창
          뒤까지 그리는데 innerHeight·100vh·고정 레이어 높이는 그 영역을 다 포함하지 않아 사진이 화면 끝에
          닿지 않음 → 화면 전체 높이면 어떤 브라우저 UI 가 덮든 사진이 끝까지 참(넘치는 부분은 스크롤 아래).
-         당겨서 새로고침·주소창 상태와도 무관하게 일정. PC(마우스)는 창 높이 기준.
+         당겨서 새로고침·주소창 상태와도 무관하게 일정. PC(마우스)는 max(창 높이, 100vh).
        - 손글씨 위치(--view-h) = 실제로 보이는 높이(innerHeight). 사진이 화면보다 커도 글씨는 보이는 영역
          아래 15% 위에 놓여 툴바에 가려지지 않음. 맨 위에서 이 값이 줄면 반영 — 카카오톡 인앱은 페이지가
          뜬 뒤 하단 툴바가 나타남. 줄이기만 하므로 이후 툴바 토글에도 다시 바뀌지 않음. -->
@@ -54,29 +54,41 @@
         de.className += ' hw-pending';
         setTimeout(function () { de.classList.remove('hw-pending'); }, 8000);
       }
-      var phone = !!(window.matchMedia && matchMedia('(pointer: coarse)').matches && window.screen);
-      function photoH(viewH) {
+      var phone = !!(window.matchMedia && matchMedia('(pointer: coarse)').matches && window.screen && screen.width);
+      // iOS 는 회전해도 screen 가로·세로가 안 바뀌므로 방향은 창 비율로 판단
+      // (뷰포트 적용 전 980px 기본 폭 값도 비율은 같음)
+      function portrait() { return window.innerWidth <= window.innerHeight; }
+      // { w: 레이아웃 폭, view: 보이는 높이(--view-h), cover: 사진 높이(--cover-h) }
+      function measure() {
+        var w = window.innerWidth, h = window.innerHeight;
+        if (!w || !h) return null;
+        if (phone) {
+          // 사진 높이는 기기 화면 크기·방향만으로 정함 — 브라우저 값과 무관해 처음부터 최종 크기로 그려짐
+          var a = screen.width, b = screen.height, p = portrait();
+          var sw = p ? Math.min(a, b) : Math.max(a, b), sh = p ? Math.max(a, b) : Math.min(a, b);
+          // 아이폰 인앱은 <head> 실행 시점에 뷰포트(width=device-width)가 아직 적용되지 않아 기본 폭
+          // 980px 기준 값이 나옴 → 이 값으로 그리면 사진이 커졌다가 작아짐. 화면 폭 기준으로 환산
+          if (w > sw + 1) { h = Math.round(h * sw / w); w = sw; }
+          return { w: w, view: Math.min(h, sh), cover: sh };
+        }
         var vh = document.createElement('div');
         vh.style.cssText = 'position:absolute;top:0;width:0;height:100vh;visibility:hidden';
         de.appendChild(vh);
-        var h = Math.max(viewH, vh.offsetHeight);
+        var cover = Math.max(h, vh.offsetHeight);
         de.removeChild(vh);
-        if (phone) { // iOS 는 회전해도 screen 가로·세로가 안 바뀌므로 방향에 맞춰 고름
-          var a = screen.width, b = screen.height;
-          h = Math.max(h, window.innerWidth <= viewH ? Math.max(a, b) : Math.min(a, b));
-        }
-        return h;
+        return { w: w, view: h, cover: cover };
       }
-      var coverW = 0, viewH = 0;
+      var cur = null, log = window.__coverLog = []; // ?debug 로 열면 main.js 가 화면에 표시
       function set(name, px) { de.style.setProperty(name, px + 'px'); }
-      function fixCoverH() {
-        var w = window.innerWidth, h = window.innerHeight;
-        if (!h) return;
-        if (w !== coverW) {
-          coverW = w; viewH = h;
-          set('--view-h', h); set('--cover-h', photoH(h));
-        } else if (h < viewH && window.scrollY <= 0) {
-          viewH = h; set('--view-h', h);
+      function fixCoverH(e) {
+        var m = measure();
+        log.push([Math.round(performance.now()), e ? e.type : 'head', window.innerWidth, window.innerHeight,
+                  m ? m.cover : '-', m ? m.view : '-']);
+        if (!m) return;
+        if (!cur || m.w !== cur.w) {
+          cur = m; set('--view-h', m.view); set('--cover-h', m.cover);
+        } else if (m.view < cur.view && window.scrollY <= 0) {
+          cur.view = m.view; set('--view-h', m.view);
         }
       }
       fixCoverH();
