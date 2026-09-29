@@ -36,10 +36,12 @@
          접혔다 펴질 때 웹뷰 크기 자체가 바뀌어 vh/svh/dvh가 전부 따라 변하고, iOS WebKit(<Safari 27)은
          스크롤 앵커링이 없어 커버 높이가 바뀌면 보던 내용이 그만큼 출렁임. 그래서 스크롤 중 높이만
          바뀌는 resize(주소창 토글)는 무시하고, 너비가 바뀔 때(화면 회전)만 다시 잰다.
-       - 첫 화면 높이 = max(보이는 높이 innerHeight, 100vh). 사파리·크롬의 100vh 는 주소창이 접혔을 때
-         기준(큰 뷰포트)이라 주소창 상태와 무관하게 일정 → 사진이 반투명 하단 주소창 뒤까지 화면을 꽉
-         채우고(아래 내용이 먼저 비치지 않음), 당겨서 새로고침해도 크기가 그대로. 카카오톡처럼 웹뷰 자체가
-         줄었다 늘었다 하는 곳은 두 값이 같음.
+       - 첫 화면 높이 = max(보이는 높이 innerHeight, 100vh, 전체 화면 고정 레이어 높이). 사파리·크롬의
+         100vh 는 주소창이 접혔을 때 기준(큰 뷰포트)이라 주소창 상태와 무관하게 일정 → 사진이 반투명 하단
+         주소창 뒤까지 화면을 꽉 채우고(아래 내용이 먼저 비치지 않음), 당겨서 새로고침해도 크기가 그대로.
+         고정 레이어(position:fixed; top:0; bottom:0)는 다른 청첩장이 인트로 덮개로 쓰는 크기라, 사파리가
+         그쪽을 더 크게 잡더라도 사진이 최소 그만큼은 덮음. 카카오톡처럼 웹뷰 자체가 줄었다 늘었다 하는
+         곳은 세 값이 같음.
          예외: 맨 위에서 높이가 줄면 반영 — 카카오톡 인앱은 페이지가 뜬 뒤 하단 툴바가 나타나서, 처음 잰
          높이가 실제 보이는 화면보다 커 커버 아래(손글씨)가 툴바에 가려짐. 맨 위에선 커버 아래 내용이
          화면 밖이라 출렁임이 보이지 않고, 줄이기만 하므로 이후 툴바 토글에도 다시 바뀌지 않음. -->
@@ -55,11 +57,12 @@
         setTimeout(function () { de.classList.remove('hw-pending'); }, 8000);
       }
       function screenH() {
-        var p = document.createElement('div');
-        p.style.cssText = 'position:absolute;top:0;width:0;height:100vh;visibility:hidden';
-        de.appendChild(p);
-        var h = Math.max(window.innerHeight, p.offsetHeight);
-        de.removeChild(p);
+        var vh = document.createElement('div'), fixed = document.createElement('div');
+        vh.style.cssText = 'position:absolute;top:0;width:0;height:100vh;visibility:hidden';
+        fixed.style.cssText = 'position:fixed;top:0;bottom:0;width:0;visibility:hidden';
+        de.appendChild(vh); de.appendChild(fixed);
+        var h = Math.max(window.innerHeight, vh.offsetHeight, fixed.offsetHeight);
+        de.removeChild(vh); de.removeChild(fixed);
         return h;
       }
       var coverW = 0, coverH = 0;
