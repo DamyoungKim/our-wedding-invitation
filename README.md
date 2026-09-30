@@ -22,6 +22,7 @@ assets/audio/           # BGM 음원 (bgm.mp3)
 scripts/optimize-images.mjs  # 일회성 이미지 최적화 스크립트 (배포와 무관)
 scripts/fetch-fonts.mjs      # 일회성 본문 폰트(Noto Serif KR·Pretendard) 다운로드 스크립트 (배포와 무관)
 scripts/make-handwriting.mjs # 커버 손글씨 문구 SVG 생성 스크립트 (배포와 무관)
+scripts/bump-assets.mjs      # index.html 의 CSS·JS·커버 사진 주소에 ?v=해시 갱신 (커밋 전 실행)
 image/                  # 원본 사진 (git 제외)
 .claude/rules/design.md # 디자인·구현 규칙 (폰트/색/스크롤 — Claude Code 가 자동으로 읽음)
 ```
@@ -113,7 +114,7 @@ node scripts/make-handwriting.mjs "We're getting|married" "Pinyon Script"
    node scripts/optimize-images.mjs
    ```
    (사진이 5장보다 적어도 되고, 6장을 초과하면 앞 5장만 갤러리로 씁니다. 매핑 규칙은
-   `scripts/optimize-images.mjs` 상단 주석 참고.) 커버는 `cover.jpg` 만 바뀌면 끝입니다.
+   `scripts/optimize-images.mjs` 상단 주석 참고.) 커버는 `cover.jpg` 만 바뀌면 되고, 커밋 전에 `npm run bump` 를 실행하세요(아래 "배포").
    세로 사진 권장 — 첫 화면에 꽉 차게 잘리고, 손글씨가 사진 아래쪽에 올라갑니다.
 3. 갤러리·OG를 켜려면 `index.html`을 아래와 같이 고칩니다.
    - **갤러리**: "갤러리 섹션 — 웨딩 촬영본 도착 전까지 비활성화" 주석을 아래 블록으로 교체합니다
@@ -149,6 +150,10 @@ https(배포 후)에서 최종 확인하세요.
 
 저장소 `DamyoungKim/our-wedding-invitation`의 `master` 브랜치 루트가 Pages로 서빙됩니다.
 `git push origin master` 만으로 반영되며, 캐시 때문에 1~2분 뒤 새로고침해서 확인하세요.
+
+**커밋 전에 `npm run bump`** — GitHub Pages 는 파일마다 10분 캐시(`max-age=600`)라, 그냥 두면
+새로고침해도 브라우저가 예전 CSS·JS 를 씁니다. 이 스크립트가 `index.html` 의 CSS·JS·커버 사진 주소 뒤
+`?v=` 를 파일 내용 해시로 바꿔서, 바뀐 파일만 바로 새로 받게 합니다.
 
 배포 후 [카카오 공유 디버거](https://developers.kakao.com/tool/debugger/sharing)에서
 캐시 초기화 + 미리보기 확인, 카톡 "나에게 보내기"로 육안 확인을 권장합니다.
