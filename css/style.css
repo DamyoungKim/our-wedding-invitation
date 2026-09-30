@@ -49,7 +49,9 @@
 
 /* ---------- Reset / 기본 ---------- */
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; }
+/* scrollbar-gutter: PC 는 스크롤바가 자리를 차지해서, 손글씨 잠금(overflow:hidden)이 풀리며 스크롤바가
+ * 생길 때 가운데 카드가 스크롤바 폭 절반만큼 왼쪽으로 튐 → 스크롤바 자리를 항상 비워 둠 (폰은 영향 없음) */
+html { -webkit-text-size-adjust: 100%; scrollbar-gutter: stable; }
 body {
   font-family: var(--font);
   background: var(--bg);

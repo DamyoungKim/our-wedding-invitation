@@ -40,6 +40,7 @@
 - 애니메이션은 `transform`/`opacity` 만 씁니다. `box-shadow`·`height` 등 레이아웃/페인트 속성은 애니메이션하지 않습니다.
 - 지도처럼 터치 스크롤을 가로채는 요소는 탭해야 활성화되는 veil 패턴으로 만듭니다(`#map-tap-veil`).
 - 첫 화면 손글씨가 써지는 동안에는 스크롤을 잠급니다(`html.is-locked`). 탭하면 건너뛰고, 7초 뒤에는 잠금이 무조건 풀립니다.
+- 스크롤 잠금(`overflow:hidden`)을 켜고 끌 때 PC 에서 스크롤바가 사라졌다 생기며 화면이 옆으로 튀지 않게, `html` 의 `scrollbar-gutter: stable` 을 유지합니다.
 - 모달 대신 인라인 아코디언(`<details class="fold">`)을 씁니다.
 - 모션 줄이기(`prefers-reduced-motion`)와 JS 꺼짐 환경에서도 내용이 전부 보여야 합니다(점진적 향상).
 
