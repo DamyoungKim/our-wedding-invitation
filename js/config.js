@@ -105,11 +105,11 @@ window.WEDDING_CONFIG = {
 
   /* ---------- 배경음악 (BGM) ----------
    * ⚠ 저작권: public 저장소에는 로열티프리/자작/정식 라이선스 음원만 업로드하세요.
+   *   지금 음원은 직접 만든 파헬벨 「캐논」 오르골 편곡(scripts/make-bgm.mjs) — 출처 표기 불필요.
    * 파일을 assets/audio/bgm.mp3 로 넣고 src 에 './assets/audio/bgm.mp3' 를 입력하면
    * 우상단 플로팅 토글(♪)이 나타납니다. 비어 있으면 토글은 숨겨집니다. */
   bgm: {
-    src: './assets/audio/bgm.mp3'   // 뮤팟(Mewpot) 무료 음원 '새벽 햇살' (2.1MB)
-    // 라이선스 조건: 출처 표기 필수 — index.html 푸터에 표기됨 (mewc.at/songs/6524)
+    src: './assets/audio/bgm.mp3'   // 파헬벨 「캐논」 오르골 편곡 (직접 제작, 약 1분 33초 반복, 1.1MB)
   },
 
   /* ---------- 공유 ---------- */

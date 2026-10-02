@@ -24,10 +24,10 @@
   <meta name="twitter:card" content="summary">
 
   <!-- 커버 이미지 LCP 우선 로드 -->
-  <link rel="preload" as="image" href="./assets/img/cover.jpg?v=20a18434" fetchpriority="high">
+  <link rel="preload" as="image" href="./assets/img/cover.jpg?v=f4593b0c" fetchpriority="high">
   <!-- 명조(Noto Serif KR)·Pretendard 셀프호스팅 — unicode-range 슬라이스라 쓰인 글자 조각만 다운로드됨 -->
   <link rel="stylesheet" href="./css/fonts.css?v=a97819ea">
-  <link rel="stylesheet" href="./css/style.css?v=4f4840f0">
+  <link rel="stylesheet" href="./css/style.css?v=6f8b185b">
 
   <!-- - html에 .js 부여: 리빌/손글씨 애니메이션은 .js 하위에서만 동작 (no-JS fail-open)
        - 새로고침해도 항상 맨 위(커버)부터 — 손글씨가 써지는 동안 스크롤을 잠그므로, 중간 위치로
@@ -102,10 +102,10 @@
 
     <!-- 1. 커버 — 첫 화면 가득 사진 + 손글씨 문구(열리면 한 글자씩 써짐, js/main.js initHandwriting),
          그 아래 종이 청첩장 표지 구성(영문 성함 / 문구 / 일시 / 장소).
-         ⚠ 사진은 웨딩 촬영본 도착 전 임시 사진 — 교체 방법은 README.md "사진 바꾸기" 참고 -->
+         ⚠ 지금은 웨딩 촬영본 도착 전 임시 그림(채플 아치 일러스트, scripts/make-cover-art.mjs) — 교체 방법은 README.md "사진 바꾸기" 참고 -->
     <section class="cover" id="cover">
       <div class="cover-photo">
-        <img id="cover-img" src="./assets/img/cover.jpg?v=20a18434" alt="김담영 박승혜 커플 사진"
+        <img id="cover-img" src="./assets/img/cover.jpg?v=f4593b0c" alt="꽃 넝쿨이 감싼 채플 아치 창 일러스트"
              fetchpriority="high" decoding="async">
         <div class="cover-script">
         <!-- HANDWRITING:START "We're getting / married" · Pinyon Script (OFL) — scripts/make-handwriting.mjs 로 생성, 직접 수정 금지 -->
@@ -311,11 +311,6 @@
         <span data-cfg="groomName">김담영</span> <span class="footer-amp">&hearts;</span> <span data-cfg="brideName">박승혜</span>
       </p>
       <p class="footer-date"><span data-cfg="dateText">2026. 12. 12. SAT</span> &middot; <span data-cfg="venueName">더채플 앳 청담</span></p>
-      <!-- 뮤팟(Mewpot) 무료 음원 라이선스 조건: 출처 표기 필수 — 삭제하지 마세요 -->
-      <p class="footer-credit">
-        배경음악: 뮤팟 제공 &lsquo;새벽 햇살&rsquo; &middot;
-        <a href="https://mewc.at/songs/6524" target="_blank" rel="noopener">mewc.at/songs/6524</a>
-      </p>
     </footer>
   </div><!-- /.page -->
 
@@ -336,7 +331,7 @@
   <!-- 토스트 -->
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <script src="./js/config.js?v=d22170fc"></script>
+  <script src="./js/config.js?v=f524b09f"></script>
   <script src="./js/main.js?v=6080ce91"></script>
 </body>
 </html>

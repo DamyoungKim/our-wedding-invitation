@@ -16,12 +16,14 @@ css/style.css           # 스타일 (모바일 우선, 라이트 고정) + 스�
 css/fonts.css           # Noto Serif KR + Pretendard 셀프호스팅 (scripts/fetch-fonts.mjs 가 생성)
 js/config.js            # ★ 본문 값 전부 여기서 수정 (이름/연락처/계좌/인사말/교통 등)
 js/main.js              # 인터랙션 (수정 불필요)
-assets/img/             # cover.jpg(커버 사진, 웨딩 촬영본 전 임시 사진) — 아래 "사진 바꾸기" 참고
+assets/img/             # cover.jpg(커버 — 웨딩 촬영본 전 임시 그림) — 아래 "사진 바꾸기" 참고
 assets/fonts/           # Noto Serif KR·Pretendard 슬라이스 + Yellowtail(영문 스크립트) 라틴 서브셋
 assets/audio/           # BGM 음원 (bgm.mp3)
 scripts/optimize-images.mjs  # 일회성 이미지 최적화 스크립트 (배포와 무관)
 scripts/fetch-fonts.mjs      # 일회성 본문 폰트(Noto Serif KR·Pretendard) 다운로드 스크립트 (배포와 무관)
 scripts/make-handwriting.mjs # 커버 손글씨 문구 SVG 생성 스크립트 (배포와 무관)
+scripts/make-cover-art.mjs   # 임시 커버 그림(채플 아치 일러스트) 생성 (배포와 무관)
+scripts/make-bgm.mjs         # 배경음악(캐논 오르골 편곡) 생성 (배포와 무관)
 scripts/bump-assets.mjs      # index.html 의 CSS·JS·커버 사진 주소에 ?v=해시 갱신 (커밋 전 실행)
 image/                  # 원본 사진 (git 제외)
 .claude/rules/design.md # 디자인·구현 규칙 (폰트/색/스크롤 — Claude Code 가 자동으로 읽음)
@@ -54,7 +56,8 @@ image/                  # 원본 사진 (git 제외)
 2. MP3 파일(1~2MB 권장)을 `assets/audio/bgm.mp3`로 저장하고 `js/config.js`의 `bgm.src`를 지정
 → 우상단에 ♪ 플로팅 토글이 나타납니다. 브라우저 정책상 소리 있는 자동재생은 보장되지
 않으며(첫 터치 후 재생 시도), 토글 버튼이 항상 동작하는 보장 경로입니다.
-현재 뮤팟(Mewpot) 무료 음원 '새벽 햇살'이 들어 있고, 라이선스 조건(출처 표기)은 푸터에 있습니다.
+현재 음원은 **직접 만든 파헬벨 「캐논」 오르골 편곡**입니다(작곡은 퍼블릭 도메인, 편곡·소리 합성은
+`scripts/make-bgm.mjs` 가 직접 생성 → 저작권·출처 표기 걱정 없음). 다시 만들려면 `node scripts/make-bgm.mjs`.
 
 ### 4) 지도 · 길찾기 버튼
 - **카카오지도 임베드**: `js/config.js`의 `map.kakaoJsKey`에 JavaScript 키가 들어 있어 지도 영역에
@@ -104,7 +107,8 @@ node scripts/make-handwriting.mjs "We're getting|married" "Pinyon Script"
 
 ## 사진 바꾸기
 
-**커버 사진은 웨딩 촬영본 도착 전 임시 사진**입니다. 갤러리·OG 공유 이미지는 아직 꺼져 있습니다.
+**커버는 웨딩 촬영본 도착 전 임시 그림**(버건디 배경 채플 아치 일러스트)입니다. `node scripts/make-cover-art.mjs` 가
+그려서 `assets/img/cover.jpg` 를 만듭니다. 갤러리·OG 공유 이미지는 아직 꺼져 있습니다.
 
 1. 원본 사진을 이 저장소 바로 아래 `image/` 폴더에 넣습니다 (git 제외 폴더, 없으면 새로 만드세요).
    파일명 정렬 순서가 그대로 매핑되니(예: `01.jpg`, `02.jpg`, …) 커버로 쓸 사진을 맨 앞 순번으로 두세요.
@@ -170,5 +174,5 @@ https(배포 후)에서 최종 확인하세요.
 - [ ] 계좌번호 (`accounts.*`의 `bank`/`number`)
 - [ ] 신부 아버지 고인(故) 표시가 맞는지 확인 (`bride.father.deceased`)
 - [x] 카카오맵 JavaScript 키
-- [ ] **웨딩 촬영본 도착 후 사진 교체** (커버 임시 사진 교체 + 갤러리/OG 켜기 — 위 "사진 바꾸기" 참고)
+- [ ] **웨딩 촬영본 도착 후 사진 교체** (커버 임시 그림 교체 + 갤러리/OG 켜기 — 위 "사진 바꾸기" 참고)
 - [ ] 배포 후 카카오톡/네이버 앱/인스타그램 인앱 브라우저에서 실기기 확인
