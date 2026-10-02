@@ -105,11 +105,12 @@ window.WEDDING_CONFIG = {
 
   /* ---------- 배경음악 (BGM) ----------
    * ⚠ 저작권: public 저장소에는 로열티프리/자작/정식 라이선스 음원만 업로드하세요.
-   *   지금 음원은 직접 만든 파헬벨 「캐논」 오르골 편곡(scripts/make-bgm.mjs) — 출처 표기 불필요.
+   *   지금 음원: Pixabay 「Christmas piano ~カノン~」(pianocafe_Kumi) — Pixabay Content License,
+   *   무료·출처 표기 불필요. 받은 파일은 scripts/prepare-bgm.mjs 로 앞뒤 무음 정리 + 용량 축소.
    * 파일을 assets/audio/bgm.mp3 로 넣고 src 에 './assets/audio/bgm.mp3' 를 입력하면
    * 우상단 플로팅 토글(♪)이 나타납니다. 비어 있으면 토글은 숨겨집니다. */
   bgm: {
-    src: './assets/audio/bgm.mp3'   // 파헬벨 「캐논」 오르골 편곡 (직접 제작, 약 1분 33초 반복, 1.1MB)
+    src: './assets/audio/bgm.mp3?v=ce9febfd'   // 캐논 크리스마스 피아노 편곡 (3분 15초 반복, 3MB) — ?v= 는 bump-assets 가 갱신
   },
 
   /* ---------- 공유 ---------- */

@@ -23,7 +23,7 @@ scripts/optimize-images.mjs  # 일회성 이미지 최적화 스크립트 (배�
 scripts/fetch-fonts.mjs      # 일회성 본문 폰트(Noto Serif KR·Pretendard) 다운로드 스크립트 (배포와 무관)
 scripts/make-handwriting.mjs # 커버 손글씨 문구 SVG 생성 스크립트 (배포와 무관)
 scripts/make-cover-art.mjs   # 임시 종이 커버(아이보리 + 올리브 가지) 생성 (배포와 무관)
-scripts/make-bgm.mjs         # 배경음악(캐논 오르골 편곡) 생성 (배포와 무관)
+scripts/prepare-bgm.mjs      # 받은 배경음악 mp3 손질(무음 정리·용량 축소) → bgm.mp3 (배포와 무관)
 scripts/bump-assets.mjs      # index.html 의 CSS·JS·커버 사진 주소에 ?v=해시 갱신 (커밋 전 실행)
 image/                  # 원본 사진 (git 제외)
 .claude/rules/design.md # 디자인·구현 규칙 (폰트/색/스크롤 — Claude Code 가 자동으로 읽음)
@@ -56,8 +56,10 @@ image/                  # 원본 사진 (git 제외)
 2. MP3 파일(1~2MB 권장)을 `assets/audio/bgm.mp3`로 저장하고 `js/config.js`의 `bgm.src`를 지정
 → 우상단에 ♪ 플로팅 토글이 나타납니다. 브라우저 정책상 소리 있는 자동재생은 보장되지
 않으며(첫 터치 후 재생 시도), 토글 버튼이 항상 동작하는 보장 경로입니다.
-현재 음원은 **직접 만든 파헬벨 「캐논」 오르골 편곡**입니다(작곡은 퍼블릭 도메인, 편곡·소리 합성은
-`scripts/make-bgm.mjs` 가 직접 생성 → 저작권·출처 표기 걱정 없음). 다시 만들려면 `node scripts/make-bgm.mjs`.
+현재 음원은 Pixabay [「Christmas piano ~カノン~」](https://pixabay.com/music/christmas-christmas-piano%E3%82%AB%E3%83%8E%E3%83%B3-271110/)
+(pianocafe_Kumi)입니다 — Pixabay Content License(무료, 출처 표기 불필요). 채플·연말·클래식 분위기로 골랐습니다.
+받은 mp3 는 `node scripts/prepare-bgm.mjs <파일>` 로 앞뒤 무음을 자르고 128kbps 로 줄여 `bgm.mp3` 로 넣습니다
+(원본 파일은 저장소에 넣지 않음).
 
 ### 4) 지도 · 길찾기 버튼
 - **카카오지도 임베드**: `js/config.js`의 `map.kakaoJsKey`에 JavaScript 키가 들어 있어 지도 영역에
@@ -158,8 +160,8 @@ https(배포 후)에서 최종 확인하세요.
 `git push origin master` 만으로 반영되며, 캐시 때문에 1~2분 뒤 새로고침해서 확인하세요.
 
 **커밋 전에 `npm run bump`** — GitHub Pages 는 파일마다 10분 캐시(`max-age=600`)라, 그냥 두면
-새로고침해도 브라우저가 예전 CSS·JS 를 씁니다. 이 스크립트가 `index.html` 의 CSS·JS·커버 사진 주소 뒤
-`?v=` 를 파일 내용 해시로 바꿔서, 바뀐 파일만 바로 새로 받게 합니다.
+새로고침해도 브라우저가 예전 CSS·JS 를 씁니다. 이 스크립트가 `index.html` 의 CSS·JS·커버 사진 주소와
+`config.js` 의 배경음악 주소 뒤 `?v=` 를 파일 내용 해시로 바꿔서, 바뀐 파일만 바로 새로 받게 합니다.
 
 배포 후 [카카오 공유 디버거](https://developers.kakao.com/tool/debugger/sharing)에서
 캐시 초기화 + 미리보기 확인, 카톡 "나에게 보내기"로 육안 확인을 권장합니다.
