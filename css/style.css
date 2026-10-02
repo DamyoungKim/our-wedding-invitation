@@ -17,7 +17,7 @@
 :root {
   color-scheme: light; /* 인앱 강제 다크 반전 방지 (라이트 고정) */
 
-  --bg: #eeeae8;            /* 카드 바깥 배경 */
+  --bg: #faf5ee;            /* 카드 바깥 배경 — 아이보리 종이 커버와 같게(사파리 26은 이 색으로 상단 상태바를 칠함) */
   --card: #ffffff;          /* 종이 청첩장과 같은 흰 카드 */
   --card-deep: #faf7f6;     /* 살짝 어두운 교차 섹션 */
   --ink: #262223;           /* 본문 (종이: 검정) */
@@ -28,7 +28,7 @@
   --accent-soft: #f6ebec;   /* 버건디 옅은 틴트 (배경) */
   --line: #e9e3e3;          /* 얇은 구분선 */
   --sunday: #b4474f;        /* 일요일 (흰 배경 대비 ≈4.9:1) */
-  --cover-bg: #3c0a12;      /* 커버 그림(cover.jpg)이 뜨기 전 바탕 — 그림의 버건디와 맞춤 */
+  --cover-bg: #faf5ee;      /* 커버 그림(cover.jpg)이 뜨기 전 바탕 — 아이보리 종이 그림과 맞춤 */
 
   --space-1: 0.5rem;
   --space-2: 1rem;
@@ -168,6 +168,24 @@ html.lb-open, html.lb-open body { overflow: hidden; }
   filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.35));
 }
 .hw.is-writing .hw-fill { opacity: 0; }
+
+/* 임시 종이 커버(.cover--paper, 웨딩 사진 전) — 아이보리 그림 위 버건디 손글씨 + 보이는 화면에 맞춘 이중 테두리.
+ * 테두리는 그림에 넣으면 화면 비율마다 잘려서(PC 는 위아래, 폰은 좌우) CSS 로 그림.
+ * 웨딩 사진으로 바꿀 때는 index.html 의 cover--paper 클래스만 지우면 흰 손글씨·아래 그림자로 돌아감 */
+.cover--paper .cover-photo::after { content: none; }
+.cover--paper .cover-photo::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  top: 16px; left: 16px; right: 16px;
+  height: calc(var(--view-h, 100vh) - 32px);
+  border: 1.5px solid rgba(112, 16, 24, 0.5);
+  outline: 1px solid rgba(112, 16, 24, 0.32);
+  outline-offset: -8px;            /* 안쪽 두 번째 선 */
+  pointer-events: none;
+}
+.cover--paper .cover-script { color: var(--accent); }
+.cover--paper .hw { filter: none; }
 .cover-text {
   padding: var(--space-4) var(--space-3);
   text-align: center;

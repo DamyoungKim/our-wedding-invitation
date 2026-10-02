@@ -24,10 +24,10 @@
   <meta name="twitter:card" content="summary">
 
   <!-- 커버 이미지 LCP 우선 로드 -->
-  <link rel="preload" as="image" href="./assets/img/cover.jpg?v=f4593b0c" fetchpriority="high">
+  <link rel="preload" as="image" href="./assets/img/cover.jpg?v=15879228" fetchpriority="high">
   <!-- 명조(Noto Serif KR)·Pretendard 셀프호스팅 — unicode-range 슬라이스라 쓰인 글자 조각만 다운로드됨 -->
   <link rel="stylesheet" href="./css/fonts.css?v=a97819ea">
-  <link rel="stylesheet" href="./css/style.css?v=6f8b185b">
+  <link rel="stylesheet" href="./css/style.css?v=07d7a3cc">
 
   <!-- - html에 .js 부여: 리빌/손글씨 애니메이션은 .js 하위에서만 동작 (no-JS fail-open)
        - 새로고침해도 항상 맨 위(커버)부터 — 손글씨가 써지는 동안 스크롤을 잠그므로, 중간 위치로
@@ -102,10 +102,10 @@
 
     <!-- 1. 커버 — 첫 화면 가득 사진 + 손글씨 문구(열리면 한 글자씩 써짐, js/main.js initHandwriting),
          그 아래 종이 청첩장 표지 구성(영문 성함 / 문구 / 일시 / 장소).
-         ⚠ 지금은 웨딩 촬영본 도착 전 임시 그림(채플 아치 일러스트, scripts/make-cover-art.mjs) — 교체 방법은 README.md "사진 바꾸기" 참고 -->
-    <section class="cover" id="cover">
+         ⚠ 지금은 웨딩 촬영본 도착 전 임시 종이 커버(아이보리 + 올리브 가지, scripts/make-cover-art.mjs · cover--paper) — 교체 방법은 README.md "사진 바꾸기" 참고 -->
+    <section class="cover cover--paper" id="cover">
       <div class="cover-photo">
-        <img id="cover-img" src="./assets/img/cover.jpg?v=f4593b0c" alt="꽃 넝쿨이 감싼 채플 아치 창 일러스트"
+        <img id="cover-img" src="./assets/img/cover.jpg?v=15879228" alt="아이보리 종이 위 올리브 가지 장식"
              fetchpriority="high" decoding="async">
         <div class="cover-script">
         <!-- HANDWRITING:START "We're getting / married" · Pinyon Script (OFL) — scripts/make-handwriting.mjs 로 생성, 직접 수정 금지 -->

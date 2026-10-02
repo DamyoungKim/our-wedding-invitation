@@ -16,13 +16,13 @@ css/style.css           # 스타일 (모바일 우선, 라이트 고정) + 스�
 css/fonts.css           # Noto Serif KR + Pretendard 셀프호스팅 (scripts/fetch-fonts.mjs 가 생성)
 js/config.js            # ★ 본문 값 전부 여기서 수정 (이름/연락처/계좌/인사말/교통 등)
 js/main.js              # 인터랙션 (수정 불필요)
-assets/img/             # cover.jpg(커버 — 웨딩 촬영본 전 임시 그림) — 아래 "사진 바꾸기" 참고
+assets/img/             # cover.jpg(커버 — 웨딩 촬영본 전 임시 종이 커버) — 아래 "사진 바꾸기" 참고
 assets/fonts/           # Noto Serif KR·Pretendard 슬라이스 + Yellowtail(영문 스크립트) 라틴 서브셋
 assets/audio/           # BGM 음원 (bgm.mp3)
 scripts/optimize-images.mjs  # 일회성 이미지 최적화 스크립트 (배포와 무관)
 scripts/fetch-fonts.mjs      # 일회성 본문 폰트(Noto Serif KR·Pretendard) 다운로드 스크립트 (배포와 무관)
 scripts/make-handwriting.mjs # 커버 손글씨 문구 SVG 생성 스크립트 (배포와 무관)
-scripts/make-cover-art.mjs   # 임시 커버 그림(채플 아치 일러스트) 생성 (배포와 무관)
+scripts/make-cover-art.mjs   # 임시 종이 커버(아이보리 + 올리브 가지) 생성 (배포와 무관)
 scripts/make-bgm.mjs         # 배경음악(캐논 오르골 편곡) 생성 (배포와 무관)
 scripts/bump-assets.mjs      # index.html 의 CSS·JS·커버 사진 주소에 ?v=해시 갱신 (커밋 전 실행)
 image/                  # 원본 사진 (git 제외)
@@ -107,7 +107,7 @@ node scripts/make-handwriting.mjs "We're getting|married" "Pinyon Script"
 
 ## 사진 바꾸기
 
-**커버는 웨딩 촬영본 도착 전 임시 그림**(버건디 배경 채플 아치 일러스트)입니다. `node scripts/make-cover-art.mjs` 가
+**커버는 웨딩 촬영본 도착 전 임시 종이 커버**(아이보리 종이 + 올리브 가지, 버건디 손글씨·이중 테두리)입니다. `node scripts/make-cover-art.mjs` 가
 그려서 `assets/img/cover.jpg` 를 만듭니다. 갤러리·OG 공유 이미지는 아직 꺼져 있습니다.
 
 1. 원본 사진을 이 저장소 바로 아래 `image/` 폴더에 넣습니다 (git 제외 폴더, 없으면 새로 만드세요).
@@ -120,6 +120,8 @@ node scripts/make-handwriting.mjs "We're getting|married" "Pinyon Script"
    (사진이 5장보다 적어도 되고, 6장을 초과하면 앞 5장만 갤러리로 씁니다. 매핑 규칙은
    `scripts/optimize-images.mjs` 상단 주석 참고.) 커버는 `cover.jpg` 만 바뀌면 되고, 커밋 전에 `npm run bump` 를 실행하세요(아래 "배포").
    세로 사진 권장 — 첫 화면에 꽉 차게 잘리고, 손글씨가 사진 아래쪽에 올라갑니다.
+   사진으로 바꿀 때는 `index.html` 의 `<section class="cover cover--paper">` 에서 `cover--paper` 를 지우세요
+   (버건디 손글씨·테두리 → 사진용 흰 손글씨·아래 그림자로 바뀝니다).
 3. 갤러리·OG를 켜려면 `index.html`을 아래와 같이 고칩니다.
    - **갤러리**: "갤러리 섹션 — 웨딩 촬영본 도착 전까지 비활성화" 주석을 아래 블록으로 교체합니다
      (스타일·라이트박스는 이미 준비돼 있어 이 마크업만 넣으면 바로 동작합니다):
