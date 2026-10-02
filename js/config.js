@@ -98,8 +98,8 @@ window.WEDDING_CONFIG = {
       // 필요 시 추가: { label: '어머니', bank: '은행명', number: '계좌번호', holder: '최연옥' }
     ],
     bride: [
-      { label: '신부', bank: '하나은행', number: '59991040722607', holder: '박승혜' }
-      // 필요 시 추가: { label: '어머니', bank: '은행명', number: '계좌번호', holder: '서영희' }
+      { label: '신부', bank: '하나은행', number: '59991040722607', holder: '박승혜' },
+      { label: '어머니', bank: '우리은행', number: '1002-053-336008', holder: '서영희' }
     ]
   },
 
