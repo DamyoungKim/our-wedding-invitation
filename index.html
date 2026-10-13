@@ -28,12 +28,12 @@
   <link rel="preload" as="image" href="./assets/img/cover.jpg?v=fd5cbed9" fetchpriority="high">
   <!-- 명조(Noto Serif KR)·Pretendard 셀프호스팅 — unicode-range 슬라이스라 쓰인 글자 조각만 다운로드됨 -->
   <link rel="stylesheet" href="./css/fonts.css?v=a97819ea">
-  <link rel="stylesheet" href="./css/style.css?v=7f80ee0f">
+  <link rel="stylesheet" href="./css/style.css?v=1cc2e843">
 
   <!-- - html에 .js 부여: 리빌/손글씨 애니메이션은 .js 하위에서만 동작 (no-JS fail-open)
        - 새로고침해도 항상 맨 위(커버)부터 — 손글씨가 써지는 동안 스크롤을 잠그므로, 중간 위치로
          복원된 채 잠기는 일을 막음 (history.scrollRestoration = 'manual')
-       - 커버 사진 크기는 사진 고유 비율(<img width/height>)과 너비로만 정해짐. 화면 높이는 재지 않음:
+       - 커버 상자는 폰 화면 비율(20:9, style.css .cover-photo aspect-ratio)로 너비에서 정해짐. 화면 높이는 재지 않음:
          카카오톡 인앱은 페이지가 뜬 뒤 하단 툴바를 꺼내 화면 높이가 줄고, 사파리는 주소창이 접혔다 펴지며
          바뀌어서, 높이에 맞추면 처음 그린 크기가 최종 크기가 아님(커졌다 작아짐). 너비는 안 변함.
        - ?debug 로 열면 창 크기가 언제 바뀌는지 기록을 화면 위에 표시(main.js initDebug) -->
@@ -66,8 +66,8 @@
          사진 교체 방법은 README.md "사진 바꾸기" 참고 -->
     <section class="cover" id="cover">
       <div class="cover-photo">
-        <!-- width/height = 사진 파일의 실제 크기(scripts/optimize-images.mjs 가 씀). 브라우저가 사진을 받기 전부터
-             이 비율로 자리를 잡아 첫 화면 크기가 곧 최종 크기 — 이유는 css/style.css .cover-photo 주석 -->
+        <!-- width/height = 사진 파일의 실제 크기(scripts/optimize-images.mjs 가 씀) — 브라우저가 디코딩 전에 크기를
+             알게 하는 용도. 상자 크기·잘림은 css/style.css .cover-photo 가 정함 -->
         <img id="cover-img" src="./assets/img/cover.jpg?v=fd5cbed9" width="1600" height="2400"
              alt="나무 계단에서 위를 올려다보는 신랑 신부" fetchpriority="high" decoding="async">
         <div class="cover-script">

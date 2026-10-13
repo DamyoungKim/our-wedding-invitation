@@ -126,21 +126,31 @@ html.lb-open, html.lb-open body { overflow: hidden; }
 /* ============================================================
  * 1. 커버 — 첫 화면 가득 사진 + 손글씨, 그 아래 종이 청첩장 표지(영문 성함 / 문구 / 일시 / 장소)
  * ============================================================ */
-/* 사진은 자르지 않고 전체를 너비에 맞춰 보여 줌(액자처럼, 사용자 요청). 높이는 사진 고유 비율로 정해짐:
- * - <img width/height>(scripts/optimize-images.mjs 가 파일에서 읽어 씀) 덕에 브라우저가 사진을 받기 전부터
- *   그 비율로 자리를 잡음. 너비만 보고 높이가 정해지니 처음 그린 크기가 곧 최종 크기. 손으로 정한 숫자 없음.
- * - 화면 높이(vh·innerHeight·screen)는 쓰지 않음: 카카오톡 인앱은 페이지가 뜬 뒤 하단 툴바를 꺼내 화면 높이가
+/* 첫 화면을 사진으로 꽉 채움 — 상자 비율은 요즘 폰 중 가장 긴 화면 비율 20:9(aspect-ratio — 19.5:9 아이폰은 아래가 조금 더 스크롤 밑으로, 20:9 안드로이드는 딱 맞아 어떤 폰에서도 아래 여백 없음), 사진은 object-fit:cover 로
+ * 오른쪽 기준으로 채워 왼쪽이 잘림(사용자: 왼쪽 잘려도 됨, 아래 여백은 안 됨). 넘치는 아래쪽은 스크롤 밑으로.
+ * - 화면 높이(vh·innerHeight)는 폰에서 쓰지 않음: 카카오톡 인앱은 페이지가 뜬 뒤 하단 툴바를 꺼내 화면 높이가
  *   줄고, 사파리는 주소창이 접혔다 펴지며 바뀜. 높이에 맞추면 커졌다 작아지거나, 숨겼다 보여 주거나(갈색 화면),
- *   아래가 가림(2026-10-13 사용자가 전부 겪음). 긴 화면에선 사진 아래 성함·일시가 첫 화면에 같이 보임.
- * - 바탕: 사진이 받아지기 전엔 24px 축소본(base64, optimize-images.mjs 가 갱신)을 깔아 사진 윤곽이 바로 보이게 */
+ *   아래가 가림(2026-10-13 사용자가 전부 겪음). 너비 기준 비율이면 처음 그린 크기가 곧 최종 크기.
+ * - 사진 고유 비율(2:3)로 자르지 않고 보여 주는 것도 해 봤는데 사진 아래 여백이 생겨 사용자가 싫어함.
+ * - PC(마우스)는 툴바가 없어 100vh 가 안정적이라 창 높이에 맞춤.
+ * - 바탕: 사진이 받아지기 전엔 24px 축소본(base64, optimize-images.mjs 가 갱신)을 같은 위치로 깔아 윤곽이 바로 보이게 */
 .cover-photo {
   position: relative;
-  background: var(--cover-bg) url("data:image/jpeg;base64,/9j/2wBDAA4KCw0LCQ4NDA0QDw4RFiQXFhQUFiwgIRokNC43NjMuMjI6QVNGOj1OPjIySGJJTlZYXV5dOEVmbWVabFNbXVn/2wBDAQ8QEBYTFioXFypZOzI7WVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVn/wAARCAAkABgDASIAAhEBAxEB/8QAGQABAAMBAQAAAAAAAAAAAAAAAAIEBgUD/8QAKRAAAgEDAwIEBwAAAAAAAAAAAQIDAAQRBSFBEjETUXGxFCIjcpHB0f/EABYBAQEBAAAAAAAAAAAAAAAAAAMCBP/EABcRAQEBAQAAAAAAAAAAAAAAAAABETH/2gAMAwEAAhEDEQA/AONpVgt5BM+/yHgeYzXhNahGyoOVOe1VgEimaN2usdIwsJxn1qDRIQcQXTfc9DYeN2rB7dCOVBpVPTnzptvsR9MbHilaZxlvWYuonm1doomZTgKxU4A2Hc0ks4YplLSSXEPThyHIw/rVWe6ZdVumU95Cvt/KheSRmSDcqOrL4osLtarTCkVhDEJC7KDnPG+wpXI0a68WWdwOlScKPIcUpZwVZ9iWupST3c5/Jrq2+lwTQiR2kJx2yMe1KUZEfF+A6lt0QZ5OT+6UpU7VyR//2Q==") center / cover no-repeat;
+  overflow: hidden;
+  aspect-ratio: 9 / 20;
+  background: var(--cover-bg) url("data:image/jpeg;base64,/9j/2wBDAA4KCw0LCQ4NDA0QDw4RFiQXFhQUFiwgIRokNC43NjMuMjI6QVNGOj1OPjIySGJJTlZYXV5dOEVmbWVabFNbXVn/2wBDAQ8QEBYTFioXFypZOzI7WVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVn/wAARCAAkABgDASIAAhEBAxEB/8QAGQABAAMBAQAAAAAAAAAAAAAAAAIEBgUD/8QAKRAAAgEDAwIEBwAAAAAAAAAAAQIDAAQRBSFBEjETUXGxFCIjcpHB0f/EABYBAQEBAAAAAAAAAAAAAAAAAAMCBP/EABcRAQEBAQAAAAAAAAAAAAAAAAABETH/2gAMAwEAAhEDEQA/AONpVgt5BM+/yHgeYzXhNahGyoOVOe1VgEimaN2usdIwsJxn1qDRIQcQXTfc9DYeN2rB7dCOVBpVPTnzptvsR9MbHilaZxlvWYuonm1doomZTgKxU4A2Hc0ks4YplLSSXEPThyHIw/rVWe6ZdVumU95Cvt/KheSRmSDcqOrL4osLtarTCkVhDEJC7KDnPG+wpXI0a68WWdwOlScKPIcUpZwVZ9iWupST3c5/Jrq2+lwTQiR2kJx2yMe1KUZEfF+A6lt0QZ5OT+6UpU7VyR//2Q==") right center / cover no-repeat;
+}
+@supports not (aspect-ratio: 1 / 1) {   /* iOS 14 이하 등: 비율 상자 폴백 */
+  .cover-photo { height: 0; padding-bottom: 222.22%; }
+}
+@media (hover: hover) and (pointer: fine) {
+  .cover-photo { aspect-ratio: auto; height: 100vh; padding-bottom: 0; }
 }
 .cover-photo img {
-  display: block;
-  width: 100%;
-  height: auto;                /* width/height 속성 비율대로 — 자르지 않음 */
+  position: absolute; top: 0; left: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: right center;   /* 왼쪽(난간 쪽)이 잘리고 두 사람이 가운데쯤 옴 — 사진 바꾸면 다시 맞춤 */
 }
 /* 손글씨가 계단 결 위에서도 읽히도록 위쪽만 살짝 어둡게 */
 .cover-photo::after {
