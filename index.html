@@ -28,7 +28,7 @@
   <link rel="preload" as="image" href="./assets/img/cover.jpg?v=fd5cbed9" fetchpriority="high">
   <!-- 명조(Noto Serif KR)·Pretendard 셀프호스팅 — unicode-range 슬라이스라 쓰인 글자 조각만 다운로드됨 -->
   <link rel="stylesheet" href="./css/fonts.css?v=a97819ea">
-  <link rel="stylesheet" href="./css/style.css?v=56e7a40a">
+  <link rel="stylesheet" href="./css/style.css?v=306ff614">
 
   <!-- - html에 .js 부여: 리빌/손글씨 애니메이션은 .js 하위에서만 동작 (no-JS fail-open)
        - 새로고침해도 항상 맨 위(커버)부터 — 손글씨가 써지는 동안 스크롤을 잠그므로, 중간 위치로
@@ -42,7 +42,7 @@
          닿지 않음 → 화면 전체 높이면 어떤 브라우저 UI 가 덮든 사진이 끝까지 참(넘치는 부분은 스크롤 아래).
          당겨서 새로고침·주소창 상태와도 무관하게 일정. PC(마우스)는 max(창 높이, 100vh).
        - 손글씨 위치(--view-h) = 실제로 보이는 높이(innerHeight). 사진이 화면보다 커도 글씨는 보이는 영역
-         아래 15% 위에 놓여 툴바에 가려지지 않음. 맨 위에서 이 값이 줄면 반영 — 카카오톡 인앱은 페이지가
+         위에서 17%에 놓임(style.css .cover-script). 맨 위에서 이 값이 줄면 반영 — 카카오톡 인앱은 페이지가
          뜬 뒤 하단 툴바가 나타남. 줄이기만 하므로 이후 툴바 토글에도 다시 바뀌지 않음. -->
   <script>
     (function () {
@@ -332,7 +332,7 @@
   <!-- 토스트 -->
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <script src="./js/config.js?v=41271eb2"></script>
+  <script src="./js/config.js?v=f92bb79b"></script>
   <script src="./js/main.js?v=6080ce91"></script>
 </body>
 </html>

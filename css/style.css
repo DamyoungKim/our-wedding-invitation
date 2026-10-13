@@ -140,23 +140,23 @@ html.lb-open, html.lb-open body { overflow: hidden; }
   object-fit: cover;
   object-position: 82% 50%;   /* 폰에선 사진 좌우가 잘리는데, 두 사람이 사진 가운데보다 오른쪽에 있어서 화면 가운데로 옮김 — 사진 바꾸면 다시 맞춤 */
 }
-/* 손글씨가 밝은 사진 위에서도 읽히도록 아래쪽만 살짝 어둡게 */
+/* 손글씨가 계단 결 위에서도 읽히도록 위쪽만 살짝 어둡게 */
 .cover-photo::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.38) 100%);
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.32) 0%, rgba(0, 0, 0, 0) 45%);
   pointer-events: none;
 }
-/* 글씨 밑단 = 보이는 화면(--view-h) 아래 15% 위. 사진(--cover-h)은 폰 화면 전체라 보이는 영역보다 클 수
- * 있어서 사진 기준이 아니라 보이는 영역 기준으로 놓음 — 인앱 하단 툴바(카카오톡 iOS ≈ 44pt + 홈 인디케이터
- * 34pt)에 가리지 않게 (375×667 에서 글씨 아래 100px, 390×844 에서 127px). JS 가 없으면 100vh 기준 */
+/* 글씨는 사진 위쪽 빈 계단 자리(보이는 화면 --view-h 위에서 17%) — 두 사람 얼굴은 사진 높이의 절반쯤이라
+ * 아래쪽에 두면 폰에서 얼굴을 덮음: 폰은 사진(--cover-h)이 화면 전체 높이인데 카카오톡은 위아래 바에 가려
+ * 보이는 높이가 훨씬 작아서, 보이는 영역 기준으로 놓은 글씨가 사진에선 얼굴 높이까지 올라옴(사용자 확인).
+ * 위쪽이라 인앱 하단 툴바에도 가리지 않음. JS 가 없으면 100vh 기준 */
 .cover-script {
   position: absolute;
   z-index: 1;
   left: 7%; right: 7%;
-  top: calc(var(--view-h, 100vh) * 0.85);
-  transform: translateY(-100%);
+  top: calc(var(--view-h, 100vh) * 0.17);
   color: #fffaf5;
 }
 /* 손글씨 SVG — scripts/make-handwriting.mjs 가 index.html 에 생성. 애니메이션은 main.js initHandwriting.
