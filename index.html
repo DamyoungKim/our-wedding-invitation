@@ -42,8 +42,9 @@
          사진 아래쪽이 하단 툴바에 가렸음. 사파리 26은 반투명 하단 주소창 뒤로 사진 아래 흰 바탕이 비치는데,
          사진 밑단이 흰 난간이라 이어져 보임(사용자 수용). PC(마우스)는 max(창 높이, 100vh).
        - 손글씨 위치(--view-h) = 보이는 높이. 글씨는 보이는 영역 위에서 17%(style.css .cover-script).
-       - 맨 위에서 보이는 높이가 줄면 두 값 모두 줄임 — 카카오톡 인앱은 페이지가 뜬 뒤 하단 툴바가 나타남.
-         줄이기만 하므로 이후 툴바 토글에도 다시 바뀌지 않음. 카카오톡에선 그동안 사진을 숨김(cover-settling). -->
+       - 사진이 보인 뒤엔 크기 고정(회전 제외) — 커졌다 작아지면 안 됨(사용자 요청). 카카오톡 인앱은 페이지가
+         뜬 뒤 하단 툴바가 나타나 보이는 높이가 줄어서, 그때까지 사진을 숨기고(cover-settling) 줄어든 높이에
+         맞춘 뒤 보여줌. 다른 브라우저는 처음 잰 크기 그대로. -->
   <script>
     (function () {
       var de = document.documentElement;
@@ -109,10 +110,12 @@
         if (!m) return;
         if (!cur || m.w !== cur.w) {
           cur = m; set('--view-h', m.view); set('--cover-h', m.cover);
-        } else if (m.view < cur.view && window.scrollY <= 0) {
+        } else if (settling && m.view < cur.view && window.scrollY <= 0) {
+          // 사진이 숨겨져 있는 동안만 줄임. 보인 뒤엔 크기 고정 — 커졌다 작아지는 것보다 늦게 뜬 툴바에
+          // 사진 밑단이 조금 가리는 편이 낫다(사용자 요청). 회전(너비 변경)만 위에서 다시 잼
           cur.view = m.view; set('--view-h', m.view);
           if (m.cover < cur.cover) { cur.cover = m.cover; set('--cover-h', m.cover); }
-          if (settling && loaded) settleIn(250);
+          if (loaded) settleIn(250);
         }
       }
       fixCoverH();
