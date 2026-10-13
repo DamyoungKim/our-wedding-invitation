@@ -28,7 +28,7 @@
   <link rel="preload" as="image" href="./assets/img/cover.jpg?v=fd5cbed9" fetchpriority="high">
   <!-- 명조(Noto Serif KR)·Pretendard 셀프호스팅 — unicode-range 슬라이스라 쓰인 글자 조각만 다운로드됨 -->
   <link rel="stylesheet" href="./css/fonts.css?v=a97819ea">
-  <link rel="stylesheet" href="./css/style.css?v=306ff614">
+  <link rel="stylesheet" href="./css/style.css?v=00f128a0">
 
   <!-- - html에 .js 부여: 리빌/손글씨 애니메이션은 .js 하위에서만 동작 (no-JS fail-open)
        - 새로고침해도 항상 맨 위(커버)부터 — 손글씨가 써지는 동안 스크롤을 잠그므로, 중간 위치로
@@ -37,13 +37,13 @@
          주소창/하단바가 접혔다 펴질 때 웹뷰 크기 자체가 바뀌어 vh/svh/dvh가 전부 따라 변하고, iOS WebKit
          (<Safari 27)은 스크롤 앵커링이 없어 커버 높이가 바뀌면 보던 내용이 그만큼 출렁임. 그래서 스크롤 중
          높이만 바뀌는 resize(주소창 토글)는 무시하고, 너비가 바뀔 때(화면 회전)만 다시 잰다.
-       - 사진 높이(--cover-h) = 폰에선 기기 화면 전체 높이(screen). 사파리 26은 페이지를 반투명 하단 주소창
-         뒤까지 그리는데 innerHeight·100vh·고정 레이어 높이는 그 영역을 다 포함하지 않아 사진이 화면 끝에
-         닿지 않음 → 화면 전체 높이면 어떤 브라우저 UI 가 덮든 사진이 끝까지 참(넘치는 부분은 스크롤 아래).
-         당겨서 새로고침·주소창 상태와도 무관하게 일정. PC(마우스)는 max(창 높이, 100vh).
-       - 손글씨 위치(--view-h) = 실제로 보이는 높이(innerHeight). 사진이 화면보다 커도 글씨는 보이는 영역
-         위에서 17%에 놓임(style.css .cover-script). 맨 위에서 이 값이 줄면 반영 — 카카오톡 인앱은 페이지가
-         뜬 뒤 하단 툴바가 나타남. 줄이기만 하므로 이후 툴바 토글에도 다시 바뀌지 않음. -->
+       - 사진 높이(--cover-h) = 폰에선 실제로 보이는 높이(innerHeight) — 사진 위(계단)부터 아래 흰 난간까지
+         첫 화면에 딱 들어와 액자처럼 보이게(사용자 선택). 예전엔 기기 화면 전체 높이(screen)라 카카오톡에선
+         사진 아래쪽이 하단 툴바에 가렸음. 사파리 26은 반투명 하단 주소창 뒤로 사진 아래 흰 바탕이 비치는데,
+         사진 밑단이 흰 난간이라 이어져 보임(사용자 수용). PC(마우스)는 max(창 높이, 100vh).
+       - 손글씨 위치(--view-h) = 보이는 높이. 글씨는 보이는 영역 위에서 17%(style.css .cover-script).
+       - 맨 위에서 보이는 높이가 줄면 두 값 모두 줄임 — 카카오톡 인앱은 페이지가 뜬 뒤 하단 툴바가 나타남.
+         줄이기만 하므로 이후 툴바 토글에도 다시 바뀌지 않음. -->
   <script>
     (function () {
       var de = document.documentElement;
@@ -64,13 +64,13 @@
         var w = window.innerWidth, h = window.innerHeight;
         if (!w || !h) return null;
         if (phone) {
-          // 사진 높이는 기기 화면 크기·방향만으로 정함 — 브라우저 값과 무관해 처음부터 최종 크기로 그려짐
           var a = screen.width, b = screen.height, p = portrait();
           var sw = p ? Math.min(a, b) : Math.max(a, b), sh = p ? Math.max(a, b) : Math.min(a, b);
           // 아이폰 인앱은 <head> 실행 시점에 뷰포트(width=device-width)가 아직 적용되지 않아 기본 폭
           // 980px 기준 값이 나옴 → 이 값으로 그리면 사진이 커졌다가 작아짐. 화면 폭 기준으로 환산
           if (w > sw + 1) { h = Math.round(h * sw / w); w = sw; }
-          return { w: w, view: Math.min(h, sh), cover: sh };
+          var view = Math.min(h, sh);
+          return { w: w, view: view, cover: view };
         }
         var vh = document.createElement('div');
         vh.style.cssText = 'position:absolute;top:0;width:0;height:100vh;visibility:hidden';
@@ -90,6 +90,7 @@
           cur = m; set('--view-h', m.view); set('--cover-h', m.cover);
         } else if (m.view < cur.view && window.scrollY <= 0) {
           cur.view = m.view; set('--view-h', m.view);
+          if (m.cover < cur.cover) { cur.cover = m.cover; set('--cover-h', m.cover); }
         }
       }
       fixCoverH();
