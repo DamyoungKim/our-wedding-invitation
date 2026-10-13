@@ -3,7 +3,7 @@
 // 매핑 규칙(계획 M8): 정렬순 첫 사진 = cover + og, 나머지 5장 = gallery-01..05
 // 실행: npm run optimize
 import sharp from 'sharp';
-import { readdir, mkdir, stat } from 'node:fs/promises';
+import { readdir, mkdir, stat, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 const SRC_DIR = 'image';
@@ -31,6 +31,15 @@ await sharp(src(coverSrc))
   .resize({ width: 1600, withoutEnlargement: true })
   .jpeg({ quality: 80, mozjpeg: true })
   .toFile(out('cover.jpg'));
+
+// 커버 축소본(LQIP): 사진이 받아지기 전 바탕으로 까는 24px 짜리 base64 → css/style.css 의 .cover-photo 배경에 넣음
+// (빈 단색 대신 사진 윤곽이 바로 보이게). 커버 사진을 바꾸면 이 스크립트를 다시 실행해야 바탕도 바뀜
+const tiny = await sharp(src(coverSrc)).rotate().resize({ width: 24 }).jpeg({ quality: 55 }).toBuffer();
+const CSS = 'css/style.css';
+const css = await readFile(CSS, 'utf8');
+const LQIP = /(\.cover-photo \{[^}]*url\("data:image\/jpeg;base64,)[^"]*(")/;
+if (!LQIP.test(css)) throw new Error(`${CSS} 의 .cover-photo 배경에 data:image/jpeg;base64 자리가 없습니다`);
+await writeFile(CSS, css.replace(LQIP, `$1${tiny.toString('base64')}$2`));
 
 // OG(카카오톡 등 링크 미리보기): 1200x630, q80, 목표 <300KB
 // 세로 사진은 자동(attention) 크롭이 두 사람 대신 계단 같은 배경을 고를 때가 있어서, 자를 영역을
@@ -71,4 +80,5 @@ for (const f of outputs) {
   console.log(`${f.padEnd(18)} ${String(size).padStart(5)} KB`);
 }
 console.log(`${'합계'.padEnd(17)} ${String(total).padStart(5)} KB`);
+console.log(`style.css 커버 축소본 ${tiny.length} B (base64 ${Math.ceil(tiny.length * 4 / 3)} B)`);
 console.log(`매핑: cover/og ← ${coverSrc} | gallery-01..${String(galleryFiles.length).padStart(2, '0')} ← 나머지 정렬순`);

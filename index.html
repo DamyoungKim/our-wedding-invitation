@@ -28,23 +28,15 @@
   <link rel="preload" as="image" href="./assets/img/cover.jpg?v=fd5cbed9" fetchpriority="high">
   <!-- 명조(Noto Serif KR)·Pretendard 셀프호스팅 — unicode-range 슬라이스라 쓰인 글자 조각만 다운로드됨 -->
   <link rel="stylesheet" href="./css/fonts.css?v=a97819ea">
-  <link rel="stylesheet" href="./css/style.css?v=c2405ebf">
+  <link rel="stylesheet" href="./css/style.css?v=cc18f13e">
 
   <!-- - html에 .js 부여: 리빌/손글씨 애니메이션은 .js 하위에서만 동작 (no-JS fail-open)
        - 새로고침해도 항상 맨 위(커버)부터 — 손글씨가 써지는 동안 스크롤을 잠그므로, 중간 위치로
          복원된 채 잠기는 일을 막음 (history.scrollRestoration = 'manual')
-       - 커버 크기는 px 로 고정 (--cover-h 사진 높이, --view-h 손글씨 위치 기준). 카카오톡 인앱은 스크롤 중
-         주소창/하단바가 접혔다 펴질 때 웹뷰 크기 자체가 바뀌어 vh/svh/dvh가 전부 따라 변하고, iOS WebKit
-         (<Safari 27)은 스크롤 앵커링이 없어 커버 높이가 바뀌면 보던 내용이 그만큼 출렁임. 그래서 스크롤 중
-         높이만 바뀌는 resize(주소창 토글)는 무시하고, 너비가 바뀔 때(화면 회전)만 다시 잰다.
-       - 사진 높이(--cover-h) = 폰에선 실제로 보이는 높이(innerHeight) — 사진 위(계단)부터 아래 흰 난간까지
-         첫 화면에 딱 들어와 액자처럼 보이게(사용자 선택). 예전엔 기기 화면 전체 높이(screen)라 카카오톡에선
-         사진 아래쪽이 하단 툴바에 가렸음. 사파리 26은 반투명 하단 주소창 뒤로 사진 아래 흰 바탕이 비치는데,
-         사진 밑단이 흰 난간이라 이어져 보임(사용자 수용). PC(마우스)는 max(창 높이, 100vh).
-       - 손글씨 위치(--view-h) = 보이는 높이. 글씨는 보이는 영역 위에서 17%(style.css .cover-script).
-       - 사진이 보인 뒤엔 크기 고정(회전 제외) — 커졌다 작아지면 안 됨(사용자 요청). 카카오톡 인앱은 페이지가
-         뜬 뒤 하단 툴바가 나타나 보이는 높이가 줄어서, 그때까지 사진을 숨기고(cover-settling) 줄어든 높이에
-         맞춘 뒤 보여줌. 다른 브라우저는 처음 잰 크기 그대로. -->
+       - 커버 사진 크기는 CSS 가 너비 기준으로 정함(style.css .cover-photo, 너비 × 1.6). 화면 높이는 재지 않음:
+         카카오톡 인앱은 페이지가 뜬 뒤 하단 툴바를 꺼내 화면 높이가 줄고, 사파리는 주소창이 접혔다 펴지며
+         바뀌어서, 높이에 맞추면 처음 그린 크기가 최종 크기가 아님(커졌다 작아짐). 너비는 안 변함.
+       - ?debug 로 열면 창 크기가 언제 바뀌는지 기록을 화면 위에 표시(main.js initDebug) -->
   <script>
     (function () {
       var de = document.documentElement;
@@ -56,70 +48,12 @@
         de.className += ' hw-pending';
         setTimeout(function () { de.classList.remove('hw-pending'); }, 8000);
       }
-      var phone = !!(window.matchMedia && matchMedia('(pointer: coarse)').matches && window.screen && screen.width);
-      // iOS 는 회전해도 screen 가로·세로가 안 바뀌므로 방향은 창 비율로 판단
-      // (뷰포트 적용 전 980px 기본 폭 값도 비율은 같음)
-      function portrait() { return window.innerWidth <= window.innerHeight; }
-      // { w: 레이아웃 폭, view: 보이는 높이(--view-h), cover: 사진 높이(--cover-h) }
-      function measure() {
-        var w = window.innerWidth, h = window.innerHeight;
-        if (!w || !h) return null;
-        if (phone) {
-          var a = screen.width, b = screen.height, p = portrait();
-          var sw = p ? Math.min(a, b) : Math.max(a, b), sh = p ? Math.max(a, b) : Math.min(a, b);
-          // 아이폰 인앱은 <head> 실행 시점에 뷰포트(width=device-width)가 아직 적용되지 않아 기본 폭
-          // 980px 기준 값이 나옴 → 이 값으로 그리면 사진이 커졌다가 작아짐. 화면 폭 기준으로 환산
-          if (w > sw + 1) { h = Math.round(h * sw / w); w = sw; }
-          var view = Math.min(h, sh);
-          return { w: w, view: view, cover: view };
-        }
-        var vh = document.createElement('div');
-        vh.style.cssText = 'position:absolute;top:0;width:0;height:100vh;visibility:hidden';
-        de.appendChild(vh);
-        var cover = Math.max(h, vh.offsetHeight);
-        de.removeChild(vh);
-        return { w: w, view: h, cover: cover };
-      }
-      var cur = null, log = window.__coverLog = []; // ?debug 로 열면 main.js 가 화면에 표시
-      function now() { return Math.round(performance.now()); }
-      function set(name, px) { de.style.setProperty(name, px + 'px'); }
-
-      // 카카오톡 인앱은 페이지가 다 뜬(load) 뒤 하단 툴바가 나타나 보이는 높이가 줄고, 사진도 그 높이에
-      // 맞춰 줄어듦 → 사진이 커졌다가 작아지는 게 보임(사용자 확인). 그래서 카카오톡에선 높이가 정해질
-      // 때까지 사진을 숨겼다가(cover-settling) 최종 크기로 서서히 보여줌. load 뒤 높이가 줄면 0.25s 잠잠할
-      // 때, 안 줄면 load 0.8s 뒤, 어떤 경우든 4s 뒤엔 보임. main.js 손글씨는 'coversettled' 뒤에 시작
-      var settling = phone && /KAKAOTALK/i.test(navigator.userAgent), loaded = false, settleTimer = 0;
-      function settle() {
-        if (!settling) return;
-        settling = false;
-        de.classList.remove('cover-settling');
-        log.push([now(), 'settled']);
-        try { document.dispatchEvent(new Event('coversettled')); } catch (e) {}
-      }
-      function settleIn(ms) { clearTimeout(settleTimer); settleTimer = setTimeout(settle, ms); }
-      if (settling) {
-        de.className += ' cover-settling';
-        window.addEventListener('load', function () { loaded = true; log.push([now(), 'load']); settleIn(800); });
-        setTimeout(settle, 4000);
-      }
-
-      function fixCoverH(e) {
-        var m = measure();
-        log.push([now(), e ? e.type : 'head', window.innerWidth, window.innerHeight,
-                  m ? m.cover : '-', m ? m.view : '-']);
-        if (!m) return;
-        if (!cur || m.w !== cur.w) {
-          cur = m; set('--view-h', m.view); set('--cover-h', m.cover);
-        } else if (settling && m.view < cur.view && window.scrollY <= 0) {
-          // 사진이 숨겨져 있는 동안만 줄임. 보인 뒤엔 크기 고정 — 커졌다 작아지는 것보다 늦게 뜬 툴바에
-          // 사진 밑단이 조금 가리는 편이 낫다(사용자 요청). 회전(너비 변경)만 위에서 다시 잼
-          cur.view = m.view; set('--view-h', m.view);
-          if (m.cover < cur.cover) { cur.cover = m.cover; set('--cover-h', m.cover); }
-          if (loaded) settleIn(250);
-        }
-      }
-      fixCoverH();
-      window.addEventListener('resize', fixCoverH);
+      // 창 크기 기록 (?debug 확인용) — 인앱 툴바가 나타나는 시점 등
+      var log = window.__coverLog = [];
+      function note(e) { log.push([Math.round(performance.now()), e ? e.type : 'head', window.innerWidth, window.innerHeight]); }
+      note();
+      window.addEventListener('resize', note);
+      window.addEventListener('load', note);
     })();
   </script>
 </head>
@@ -359,6 +293,6 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="./js/config.js?v=f92bb79b"></script>
-  <script src="./js/main.js?v=d16a25fc"></script>
+  <script src="./js/main.js?v=14ce863f"></script>
 </body>
 </html>

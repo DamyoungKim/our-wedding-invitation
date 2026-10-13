@@ -174,15 +174,10 @@
       setTimeout(finish, t + 600 + 100);
     }
 
-    // 사진이 뜬 뒤에 쓰기 시작(빈 화면 위에서 써지지 않게) — 캐시·오류 포함, 최대 1.5s 대기.
-    // 카카오톡은 사진 크기가 정해질 때까지 사진을 숨기므로(head 스크립트 cover-settling) 그 뒤에 시작
+    // 사진이 뜬 뒤에 쓰기 시작(빈 화면 위에서 써지지 않게) — 캐시·오류 포함, 최대 1.5s 대기
     var img = doc.getElementById('cover-img');
     var started = false;
-    function afterSettled(fn) {
-      if (!root.classList.contains('cover-settling')) return fn();
-      doc.addEventListener('coversettled', fn);
-    }
-    function start() { if (!started) { started = true; afterSettled(function () { setTimeout(write, 300); }); } }
+    function start() { if (!started) { started = true; setTimeout(write, 300); } }
     if (!img || img.complete) start();
     else {
       img.addEventListener('load', start);
@@ -757,7 +752,7 @@
   })();
 
   /* ============================================================
-   * 12. ?debug — 커버 크기 측정 기록을 화면 위에 표시 (폰 인앱에서 원인 확인용).
+   * 12. ?debug — 창 크기 변화 기록을 화면 위에 표시 (폰 인앱에서 툴바가 언제 나타나는지 확인용).
    *     주소 뒤에 ?debug 를 붙였을 때만 동작. 기록은 index.html <head> 스크립트가 남김
    * ============================================================ */
   (function initDebug() {
@@ -768,12 +763,10 @@
     doc.body.appendChild(box);
     var photo = $('.cover-photo');
     function render() {
-      var cs = getComputedStyle(root);
       box.textContent = navigator.userAgent.slice(-60) +
         '\nscreen ' + screen.width + 'x' + screen.height + ' | now ' + innerWidth + 'x' + innerHeight + ' y' + Math.round(scrollY) +
-        '\n--cover-h ' + cs.getPropertyValue('--cover-h') + ' --view-h ' + cs.getPropertyValue('--view-h') +
         ' | photo ' + (photo ? Math.round(photo.getBoundingClientRect().height) : '-') +
-        '\nms event w h cover view\n' +
+        '\nms event w h\n' +
         (window.__coverLog || []).slice(-12).map(function (r) { return r.join(' '); }).join('\n');
     }
     render();

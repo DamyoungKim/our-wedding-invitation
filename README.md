@@ -120,7 +120,7 @@ node scripts/make-handwriting.mjs "We're getting|married" "Pinyon Script"
    node scripts/optimize-images.mjs
    ```
    (사진이 5장보다 적어도 되고, 6장을 초과하면 앞 5장만 갤러리로 씁니다. 매핑 규칙은
-   `scripts/optimize-images.mjs` 상단 주석 참고.) 커버는 `cover.jpg` 만 바뀌면 되고, 커밋 전에 `npm run bump` 를 실행하세요(아래 "배포").
+   `scripts/optimize-images.mjs` 상단 주석 참고.) 커버는 `cover.jpg` 와 `css/style.css` 의 축소본 바탕(사진이 받아지기 전 잠깐 보이는 흐린 그림)이 같이 바뀝니다. 커밋 전에 `npm run bump` 를 실행하세요(아래 "배포").
    세로 사진 권장 — 첫 화면에 꽉 차게 잘리고, 손글씨가 사진 아래쪽에 올라갑니다.
    커버 사진을 바꾸면 두 군데를 사진에 맞춰 다시 정하세요:
    - `css/style.css` 의 `.cover-photo img { object-position }` — 폰에선 사진 좌우가 잘리므로 두 사람이 화면 가운데 오게
