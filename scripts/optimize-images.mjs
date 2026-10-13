@@ -32,6 +32,15 @@ await sharp(src(coverSrc))
   .jpeg({ quality: 80, mozjpeg: true })
   .toFile(out('cover.jpg'));
 
+// 커버 실제 크기 → index.html <img id="cover-img" width height>. 브라우저가 사진을 받기 전부터 이 비율로 자리를
+// 잡아 첫 화면 크기가 곧 최종 크기(화면 높이를 재지 않음 — css/style.css .cover-photo 주석)
+const { width: cw, height: ch } = await sharp(out('cover.jpg')).metadata();
+const HTML = 'index.html';
+const html = await readFile(HTML, 'utf8');
+const SIZE = /(<img id="cover-img" src="[^"]*" )width="\d+" height="\d+"/;
+if (!SIZE.test(html)) throw new Error(`${HTML} 의 <img id="cover-img"> 에 width/height 속성 자리가 없습니다`);
+await writeFile(HTML, html.replace(SIZE, `$1width="${cw}" height="${ch}"`));
+
 // 커버 축소본(LQIP): 사진이 받아지기 전 바탕으로 까는 24px 짜리 base64 → css/style.css 의 .cover-photo 배경에 넣음
 // (빈 단색 대신 사진 윤곽이 바로 보이게). 커버 사진을 바꾸면 이 스크립트를 다시 실행해야 바탕도 바뀜
 const tiny = await sharp(src(coverSrc)).rotate().resize({ width: 24 }).jpeg({ quality: 55 }).toBuffer();
@@ -80,5 +89,5 @@ for (const f of outputs) {
   console.log(`${f.padEnd(18)} ${String(size).padStart(5)} KB`);
 }
 console.log(`${'합계'.padEnd(17)} ${String(total).padStart(5)} KB`);
-console.log(`style.css 커버 축소본 ${tiny.length} B (base64 ${Math.ceil(tiny.length * 4 / 3)} B)`);
+console.log(`index.html 커버 width/height ${cw}×${ch} | style.css 커버 축소본 ${tiny.length} B (base64 ${Math.ceil(tiny.length * 4 / 3)} B)`);
 console.log(`매핑: cover/og ← ${coverSrc} | gallery-01..${String(galleryFiles.length).padStart(2, '0')} ← 나머지 정렬순`);

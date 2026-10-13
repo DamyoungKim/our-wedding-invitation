@@ -121,9 +121,9 @@ node scripts/make-handwriting.mjs "We're getting|married" "Pinyon Script"
    ```
    (사진이 5장보다 적어도 되고, 6장을 초과하면 앞 5장만 갤러리로 씁니다. 매핑 규칙은
    `scripts/optimize-images.mjs` 상단 주석 참고.) 커버는 `cover.jpg` 와 `css/style.css` 의 축소본 바탕(사진이 받아지기 전 잠깐 보이는 흐린 그림)이 같이 바뀝니다. 커밋 전에 `npm run bump` 를 실행하세요(아래 "배포").
-   세로 사진 권장 — 첫 화면에 꽉 차게 잘리고, 손글씨가 사진 아래쪽에 올라갑니다.
-   커버 사진을 바꾸면 두 군데를 사진에 맞춰 다시 정하세요:
-   - `css/style.css` 의 `.cover-photo img { object-position }` — 폰에선 사진 좌우가 잘리므로 두 사람이 화면 가운데 오게
+   세로 사진 권장 — 자르지 않고 사진 전체가 너비에 맞춰 보이고, 손글씨가 사진 위쪽에 올라갑니다. 크기·비율·바탕 축소본은 스크립트가 파일에서 읽어 자동으로 맞춥니다.
+   커버 사진을 바꾸면 두 군데를 사진 구도에 맞춰 다시 정하세요:
+   - `css/style.css` 의 `.cover-script { top }` — 손글씨가 사진의 빈 자리에 오게 (지금 17%, 위쪽 계단)
    - `scripts/optimize-images.mjs` 의 `OG_CROP` — 카톡 미리보기에서 두 얼굴이 가운데 오게 (자동 크롭은 계단 같은 배경을 고르기도 함)
 3. 갤러리를 켜려면 `index.html`을 아래와 같이 고칩니다.
    - **갤러리**: "갤러리 섹션 — 웨딩 촬영본 도착 전까지 비활성화" 주석을 아래 블록으로 교체합니다

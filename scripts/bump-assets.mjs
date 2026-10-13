@@ -22,6 +22,12 @@ const hashes = {};
 for (const m of html.matchAll(ASSET)) {
   const path = m[2];
   if (!hashes[path]) hashes[path] = await hashOf(path);
+  // 에디터에서 한글 키가 눌려 파일 맨 앞에 'ㄴ' 같은 글자가 들어간 적 있음(2026-10-13). JS 에선 변수명으로
+  // 유효해 node --check 는 통과하지만 브라우저에선 첫 줄에서 죽어 스크립트 전체가 안 돎 → 여기서 막음
+  if (path.endsWith('.js')) {
+    const head = (await readFile(path, 'utf8')).trimStart().charCodeAt(0);
+    if (!(head < 128)) throw new Error(`${path} 가 ASCII 가 아닌 글자(U+${head.toString(16).toUpperCase()})로 시작합니다 — 에디터에서 잘못 들어간 글자를 지우세요`);
+  }
 }
 // OG 미리보기 사진(절대 주소) — 카카오톡 등이 이미지를 주소 기준으로 캐시하므로 사진이 바뀌면 주소도 바뀌게
 const OG = './assets/img/og-image.jpg';
