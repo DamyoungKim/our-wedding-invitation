@@ -759,10 +759,14 @@
       'font:11px/1.35 monospace;color:#7CFC7C;background:rgba(0,0,0,.75);white-space:pre-wrap;pointer-events:none';
     doc.body.appendChild(box);
     var photo = $('.cover-photo');
+    function ver(sel) { var el = $(sel), m = el && /v=([0-9a-f]+)/.exec(el.getAttribute('href') || el.getAttribute('src') || ''); return m ? m[1] : '?'; }
     function render() {
       box.textContent = navigator.userAgent.slice(-60) +
         '\nscreen ' + screen.width + 'x' + screen.height + ' | now ' + innerWidth + 'x' + innerHeight + ' y' + Math.round(scrollY) +
         ' | photo ' + (photo ? Math.round(photo.getBoundingClientRect().height) : '-') +
+        // 어떤 버전의 CSS·JS 가 실제로 읽혔는지 — 인앱 브라우저가 예전 파일을 캐시에서 보여 주는지 구분용
+        '\ncss ' + ver('link[href*="style.css"]') + ' js ' + ver('script[src*="main.js"]') +
+        ' ratio ' + (photo ? (photo.offsetHeight / photo.offsetWidth).toFixed(2) : '-') + (root.classList.contains('in-kakao-ios') ? ' kakao-ios' : '') +
         '\nms event w h\n' +
         (window.__coverLog || []).slice(-12).map(function (r) { return r.join(' '); }).join('\n');
     }

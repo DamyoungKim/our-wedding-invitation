@@ -126,11 +126,15 @@ html.lb-open, html.lb-open body { overflow: hidden; }
 /* ============================================================
  * 1. 커버 — 첫 화면 가득 사진 + 손글씨, 그 아래 종이 청첩장 표지(영문 성함 / 문구 / 일시 / 장소)
  * ============================================================ */
-/* 첫 화면을 사진으로 꽉 채움 — 상자 비율 16:9(aspect-ratio). 기준은 기기 화면이 아니라 카카오톡·사파리 안에서
- * 실제로 보이는 영역(아이폰 390×650 안팎 = 1.67): 그보다 조금 길어 아래 여백 없이 꽉 차고 얼굴이 가운데쯤 옴.
+/* 첫 화면을 사진으로 꽉 채움 — 상자 비율은 기기 화면 비율 19.5:9(aspect-ratio, 390px 폰에서 844px). 사파리 26 은
+ * 반투명 하단 주소창 뒤까지 페이지를 그려서 보이는 높이가 약 797px 라, 그보다 길어야 아래 여백 없이 꽉 참(사용자 캡처).
  * 사진은 object-fit:cover 로 오른쪽 기준으로 채워 왼쪽이 잘림(사용자: 왼쪽 잘려도 됨, 아래 여백은 안 됨).
- * 넘치는 아래쪽은 스크롤 밑으로. 20:9(기기 화면 비율)로 했더니 카카오톡 툴바만큼 보이는 영역이 짧아 얼굴이
- * 아래 1/3 에 깔렸음(사용자 캡처). 긴 화면(안드로이드)에선 사진 아래에 이름 블록이 바로 이어짐.
+ * 넘치는 아래쪽은 스크롤 밑으로.
+ * 카카오톡 iOS 만 16:9 (html.in-kakao-ios, index.html <head> 가 UA 로 붙임): 카카오톡은 위아래 바가 약 195px 라
+ * 보이는 높이가 649px 뿐이어서, 844px 상자면 얼굴이 아래 1/3 에 깔림(사용자 캡처). 16:9(693px)면 꽉 차고 얼굴이 가운데.
+ * 같은 폰인데 브라우저마다 보이는 높이가 23% 다르니 비율 하나로는 둘 다 못 맞춤 — UA 는 측정이 아니라 고정 사실이라
+ * 처음 그린 크기가 곧 최종 크기(화면 높이를 재면 카카오톡 툴바 때문에 커졌다 작아짐).
+ * 안드로이드는 844 상자가 카카오톡(보이는 높이 ~650)·크롬(~700)을 다 채우고 얼굴이 55~60%.
  * - 화면 높이(vh·innerHeight)는 폰에서 쓰지 않음: 카카오톡 인앱은 페이지가 뜬 뒤 하단 툴바를 꺼내 화면 높이가
  *   줄고, 사파리는 주소창이 접혔다 펴지며 바뀜. 높이에 맞추면 커졌다 작아지거나, 숨겼다 보여 주거나(갈색 화면),
  *   아래가 가림(2026-10-13 사용자가 전부 겪음). 너비 기준 비율이면 처음 그린 크기가 곧 최종 크기.
@@ -140,11 +144,13 @@ html.lb-open, html.lb-open body { overflow: hidden; }
 .cover-photo {
   position: relative;
   overflow: hidden;
-  aspect-ratio: 9 / 16;
+  aspect-ratio: 9 / 19.5;
   background: var(--cover-bg) url("data:image/jpeg;base64,/9j/2wBDAA4KCw0LCQ4NDA0QDw4RFiQXFhQUFiwgIRokNC43NjMuMjI6QVNGOj1OPjIySGJJTlZYXV5dOEVmbWVabFNbXVn/2wBDAQ8QEBYTFioXFypZOzI7WVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVn/wAARCAAkABgDASIAAhEBAxEB/8QAGQABAAMBAQAAAAAAAAAAAAAAAAIEBgUD/8QAKRAAAgEDAwIEBwAAAAAAAAAAAQIDAAQRBSFBEjETUXGxFCIjcpHB0f/EABYBAQEBAAAAAAAAAAAAAAAAAAMCBP/EABcRAQEBAQAAAAAAAAAAAAAAAAABETH/2gAMAwEAAhEDEQA/AONpVgt5BM+/yHgeYzXhNahGyoOVOe1VgEimaN2usdIwsJxn1qDRIQcQXTfc9DYeN2rB7dCOVBpVPTnzptvsR9MbHilaZxlvWYuonm1doomZTgKxU4A2Hc0ks4YplLSSXEPThyHIw/rVWe6ZdVumU95Cvt/KheSRmSDcqOrL4osLtarTCkVhDEJC7KDnPG+wpXI0a68WWdwOlScKPIcUpZwVZ9iWupST3c5/Jrq2+lwTQiR2kJx2yMe1KUZEfF+A6lt0QZ5OT+6UpU7VyR//2Q==") right center / cover no-repeat;
 }
+html.in-kakao-ios .cover-photo { aspect-ratio: 9 / 16; }
 @supports not (aspect-ratio: 1 / 1) {   /* iOS 14 이하 등: 비율 상자 폴백 */
-  .cover-photo { height: 0; padding-bottom: 177.78%; }
+  .cover-photo { height: 0; padding-bottom: 216.67%; }
+  html.in-kakao-ios .cover-photo { padding-bottom: 177.78%; }
 }
 @media (hover: hover) and (pointer: fine) {
   .cover-photo { aspect-ratio: auto; height: 100vh; padding-bottom: 0; }

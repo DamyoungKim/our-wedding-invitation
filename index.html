@@ -28,12 +28,12 @@
   <link rel="preload" as="image" href="./assets/img/cover.jpg?v=fd5cbed9" fetchpriority="high">
   <!-- 명조(Noto Serif KR)·Pretendard 셀프호스팅 — unicode-range 슬라이스라 쓰인 글자 조각만 다운로드됨 -->
   <link rel="stylesheet" href="./css/fonts.css?v=a97819ea">
-  <link rel="stylesheet" href="./css/style.css?v=2dabf0f2">
+  <link rel="stylesheet" href="./css/style.css?v=238745e6">
 
   <!-- - html에 .js 부여: 리빌/손글씨 애니메이션은 .js 하위에서만 동작 (no-JS fail-open)
        - 새로고침해도 항상 맨 위(커버)부터 — 손글씨가 써지는 동안 스크롤을 잠그므로, 중간 위치로
          복원된 채 잠기는 일을 막음 (history.scrollRestoration = 'manual')
-       - 커버 상자는 16:9 비율(style.css .cover-photo aspect-ratio — 카카오톡 안에서 보이는 영역 기준)로 너비에서 정해짐. 화면 높이는 재지 않음:
+       - 커버 상자는 기기 화면 비율 19.5:9(카카오톡 iOS 만 16:9, style.css .cover-photo 주석)로 너비에서 정해짐. 화면 높이는 재지 않음:
          카카오톡 인앱은 페이지가 뜬 뒤 하단 툴바를 꺼내 화면 높이가 줄고, 사파리는 주소창이 접혔다 펴지며
          바뀌어서, 높이에 맞추면 처음 그린 크기가 최종 크기가 아님(커졌다 작아짐). 너비는 안 변함.
        - ?debug 로 열면 창 크기가 언제 바뀌는지 기록을 화면 위에 표시(main.js initDebug) -->
@@ -41,6 +41,8 @@
     (function () {
       var de = document.documentElement;
       de.className += ' js';
+      // 카카오톡 iOS 는 위아래 바가 커서 보이는 높이가 짧음 → 커버 상자를 16:9 로 (style.css .cover-photo 주석)
+      if (/iPhone|iPad|iPod/.test(navigator.userAgent) && /KAKAOTALK/i.test(navigator.userAgent)) de.className += ' in-kakao-ios';
       try { if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch (e) {}
       // 창 크기 기록 (?debug 확인용) — 인앱 툴바가 나타나는 시점 등
       var log = window.__coverLog = [];
@@ -289,6 +291,6 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="./js/config.js?v=f92bb79b"></script>
-  <script src="./js/main.js?v=c81ad91a"></script>
+  <script src="./js/main.js?v=799eef2e"></script>
 </body>
 </html>
