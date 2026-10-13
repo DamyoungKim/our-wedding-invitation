@@ -47,7 +47,10 @@
 ## 콘텐츠
 - 문구·연락처·계좌·예식 정보는 `js/config.js` 에서만 바꿉니다. 기준은 종이 청첩장(`청첩장.pdf`)입니다.
 - 방명록·참석 여부(RSVP)·공유 섹션은 넣지 않습니다 (사용자 결정).
-- `assets/img/cover.jpg` 는 웨딩 촬영 전 임시 **종이 커버**입니다(`scripts/make-cover-art.mjs`: 아이보리 + 올리브 가지, 사용자 선택). `.cover--paper` 가 버건디 손글씨와 보이는 화면에 맞춘 이중 테두리를 그립니다. 테두리·글자는 그림에 굽지 않습니다(화면 비율마다 잘림). 사진으로 바꿀 때는 `cover--paper` 클래스를 지웁니다.
+- `assets/img/cover.jpg` 는 웨딩 사진입니다(원본 `image/01-cover.jpg` — 나무 계단 위 두 사람, 2026-10-13 사용자 제공). `node scripts/optimize-images.mjs` 로 커버(가로 1600px)와 카톡 미리보기 `og-image.jpg`(1200×630)를 같이 만듭니다.
+  - 인물은 화면 가운데에 옵니다(사용자 요청). 폰은 사진 좌우가 잘리므로 `.cover-photo img` 의 `object-position` 으로 맞춥니다(지금 82%). 사진을 바꾸면 다시 맞춥니다.
+  - 카톡 미리보기에는 두 사람 얼굴이 보여야 합니다(사용자 요청). 자동 크롭은 계단만 골라서, `optimize-images.mjs` 의 `OG_CROP` 으로 얼굴이 가운데 오게 직접 자릅니다. 카톡이 가운데를 정사각형으로 잘라도 얼굴이 남아야 합니다.
+  - 촬영 전 임시 **종이 커버**(`scripts/make-cover-art.mjs` + `.cover--paper`)는 되돌릴 때만 씁니다. 그 스크립트는 `cover.jpg` 를 덮어씁니다.
 - 배경음악 `assets/audio/bgm.mp3` 는 Pixabay 「Christmas piano ~カノン~」(pianocafe_Kumi)입니다. Pixabay Content License 라서 무료이고 출처 표기가 필요 없습니다. 사용자가 "채플 앳 청담·연말·클래식" 분위기로 고르라고 해서 골랐습니다. 직접 합성한 오르골 곡은 사용자가 별로라고 해서 버렸습니다.
   - 다른 음원으로 바꿀 때도 출처 표기 없이 쓸 수 있는 것(Pixabay·퍼블릭 도메인)만 씁니다.
   - 받은 파일은 `node scripts/prepare-bgm.mjs <파일>` 로 손질합니다(앞뒤 무음 정리, 128kbps). 원본은 저장소에 넣지 않습니다.
@@ -58,7 +61,7 @@
 - 수정 후 320 / 360 / 375 / 412px 폭에서 확인합니다: 가로 넘침 없음, 의도치 않은 줄바꿈 없음, 콘솔 에러 없음, 폰트 로드(Noto Serif KR · Pretendard Variable · Yellowtail).
 
 ## 작업 방식
-- 커밋 전에 항상 `node scripts/bump-assets.mjs` 를 실행합니다. `index.html` 의 CSS·JS·커버 사진 주소와 `config.js` 의 배경음악 주소에 붙은 `?v=` 해시를 갱신합니다. GitHub Pages 의 10분 캐시 때문에, 이걸 빼먹으면 사용자가 새로고침해도 예전 CSS·JS 가 보입니다(실제로 겪음).
+- 커밋 전에 항상 `node scripts/bump-assets.mjs` 를 실행합니다. `index.html` 의 CSS·JS·커버 사진·OG 사진 주소와 `config.js` 의 배경음악 주소에 붙은 `?v=` 해시를 갱신합니다. GitHub Pages 의 10분 캐시 때문에, 이걸 빼먹으면 사용자가 새로고침해도 예전 CSS·JS 가 보입니다(실제로 겪음).
 - 수정이 끝나고 검증되면 **바로 커밋하고 `master` 에 푸시**합니다. 사용자가 배포 주소를 폰(사파리·카카오톡)으로 열어 직접 테스트하기 때문입니다. 푸시 후 GitHub Pages 반영까지 확인합니다.
 - 커밋 작성자는 저장소 로컬 설정(김담영)을 따릅니다.
 - 커밋 메시지는 한국어로 변경 요약을 씁니다.

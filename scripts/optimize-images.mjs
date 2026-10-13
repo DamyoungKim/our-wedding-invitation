@@ -24,20 +24,30 @@ const kb = async (p) => Math.round((await stat(p)).size / 1024);
 const src = (f) => path.join(SRC_DIR, f);
 const out = (f) => path.join(OUT_DIR, f);
 
-// 커버: 첫 사진(사용자 미지정 시 임시), 가로 최대 1200px, q80, 목표 <300KB
+// 커버: 첫 사진, 가로 최대 1600px(폰 화면 높이 전체를 채우므로 3배율 폰 기준), q80, 목표 <300KB
 const coverSrc = files[0];
 await sharp(src(coverSrc))
   .rotate() // EXIF 방향 반영
-  .resize({ width: 1200, withoutEnlargement: true })
+  .resize({ width: 1600, withoutEnlargement: true })
   .jpeg({ quality: 80, mozjpeg: true })
   .toFile(out('cover.jpg'));
 
-// OG: 1200x630, attention 크롭(피사체 중심), q80, 목표 <300KB
-await sharp(src(coverSrc))
-  .rotate()
-  .resize(1200, 630, { fit: 'cover', position: sharp.strategy.attention })
-  .jpeg({ quality: 80, mozjpeg: true })
-  .toFile(out('og-image.jpg'));
+// OG(카카오톡 등 링크 미리보기): 1200x630, q80, 목표 <300KB
+// 세로 사진은 자동(attention) 크롭이 두 사람 대신 계단 같은 배경을 고를 때가 있어서, 자를 영역을
+// 사진 비율(0~1, 왼쪽·위·폭 — 높이는 1200:630 비율로 정해짐)로 직접 지정. 커버 사진을 바꾸면 다시 맞추거나 null(자동).
+const OG_CROP = { left: 0.245, top: 0.43, width: 0.75 }; // 01-cover.jpg: 두 사람 얼굴이 가운데 — 카톡이 정사각형 등으로 가운데를 잘라도 얼굴이 남게
+const og = sharp(src(coverSrc)).rotate();
+if (OG_CROP) {
+  const { width, height, orientation } = await sharp(src(coverSrc)).metadata();
+  const w = orientation >= 5 ? height : width;
+  const h = orientation >= 5 ? width : height;
+  const cw = Math.round(w * OG_CROP.width);
+  og.extract({ left: Math.round(w * OG_CROP.left), top: Math.round(h * OG_CROP.top), width: cw, height: Math.round(cw * 630 / 1200) })
+    .resize(1200, 630);
+} else {
+  og.resize(1200, 630, { fit: 'cover', position: sharp.strategy.attention });
+}
+await og.jpeg({ quality: 80, mozjpeg: true }).toFile(out('og-image.jpg'));
 
 // 갤러리: 나머지 사진들(최대 5장), 긴 변 1080px, q78, 각 <250KB
 const galleryFiles = files.slice(1, 6);

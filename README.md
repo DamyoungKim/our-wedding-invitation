@@ -16,16 +16,16 @@ css/style.css           # 스타일 (모바일 우선, 라이트 고정) + 스�
 css/fonts.css           # Noto Serif KR + Pretendard 셀프호스팅 (scripts/fetch-fonts.mjs 가 생성)
 js/config.js            # ★ 본문 값 전부 여기서 수정 (이름/연락처/계좌/인사말/교통 등)
 js/main.js              # 인터랙션 (수정 불필요)
-assets/img/             # cover.jpg(커버 — 웨딩 촬영본 전 임시 종이 커버) — 아래 "사진 바꾸기" 참고
+assets/img/             # cover.jpg(커버 웨딩 사진), og-image.jpg(카톡 미리보기) — 아래 "사진 바꾸기" 참고
 assets/fonts/           # Noto Serif KR·Pretendard 슬라이스 + Yellowtail(영문 스크립트) 라틴 서브셋
 assets/audio/           # BGM 음원 (bgm.mp3)
 scripts/optimize-images.mjs  # 일회성 이미지 최적화 스크립트 (배포와 무관)
 scripts/fetch-fonts.mjs      # 일회성 본문 폰트(Noto Serif KR·Pretendard) 다운로드 스크립트 (배포와 무관)
 scripts/make-handwriting.mjs # 커버 손글씨 문구 SVG 생성 스크립트 (배포와 무관)
-scripts/make-cover-art.mjs   # 임시 종이 커버(아이보리 + 올리브 가지) 생성 (배포와 무관)
+scripts/make-cover-art.mjs   # 예전 임시 종이 커버(아이보리 + 올리브 가지) 생성 — 실행하면 커버 사진을 덮어씀
 scripts/prepare-bgm.mjs      # 받은 배경음악 mp3 손질(무음 정리·용량 축소) → bgm.mp3 (배포와 무관)
-scripts/bump-assets.mjs      # index.html 의 CSS·JS·커버 사진 주소에 ?v=해시 갱신 (커밋 전 실행)
-image/                  # 원본 사진 (git 제외)
+scripts/bump-assets.mjs      # index.html 의 CSS·JS·커버·OG 사진 주소에 ?v=해시 갱신 (커밋 전 실행)
+image/                  # 원본 사진 (git 제외) — 01-cover.jpg = 커버 원본
 .claude/rules/design.md # 디자인·구현 규칙 (폰트/색/스크롤 — Claude Code 가 자동으로 읽음)
 ```
 
@@ -49,7 +49,7 @@ image/                  # 원본 사진 (git 제외)
 ### 2) SNS 공유 미리보기(OG) — `index.html <head>`
 카카오톡 등 크롤러는 JS를 실행하지 않으므로 **config.js가 아닌 index.html에서 직접** 수정합니다.
 `og:title` / `og:description` / `og:url`이 배포 주소 기준 **절대 URL**로 채워져 있습니다.
-`og:image`는 현재 주석 처리돼 있습니다 — 켜는 방법은 아래 "사진 바꾸기" 참고.
+`og:image`는 커버 사진에서 두 사람 얼굴 쪽을 1200×630 으로 자른 `assets/img/og-image.jpg` 입니다(아래 "사진 바꾸기").
 
 ### 3) 배경음악(BGM)
 1. **⚠ 저작권 필수**: public 저장소이므로 **로열티프리/자작/정식 라이선스 음원만** 사용하세요.
@@ -109,8 +109,8 @@ node scripts/make-handwriting.mjs "We're getting|married" "Pinyon Script"
 
 ## 사진 바꾸기
 
-**커버는 웨딩 촬영본 도착 전 임시 종이 커버**(아이보리 종이 + 올리브 가지, 버건디 손글씨·이중 테두리)입니다. `node scripts/make-cover-art.mjs` 가
-그려서 `assets/img/cover.jpg` 를 만듭니다. 갤러리·OG 공유 이미지는 아직 꺼져 있습니다.
+**커버는 웨딩 사진**(원본 `image/01-cover.jpg`)이고, 카톡 미리보기(OG) 사진도 같은 사진에서 잘라 씁니다. 갤러리는 아직 꺼져 있습니다.
+(촬영 전에 쓰던 임시 종이 커버는 `node scripts/make-cover-art.mjs` + `cover--paper` 클래스로 되돌릴 수 있습니다.)
 
 1. 원본 사진을 이 저장소 바로 아래 `image/` 폴더에 넣습니다 (git 제외 폴더, 없으면 새로 만드세요).
    파일명 정렬 순서가 그대로 매핑되니(예: `01.jpg`, `02.jpg`, …) 커버로 쓸 사진을 맨 앞 순번으로 두세요.
@@ -122,9 +122,10 @@ node scripts/make-handwriting.mjs "We're getting|married" "Pinyon Script"
    (사진이 5장보다 적어도 되고, 6장을 초과하면 앞 5장만 갤러리로 씁니다. 매핑 규칙은
    `scripts/optimize-images.mjs` 상단 주석 참고.) 커버는 `cover.jpg` 만 바뀌면 되고, 커밋 전에 `npm run bump` 를 실행하세요(아래 "배포").
    세로 사진 권장 — 첫 화면에 꽉 차게 잘리고, 손글씨가 사진 아래쪽에 올라갑니다.
-   사진으로 바꿀 때는 `index.html` 의 `<section class="cover cover--paper">` 에서 `cover--paper` 를 지우세요
-   (버건디 손글씨·테두리 → 사진용 흰 손글씨·아래 그림자로 바뀝니다).
-3. 갤러리·OG를 켜려면 `index.html`을 아래와 같이 고칩니다.
+   커버 사진을 바꾸면 두 군데를 사진에 맞춰 다시 정하세요:
+   - `css/style.css` 의 `.cover-photo img { object-position }` — 폰에선 사진 좌우가 잘리므로 두 사람이 화면 가운데 오게
+   - `scripts/optimize-images.mjs` 의 `OG_CROP` — 카톡 미리보기에서 두 얼굴이 가운데 오게 (자동 크롭은 계단 같은 배경을 고르기도 함)
+3. 갤러리를 켜려면 `index.html`을 아래와 같이 고칩니다.
    - **갤러리**: "갤러리 섹션 — 웨딩 촬영본 도착 전까지 비활성화" 주석을 아래 블록으로 교체합니다
      (스타일·라이트박스는 이미 준비돼 있어 이 마크업만 넣으면 바로 동작합니다):
      ```html
@@ -140,10 +141,6 @@ node scripts/make-handwriting.mjs "We're getting|married" "Pinyon Script"
        </div>
      </section>
      ```
-   - **OG 공유 이미지**: `<head>`의 주석 처리된 두 줄을 되돌립니다 —
-     `<meta property="og:image" content="https://damyoungkim.github.io/our-wedding-invitation/assets/img/og-image.jpg">`
-     주석을 풀고, `<meta name="twitter:card" content="summary">`를
-     `<meta name="twitter:card" content="summary_large_image">`로 바꿉니다(바로 위 주석 처리된 줄).
 4. 헷갈리면 저에게 사진만 전달해 주셔도 위 과정을 대신 해드릴게요.
 
 ## 로컬 미리보기
@@ -160,7 +157,7 @@ https(배포 후)에서 최종 확인하세요.
 `git push origin master` 만으로 반영되며, 캐시 때문에 1~2분 뒤 새로고침해서 확인하세요.
 
 **커밋 전에 `npm run bump`** — GitHub Pages 는 파일마다 10분 캐시(`max-age=600`)라, 그냥 두면
-새로고침해도 브라우저가 예전 CSS·JS 를 씁니다. 이 스크립트가 `index.html` 의 CSS·JS·커버 사진 주소와
+새로고침해도 브라우저가 예전 CSS·JS 를 씁니다. 이 스크립트가 `index.html` 의 CSS·JS·커버·OG 사진 주소와
 `config.js` 의 배경음악 주소 뒤 `?v=` 를 파일 내용 해시로 바꿔서, 바뀐 파일만 바로 새로 받게 합니다.
 
 배포 후 [카카오 공유 디버거](https://developers.kakao.com/tool/debugger/sharing)에서
@@ -178,5 +175,6 @@ https(배포 후)에서 최종 확인하세요.
 - [ ] 계좌번호 (`accounts.*`의 `bank`/`number`)
 - [ ] 신부 아버지 고인(故) 표시가 맞는지 확인 (`bride.father.deceased`)
 - [x] 카카오맵 JavaScript 키
-- [ ] **웨딩 촬영본 도착 후 사진 교체** (커버 임시 그림 교체 + 갤러리/OG 켜기 — 위 "사진 바꾸기" 참고)
+- [x] 커버 사진 교체 + 카톡 미리보기(OG) 사진 켜기
+- [ ] 갤러리 사진 넣기 (위 "사진 바꾸기" 3번)
 - [ ] 배포 후 카카오톡/네이버 앱/인스타그램 인앱 브라우저에서 실기기 확인

@@ -16,18 +16,19 @@
   <meta property="og:type" content="website">
   <meta property="og:title" content="김담영 ♥ 박승혜, 결혼합니다">
   <meta property="og:description" content="2026년 12월 12일 토요일 오후 12시 30분 · 더채플 앳 청담 커티지홀 (3층)">
-  <!-- ⚠ 임시: 웨딩 촬영본 도착 전까지 OG 이미지 비활성화(파일 없음 → 깨진 미리보기 방지).
-       사진 준비되면 README.md "사진 바꾸기" 참고해 아래 두 줄을 되돌리세요. -->
-  <!-- <meta property="og:image" content="https://damyoungkim.github.io/our-wedding-invitation/assets/img/og-image.jpg"> -->
+  <!-- 미리보기 사진: 커버 사진에서 두 사람 쪽을 1200×630 으로 자른 것(scripts/optimize-images.mjs 의 OG_CROP).
+       ?v= 는 bump-assets.mjs 가 갱신. 카카오톡은 미리보기를 캐시하므로 사진을 바꾼 뒤엔 카카오 공유 디버거에서 캐시 초기화 -->
+  <meta property="og:image" content="https://damyoungkim.github.io/our-wedding-invitation/assets/img/og-image.jpg?v=8404241c">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
   <meta property="og:url" content="https://damyoungkim.github.io/our-wedding-invitation/">
-  <!-- <meta name="twitter:card" content="summary_large_image"> -->
-  <meta name="twitter:card" content="summary">
+  <meta name="twitter:card" content="summary_large_image">
 
   <!-- 커버 이미지 LCP 우선 로드 -->
-  <link rel="preload" as="image" href="./assets/img/cover.jpg?v=15879228" fetchpriority="high">
+  <link rel="preload" as="image" href="./assets/img/cover.jpg?v=fd5cbed9" fetchpriority="high">
   <!-- 명조(Noto Serif KR)·Pretendard 셀프호스팅 — unicode-range 슬라이스라 쓰인 글자 조각만 다운로드됨 -->
   <link rel="stylesheet" href="./css/fonts.css?v=a97819ea">
-  <link rel="stylesheet" href="./css/style.css?v=07d7a3cc">
+  <link rel="stylesheet" href="./css/style.css?v=56e7a40a">
 
   <!-- - html에 .js 부여: 리빌/손글씨 애니메이션은 .js 하위에서만 동작 (no-JS fail-open)
        - 새로고침해도 항상 맨 위(커버)부터 — 손글씨가 써지는 동안 스크롤을 잠그므로, 중간 위치로
@@ -102,10 +103,10 @@
 
     <!-- 1. 커버 — 첫 화면 가득 사진 + 손글씨 문구(열리면 한 글자씩 써짐, js/main.js initHandwriting),
          그 아래 종이 청첩장 표지 구성(영문 성함 / 문구 / 일시 / 장소).
-         ⚠ 지금은 웨딩 촬영본 도착 전 임시 종이 커버(아이보리 + 올리브 가지, scripts/make-cover-art.mjs · cover--paper) — 교체 방법은 README.md "사진 바꾸기" 참고 -->
-    <section class="cover cover--paper" id="cover">
+         사진 교체 방법은 README.md "사진 바꾸기" 참고 -->
+    <section class="cover" id="cover">
       <div class="cover-photo">
-        <img id="cover-img" src="./assets/img/cover.jpg?v=15879228" alt="아이보리 종이 위 올리브 가지 장식"
+        <img id="cover-img" src="./assets/img/cover.jpg?v=fd5cbed9" alt="나무 계단에서 위를 올려다보는 신랑 신부"
              fetchpriority="high" decoding="async">
         <div class="cover-script">
         <!-- HANDWRITING:START "We're getting / married" · Pinyon Script (OFL) — scripts/make-handwriting.mjs 로 생성, 직접 수정 금지 -->
