@@ -174,10 +174,15 @@
       setTimeout(finish, t + 600 + 100);
     }
 
-    // 사진이 뜬 뒤에 쓰기 시작(빈 화면 위에서 써지지 않게) — 캐시·오류 포함, 최대 1.5s 대기
+    // 사진이 뜬 뒤에 쓰기 시작(빈 화면 위에서 써지지 않게) — 캐시·오류 포함, 최대 1.5s 대기.
+    // 카카오톡은 사진 크기가 정해질 때까지 사진을 숨기므로(head 스크립트 cover-settling) 그 뒤에 시작
     var img = doc.getElementById('cover-img');
     var started = false;
-    function start() { if (!started) { started = true; setTimeout(write, 300); } }
+    function afterSettled(fn) {
+      if (!root.classList.contains('cover-settling')) return fn();
+      doc.addEventListener('coversettled', fn);
+    }
+    function start() { if (!started) { started = true; afterSettled(function () { setTimeout(write, 300); }); } }
     if (!img || img.complete) start();
     else {
       img.addEventListener('load', start);

@@ -28,7 +28,7 @@
   <link rel="preload" as="image" href="./assets/img/cover.jpg?v=fd5cbed9" fetchpriority="high">
   <!-- 명조(Noto Serif KR)·Pretendard 셀프호스팅 — unicode-range 슬라이스라 쓰인 글자 조각만 다운로드됨 -->
   <link rel="stylesheet" href="./css/fonts.css?v=a97819ea">
-  <link rel="stylesheet" href="./css/style.css?v=00f128a0">
+  <link rel="stylesheet" href="./css/style.css?v=c2405ebf">
 
   <!-- - html에 .js 부여: 리빌/손글씨 애니메이션은 .js 하위에서만 동작 (no-JS fail-open)
        - 새로고침해도 항상 맨 위(커버)부터 — 손글씨가 써지는 동안 스크롤을 잠그므로, 중간 위치로
@@ -43,7 +43,7 @@
          사진 밑단이 흰 난간이라 이어져 보임(사용자 수용). PC(마우스)는 max(창 높이, 100vh).
        - 손글씨 위치(--view-h) = 보이는 높이. 글씨는 보이는 영역 위에서 17%(style.css .cover-script).
        - 맨 위에서 보이는 높이가 줄면 두 값 모두 줄임 — 카카오톡 인앱은 페이지가 뜬 뒤 하단 툴바가 나타남.
-         줄이기만 하므로 이후 툴바 토글에도 다시 바뀌지 않음. -->
+         줄이기만 하므로 이후 툴바 토글에도 다시 바뀌지 않음. 카카오톡에선 그동안 사진을 숨김(cover-settling). -->
   <script>
     (function () {
       var de = document.documentElement;
@@ -80,10 +80,31 @@
         return { w: w, view: h, cover: cover };
       }
       var cur = null, log = window.__coverLog = []; // ?debug 로 열면 main.js 가 화면에 표시
+      function now() { return Math.round(performance.now()); }
       function set(name, px) { de.style.setProperty(name, px + 'px'); }
+
+      // 카카오톡 인앱은 페이지가 다 뜬(load) 뒤 하단 툴바가 나타나 보이는 높이가 줄고, 사진도 그 높이에
+      // 맞춰 줄어듦 → 사진이 커졌다가 작아지는 게 보임(사용자 확인). 그래서 카카오톡에선 높이가 정해질
+      // 때까지 사진을 숨겼다가(cover-settling) 최종 크기로 서서히 보여줌. load 뒤 높이가 줄면 0.25s 잠잠할
+      // 때, 안 줄면 load 0.8s 뒤, 어떤 경우든 4s 뒤엔 보임. main.js 손글씨는 'coversettled' 뒤에 시작
+      var settling = phone && /KAKAOTALK/i.test(navigator.userAgent), loaded = false, settleTimer = 0;
+      function settle() {
+        if (!settling) return;
+        settling = false;
+        de.classList.remove('cover-settling');
+        log.push([now(), 'settled']);
+        try { document.dispatchEvent(new Event('coversettled')); } catch (e) {}
+      }
+      function settleIn(ms) { clearTimeout(settleTimer); settleTimer = setTimeout(settle, ms); }
+      if (settling) {
+        de.className += ' cover-settling';
+        window.addEventListener('load', function () { loaded = true; log.push([now(), 'load']); settleIn(800); });
+        setTimeout(settle, 4000);
+      }
+
       function fixCoverH(e) {
         var m = measure();
-        log.push([Math.round(performance.now()), e ? e.type : 'head', window.innerWidth, window.innerHeight,
+        log.push([now(), e ? e.type : 'head', window.innerWidth, window.innerHeight,
                   m ? m.cover : '-', m ? m.view : '-']);
         if (!m) return;
         if (!cur || m.w !== cur.w) {
@@ -91,6 +112,7 @@
         } else if (m.view < cur.view && window.scrollY <= 0) {
           cur.view = m.view; set('--view-h', m.view);
           if (m.cover < cur.cover) { cur.cover = m.cover; set('--cover-h', m.cover); }
+          if (settling && loaded) settleIn(250);
         }
       }
       fixCoverH();
@@ -334,6 +356,6 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="./js/config.js?v=f92bb79b"></script>
-  <script src="./js/main.js?v=6080ce91"></script>
+  <script src="./js/main.js?v=d16a25fc"></script>
 </body>
 </html>
