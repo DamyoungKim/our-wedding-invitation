@@ -50,6 +50,24 @@
       note();
       window.addEventListener('resize', note);
       window.addEventListener('load', note);
+      // ?debug: 첫 4초 동안 16ms 마다 커버 크기를 재서 바뀔 때만 기록 — 카카오톡에서 처음 다른 모양으로
+      // 그려졌다 바뀌는 원인 확인용. 페이지가 새로 열렸는지(navigate)·재사용(back_forward/bfcache)인지도 기록
+      if (/[?&]debug\b/.test(location.search)) {
+        var last = '', t0 = performance.now();
+        (function frame() {
+          var p = document.querySelector('.cover-photo'), img = document.getElementById('cover-img');
+          if (p && img) {
+            var cs = getComputedStyle(p);
+            var s = p.offsetWidth + 'x' + p.offsetHeight + ' img' + img.offsetWidth + 'x' + img.offsetHeight +
+              ' ar=' + cs.aspectRatio + ' w' + window.innerWidth + ' css=' + document.styleSheets.length +
+              (de.classList.contains('in-kakao-ios') ? ' kk' : '');
+            if (s !== last) { last = s; log.push([Math.round(performance.now()), 'frame', s]); }
+          }
+          if (performance.now() - t0 < 4000) setTimeout(frame, 16);   // rAF 는 가려진 창에서 멈춰서 타이머로
+        })();
+        try { var nav = performance.getEntriesByType('navigation')[0]; log.push([0, 'nav', nav ? nav.type : '?']); } catch (e) {}
+        window.addEventListener('pageshow', function (e) { log.push([Math.round(performance.now()), 'pageshow', e.persisted ? 'bfcache' : 'fresh']); });
+      }
     })();
   </script>
 </head>
@@ -291,6 +309,6 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="./js/config.js?v=f92bb79b"></script>
-  <script src="./js/main.js?v=799eef2e"></script>
+  <script src="./js/main.js?v=188c67af"></script>
 </body>
 </html>

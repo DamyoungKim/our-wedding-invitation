@@ -768,7 +768,7 @@
         '\ncss ' + ver('link[href*="style.css"]') + ' js ' + ver('script[src*="main.js"]') +
         ' ratio ' + (photo ? (photo.offsetHeight / photo.offsetWidth).toFixed(2) : '-') + (root.classList.contains('in-kakao-ios') ? ' kakao-ios' : '') +
         '\nms event w h\n' +
-        (window.__coverLog || []).slice(-12).map(function (r) { return r.join(' '); }).join('\n');
+        (window.__coverLog || []).slice(-30).map(function (r) { return r.join(' '); }).join('\n');
     }
     render();
     setInterval(render, 300);
