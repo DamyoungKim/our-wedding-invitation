@@ -28,7 +28,7 @@
   <link rel="preload" as="image" href="./assets/img/cover.jpg?v=fd5cbed9" fetchpriority="high">
   <!-- 명조(Noto Serif KR)·Pretendard 셀프호스팅 — unicode-range 슬라이스라 쓰인 글자 조각만 다운로드됨 -->
   <link rel="stylesheet" href="./css/fonts.css?v=a97819ea">
-  <link rel="stylesheet" href="./css/style.css?v=238745e6">
+  <link rel="stylesheet" href="./css/style.css?v=a695e5c3">
 
   <!-- - html에 .js 부여: 리빌/손글씨 애니메이션은 .js 하위에서만 동작 (no-JS fail-open)
        - 새로고침해도 항상 맨 위(커버)부터 — 손글씨가 써지는 동안 스크롤을 잠그므로, 중간 위치로
@@ -157,9 +157,18 @@
       </div>
     </section>
 
-    <!-- 갤러리 섹션 — 웨딩 촬영본 도착 전까지 비활성화.
-         사진이 준비되면 README.md "사진 바꾸기" 참고해 복원하세요
-         (css/style.css 의 .gallery 스타일과 js/main.js 의 라이트박스 초기화는 그대로 남아 있습니다). -->
+    <!-- 갤러리 — 3열 정사각 썸네일, 탭하면 라이트박스. 사진은 scripts/optimize-images.mjs 가 만든 gallery-NN.jpg.
+         9장을 넘으면 JS 가 나머지를 접고 "더보기" 버튼을 보여 줌(JS 꺼짐이면 전부 보임) -->
+    <section class="section gallery-section reveal">
+      <p class="eyebrow">Gallery</p>
+      <h2 class="section-title">우리의 순간들</h2>
+      <div class="gallery" id="gallery">
+        <button type="button" class="gallery-item"><img src="./assets/img/gallery-01.jpg" alt="웨딩 사진 1" loading="lazy" decoding="async"></button>
+        <button type="button" class="gallery-item"><img src="./assets/img/gallery-02.jpg" alt="웨딩 사진 2" loading="lazy" decoding="async"></button>
+        <button type="button" class="gallery-item"><img src="./assets/img/gallery-03.jpg" alt="웨딩 사진 3" loading="lazy" decoding="async"></button>
+      </div>
+      <button type="button" class="gallery-more" id="gallery-more" aria-expanded="false" hidden>더보기</button>
+    </section>
 
     <!-- 3. 캘린더 + D-day (2026년 12월, 정적 마크업 — JS 없이도 표시) -->
     <section class="section calendar-section reveal">
@@ -320,6 +329,6 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="./js/config.js?v=f92bb79b"></script>
-  <script src="./js/main.js?v=d7b792f0"></script>
+  <script src="./js/main.js?v=0cffb45f"></script>
 </body>
 </html>

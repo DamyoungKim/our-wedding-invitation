@@ -1,6 +1,6 @@
 // 일회성 이미지 최적화 스크립트 (배포 산출물과 무관)
 // 원본: image/*.jpg (git 제외) → 산출물: assets/img/*.jpg
-// 매핑 규칙(계획 M8): 정렬순 첫 사진 = cover + og, 나머지 5장 = gallery-01..05
+// 매핑 규칙: 정렬순 첫 사진 = cover + og, 나머지 = gallery-01, 02, …
 // 실행: npm run optimize
 import sharp from 'sharp';
 import { readdir, mkdir, stat, readFile, writeFile } from 'node:fs/promises';
@@ -67,16 +67,16 @@ if (OG_CROP) {
 }
 await og.jpeg({ quality: 80, mozjpeg: true }).toFile(out('og-image.jpg'));
 
-// 갤러리: 나머지 사진들(최대 5장), 긴 변 1080px, q78, 각 <250KB
-const galleryFiles = files.slice(1, 6);
+// 갤러리: 나머지 사진 전부(index.html #gallery 에 같은 개수만큼 마크업), 긴 변 1440px(라이트박스에서 크게 봄), q78, 각 <350KB
+const galleryFiles = files.slice(1);
 for (let i = 0; i < galleryFiles.length; i++) {
   const name = `gallery-${String(i + 1).padStart(2, '0')}.jpg`;
   const img = sharp(src(galleryFiles[i])).rotate();
   const meta = await img.metadata();
   const resize =
     (meta.width ?? 0) >= (meta.height ?? 0)
-      ? { width: 1080, withoutEnlargement: true }
-      : { height: 1080, withoutEnlargement: true };
+      ? { width: 1440, withoutEnlargement: true }
+      : { height: 1440, withoutEnlargement: true };
   await img.resize(resize).jpeg({ quality: 78, mozjpeg: true }).toFile(out(name));
 }
 

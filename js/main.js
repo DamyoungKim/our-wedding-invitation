@@ -449,6 +449,19 @@
   /* ============================================================
    * 7. 갤러리 라이트박스 — 이전/다음/스와이프/ESC/배경 닫기
    * ============================================================ */
+  (function initGalleryMore() {
+    var grid = doc.getElementById('gallery');
+    var more = doc.getElementById('gallery-more');
+    if (!grid || !more || grid.children.length <= 9) return;
+    grid.classList.add('is-collapsed');
+    more.hidden = false;
+    more.addEventListener('click', function () {
+      grid.classList.remove('is-collapsed');
+      more.hidden = true;
+      more.setAttribute('aria-expanded', 'true');
+    });
+  })();
+
   (function initLightbox() {
     var items = $$('#gallery .gallery-item img');
     var lb = doc.getElementById('lightbox');
