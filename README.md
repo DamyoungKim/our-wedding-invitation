@@ -109,7 +109,7 @@ node scripts/make-handwriting.mjs "We're getting|married" "Pinyon Script"
 
 ## 사진 바꾸기
 
-**커버는 웨딩 사진**(원본 `image/01-cover.jpg`)이고, 카톡 미리보기(OG) 사진도 같은 사진에서 잘라 씁니다. 갤러리는 아직 꺼져 있습니다.
+**커버는 웨딩 사진**(원본 `image/01-cover.jpg`)이고, 카톡 미리보기(OG) 사진도 같은 사진에서 잘라 씁니다. 갤러리는 나머지 사진(`gallery-01.jpg`, …)을 3열 정사각 썸네일로 보여 주고, 탭하면 크게 봅니다.
 (촬영 전에 쓰던 임시 종이 커버는 `node scripts/make-cover-art.mjs` + `cover--paper` 클래스로 되돌릴 수 있습니다.)
 
 1. 원본 사진을 이 저장소 바로 아래 `image/` 폴더에 넣습니다 (git 제외 폴더, 없으면 새로 만드세요).
@@ -119,29 +119,14 @@ node scripts/make-handwriting.mjs "We're getting|married" "Pinyon Script"
    npm install
    node scripts/optimize-images.mjs
    ```
-   (사진이 5장보다 적어도 되고, 6장을 초과하면 앞 5장만 갤러리로 씁니다. 매핑 규칙은
-   `scripts/optimize-images.mjs` 상단 주석 참고.) 커버는 `cover.jpg` 와 `css/style.css` 의 축소본 바탕(사진이 받아지기 전 잠깐 보이는 흐린 그림)이 같이 바뀝니다. 커밋 전에 `npm run bump` 를 실행하세요(아래 "배포").
+   (커버 다음 사진들이 전부 갤러리가 됩니다. 매핑 규칙은 `scripts/optimize-images.mjs` 상단 주석 참고.) 커버는 `cover.jpg` 와 `css/style.css` 의 축소본 바탕(사진이 받아지기 전 잠깐 보이는 흐린 그림)이 같이 바뀝니다. 커밋 전에 `npm run bump` 를 실행하세요(아래 "배포").
    세로 사진 권장 — 첫 화면(폰 화면 비율)에 꽉 차게 왼쪽이 잘리고, 손글씨가 사진 위쪽에 올라갑니다. 바탕 축소본과 `<img>` 크기 속성은 스크립트가 자동으로 맞춥니다.
    커버 사진을 바꾸면 세 군데를 사진 구도에 맞춰 다시 정하세요:
    - `css/style.css` 의 `.cover-photo img { object-position }` — 폰에선 좌우가 잘리므로 인물이 가운데 오게 (지금 right)
    - `css/style.css` 의 `.cover-script { top }` — 손글씨가 사진의 빈 자리에 오게 (지금 17%, 위쪽 계단)
    - `scripts/optimize-images.mjs` 의 `OG_CROP` — 카톡 미리보기에서 두 얼굴이 가운데 오게 (자동 크롭은 계단 같은 배경을 고르기도 함)
-3. 갤러리를 켜려면 `index.html`을 아래와 같이 고칩니다.
-   - **갤러리**: "갤러리 섹션 — 웨딩 촬영본 도착 전까지 비활성화" 주석을 아래 블록으로 교체합니다
-     (스타일·라이트박스는 이미 준비돼 있어 이 마크업만 넣으면 바로 동작합니다):
-     ```html
-     <section class="section gallery-section reveal">
-       <p class="eyebrow">Gallery</p>
-       <h2 class="section-title">우리의 순간들</h2>
-       <div class="gallery" id="gallery">
-         <button type="button" class="gallery-item"><img src="./assets/img/gallery-01.jpg" alt="웨딩 사진 1" loading="lazy" decoding="async"></button>
-         <button type="button" class="gallery-item"><img src="./assets/img/gallery-02.jpg" alt="웨딩 사진 2" loading="lazy" decoding="async"></button>
-         <button type="button" class="gallery-item"><img src="./assets/img/gallery-03.jpg" alt="웨딩 사진 3" loading="lazy" decoding="async"></button>
-         <button type="button" class="gallery-item"><img src="./assets/img/gallery-04.jpg" alt="웨딩 사진 4" loading="lazy" decoding="async"></button>
-         <button type="button" class="gallery-item"><img src="./assets/img/gallery-05.jpg" alt="웨딩 사진 5" loading="lazy" decoding="async"></button>
-       </div>
-     </section>
-     ```
+3. 갤러리 사진 수가 바뀌면 `index.html` 의 `#gallery` 안 `<button class="gallery-item">` 줄을 같은 개수로 맞춥니다
+   (`gallery-01.jpg` 부터 순서대로). 9장을 넘으면 나머지는 "더보기" 버튼 뒤로 접힙니다.
 4. 헷갈리면 저에게 사진만 전달해 주셔도 위 과정을 대신 해드릴게요.
 
 ## 로컬 미리보기
@@ -177,5 +162,5 @@ https(배포 후)에서 최종 확인하세요.
 - [ ] 신부 아버지 고인(故) 표시가 맞는지 확인 (`bride.father.deceased`)
 - [x] 카카오맵 JavaScript 키
 - [x] 커버 사진 교체 + 카톡 미리보기(OG) 사진 켜기
-- [ ] 갤러리 사진 넣기 (위 "사진 바꾸기" 3번)
+- [x] 갤러리 사진 넣기 (2026-10-14, 3장)
 - [ ] 배포 후 카카오톡/네이버 앱/인스타그램 인앱 브라우저에서 실기기 확인

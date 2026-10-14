@@ -49,6 +49,7 @@
 - `assets/img/cover.jpg` 는 웨딩 사진입니다(원본 `image/01-cover.jpg` — 나무 계단 위 두 사람, 2026-10-13 사용자 제공). `node scripts/optimize-images.mjs` 로 커버(가로 1600px)와 카톡 미리보기 `og-image.jpg`(1200×630)를 같이 만듭니다.
   - 폰에선 사진 왼쪽(난간 쪽)이 잘리고(`object-position: right`) 두 사람이 가운데쯤 옵니다. 사진을 바꾸면 `object-position` 을 다시 맞춥니다.
   - 카톡 미리보기에는 두 사람 얼굴이 보여야 합니다(사용자 요청). 자동 크롭은 계단만 골라서, `optimize-images.mjs` 의 `OG_CROP` 으로 얼굴이 가운데 오게 직접 자릅니다. 카톡이 가운데를 정사각형으로 잘라도 얼굴이 남아야 합니다.
+  - 갤러리(`#gallery`)는 사용자 참고 시안대로 3열 정사각 썸네일, 카드 폭 끝까지, 간격 2px 입니다. 9장 초과분은 "더보기" 뒤로 접습니다(JS 꺼짐이면 전부 보임). 사진은 `image/` 의 커버 다음 파일들 → `gallery-NN.jpg`(긴 변 1440px). 사용자가 2026-10-14 웨딩 사진 3장을 넣으라고 해서 공개 저장소에 올렸습니다.
   - 촬영 전 임시 **종이 커버**(`scripts/make-cover-art.mjs` + `.cover--paper`)는 되돌릴 때만 씁니다. 그 스크립트는 `cover.jpg` 를 덮어씁니다. 종이 커버는 올리브 가지가 위쪽에 있어서 되돌리면 손글씨도 아래쪽으로 옮겨야 합니다.
 - 배경음악 `assets/audio/bgm.mp3` 는 Pixabay 「Christmas piano ~カノン~」(pianocafe_Kumi)입니다. Pixabay Content License 라서 무료이고 출처 표기가 필요 없습니다. 사용자가 "채플 앳 청담·연말·클래식" 분위기로 고르라고 해서 골랐습니다. 직접 합성한 오르골 곡은 사용자가 별로라고 해서 버렸습니다.
   - 다른 음원으로 바꿀 때도 출처 표기 없이 쓸 수 있는 것(Pixabay·퍼블릭 도메인)만 씁니다.
