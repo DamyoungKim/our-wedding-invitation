@@ -50,24 +50,35 @@
       note();
       window.addEventListener('resize', note);
       window.addEventListener('load', note);
-      // ?debug: 첫 4초 동안 16ms 마다 커버 크기를 재서 바뀔 때만 기록 — 카카오톡에서 처음 다른 모양으로
-      // 그려졌다 바뀌는 원인 확인용. 페이지가 새로 열렸는지(navigate)·재사용(back_forward/bfcache)인지도 기록
-      if (/[?&]debug\b/.test(location.search)) {
-        var last = '', t0 = performance.now();
-        (function frame() {
-          var p = document.querySelector('.cover-photo'), img = document.getElementById('cover-img');
-          if (p && img) {
-            var cs = getComputedStyle(p);
-            var s = p.offsetWidth + 'x' + p.offsetHeight + ' img' + img.offsetWidth + 'x' + img.offsetHeight +
-              ' ar=' + cs.aspectRatio + ' w' + window.innerWidth + ' css=' + document.styleSheets.length +
-              (de.classList.contains('in-kakao-ios') ? ' kk' : '');
-            if (s !== last) { last = s; log.push([Math.round(performance.now()), 'frame', s]); }
-          }
-          if (performance.now() - t0 < 4000) setTimeout(frame, 16);   // rAF 는 가려진 창에서 멈춰서 타이머로
-        })();
-        try { var nav = performance.getEntriesByType('navigation')[0]; log.push([0, 'nav', nav ? nav.type : '?']); } catch (e) {}
-        window.addEventListener('pageshow', function (e) { log.push([Math.round(performance.now()), 'pageshow', e.persisted ? 'bfcache' : 'fresh']); });
-      }
+      // 첫 4초 동안 커버 크기가 바뀔 때마다 조용히 기록(ResizeObserver — 강제로 재지 않아 화면에 영향 없음).
+      // 마지막 3번 연 기록을 localStorage 에 남기고, ?debug 로 열면 main.js 가 보여 줌. 카카오톡에서 처음엔
+      // 다른 모양이었다가 바뀐다는 제보 확인용(?debug 로 열 때만 재면 증상이 안 보였음, 2026-10-14)
+      try {
+        var run = [location.search || '-', new Date().toTimeString().slice(0, 8)], t0 = performance.now();
+        var put = function (x) { run.push(Math.round(performance.now() - t0) + ' ' + x); };
+        try { var nav = performance.getEntriesByType('navigation')[0]; put('nav ' + (nav ? nav.type : '?')); } catch (e) {}
+        put('win ' + innerWidth + 'x' + innerHeight + (de.className.indexOf('in-kakao-ios') > -1 ? ' kk' : ''));
+        var save = function () {
+          try { var all = JSON.parse(localStorage.getItem('coverRuns') || '[]'); all.push(run); localStorage.setItem('coverRuns', JSON.stringify(all.slice(-3))); } catch (e) {}
+        };
+        if (window.ResizeObserver) {
+          var ro = new ResizeObserver(function (es) {
+            es.forEach(function (en) { var r = en.contentRect; put((en.target.id || 'box') + ' ' + Math.round(r.width) + 'x' + Math.round(r.height)); });
+          });
+          document.addEventListener('DOMContentLoaded', function () {
+            var p = document.querySelector('.cover-photo'), img = document.getElementById('cover-img');
+            if (p) ro.observe(p); if (img) ro.observe(img);
+            put('dcl sheets=' + document.styleSheets.length);
+          });
+        }
+        window.addEventListener('resize', function () { put('win ' + innerWidth + 'x' + innerHeight); });
+        window.addEventListener('pageshow', function (e) { put('pageshow ' + (e.persisted ? 'bfcache' : 'fresh')); });
+        window.addEventListener('load', function () { put('load'); });
+        try { new PerformanceObserver(function (l) { l.getEntries().forEach(function (en) { run.push(Math.round(en.startTime - t0) + ' ' + en.name); }); }).observe({ type: 'paint', buffered: true }); } catch (e) {}
+        document.addEventListener('DOMContentLoaded', function () { put('hw=' + !!document.querySelector('#cover .hw') + ' main.js=' + !!document.querySelector('script[src*="main.js"]')); });
+        setTimeout(function () { if (ro) ro.disconnect(); save(); }, 4000);
+        window.__coverRun = run;
+      } catch (e) {}
     })();
   </script>
 </head>
@@ -309,6 +320,6 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="./js/config.js?v=f92bb79b"></script>
-  <script src="./js/main.js?v=188c67af"></script>
+  <script src="./js/main.js?v=d7b792f0"></script>
 </body>
 </html>

@@ -768,7 +768,11 @@
         '\ncss ' + ver('link[href*="style.css"]') + ' js ' + ver('script[src*="main.js"]') +
         ' ratio ' + (photo ? (photo.offsetHeight / photo.offsetWidth).toFixed(2) : '-') + (root.classList.contains('in-kakao-ios') ? ' kakao-ios' : '') +
         '\nms event w h\n' +
-        (window.__coverLog || []).slice(-30).map(function (r) { return r.join(' '); }).join('\n');
+        (window.__coverLog || []).slice(-8).map(function (r) { return r.join(' '); }).join('\n') +
+        // 지난번에 연 기록(index.html <head> 가 localStorage 에 남김) — ?debug 없이 열었을 때 크기 변화 확인용
+        '\n--- 지난 기록 ---\n' + (function () {
+          try { return JSON.parse(localStorage.getItem('coverRuns') || '[]').map(function (r) { return r.join(' | '); }).join('\n\n'); } catch (e) { return '-'; }
+        })();
     }
     render();
     setInterval(render, 300);
