@@ -29,7 +29,7 @@
 
   /* ============================================================
    * 1. BGM (rev.3-B / rev.4, 노트 5·6·7)
-   *    - 로드 시 자동재생 시도 없음(MJ2), preload="none" 유지
+   *    - 로드 시 자동재생을 먼저 시도하고, 브라우저가 막으면 첫 터치에서 재생(사용자 요청 2026-10-15)
    *    - 재생 트리거: pointerup/touchend/click/keydown {once:true} 만
    *      (scroll·touchstart 금지 — user activation 비보장)
    *    - 재무장(N1): play().catch() 안에서만 리스너 재등록
@@ -81,17 +81,22 @@
     }
     function tryAutoPlay() {
       if (!audio.paused) return; // 이중 트리거(pointerup + click 등) 무해화
-      var p = audio.play();
+      var p;
+      try { p = audio.play(); } catch (e) { arm(); return; }
       if (p && typeof p.then === 'function') {
         p.then(function () { setState(true); })
-         .catch(function () { arm(); }); // N1: 실패 시에만 재무장, 콘솔 에러 0
+         .catch(function () { // N1: 실패 시에만 재무장, 콘솔 에러 0
+           arm();
+           if (prefGet() !== 'off') btn.classList.add('is-hinting'); // "탭하여 음악" 펄스 힌트
+         });
       }
     }
 
-    var pref = prefGet(); // 'on' | 'off' | null(첫 방문)
-    if (pref == null) { // N2: 저장값이 "없는 첫 방문"일 때만 best-effort 자동재생 무장 + 힌트
-      arm();
-      btn.classList.add('is-hinting'); // "탭하여 음악" 펄스 힌트
+    // 사용자가 직접 끈 적이 없으면(첫 방문·재방문) 열리자마자 자동재생 시도.
+    // 소리 있는 자동재생은 브라우저가 막는 경우가 많아, 막히면 첫 터치에서 재생(arm).
+    if (prefGet() !== 'off') {
+      audio.preload = 'auto';
+      tryAutoPlay();
     }
 
     btn.addEventListener('click', function () {
