@@ -94,8 +94,8 @@ window.WEDDING_CONFIG = {
   accounts: {
     groom: [
       { label: '신랑', bank: '국민은행', number: '991502-01-127980', holder: '김담영' },
-      { label: '아버지', bank: '농협', number: '003-02-188830', holder: '김종근' }
-      // 필요 시 추가: { label: '어머니', bank: '은행명', number: '계좌번호', holder: '최연옥' }
+      { label: '아버지', bank: '농협', number: '003-02-188830', holder: '김종근' },
+      { label: '어머니', bank: '국민은행', number: '773-21-0251-271', holder: '최연옥' }
     ],
     bride: [
       { label: '신부', bank: '하나은행', number: '599-910407-22607', holder: '박승혜' },
