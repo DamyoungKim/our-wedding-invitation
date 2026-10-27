@@ -457,7 +457,14 @@
   (function initGalleryMore() {
     var grid = doc.getElementById('gallery');
     var more = doc.getElementById('gallery-more');
-    if (!grid || !more || grid.children.length <= 9) return;
+    if (!grid || !more) return;
+    // 3열 기준 4줄(12칸)까지 보이고 넘치는 사진만 접음 — 가로 사진(.is-wide)은 2칸으로 셈
+    var cells = 0, extra = 0;
+    Array.prototype.forEach.call(grid.children, function (item) {
+      cells += item.classList.contains('is-wide') ? 2 : 1;
+      if (cells > 12) { item.classList.add('is-extra'); extra++; }
+    });
+    if (!extra) return;
     grid.classList.add('is-collapsed');
     more.hidden = false;
     more.addEventListener('click', function () {

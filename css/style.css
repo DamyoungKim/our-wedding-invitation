@@ -379,8 +379,8 @@ html.in-kakao-ios .cover-photo { aspect-ratio: 9 / 16; }
 .gallery-item.is-wide { grid-column: span 2; }
 .gallery-item.is-wide img { aspect-ratio: 2 / 1; object-position: center; }
 .gallery-item:active img { transform: scale(1.03); }
-/* 9장 초과분은 "더보기" 전까지 접음 — JS 가 .is-collapsed 를 붙일 때만 */
-.gallery.is-collapsed .gallery-item:nth-child(n+10) { display: none; }
+/* 4줄(12칸) 초과분은 "더보기" 전까지 접음 — JS 가 넘치는 사진에 .is-extra, 그리드에 .is-collapsed 를 붙일 때만 */
+.gallery.is-collapsed .gallery-item.is-extra { display: none; }
 .gallery-more {
   display: inline-flex;
   align-items: center;
