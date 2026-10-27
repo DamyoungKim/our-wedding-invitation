@@ -532,6 +532,19 @@
       touchX = null;
       if (Math.abs(dx) > 40) show(current + (dx < 0 ? 1 : -1));
     }, { passive: true });
+    // 확대 금지(사용자 요청 2026-10-27) — CSS touch-action:none 이 1차, 여기는 iOS 사파리/구형 WebView 대비 2차.
+    // 두 손가락 touchstart 와 모든 touchmove 를 preventDefault 해 핀치 줌과 뒤 페이지 스크롤을 막는다
+    // (한 손가락 touchstart 는 막지 않음 — 막으면 버튼 click 이 안 생김). passive:false 필수.
+    function blockZoom(e) {
+      var multi = (e.touches && e.touches.length > 1) || (e.scale != null && e.scale !== 1);
+      if (multi) touchX = null; // 핀치 시도를 스와이프로 오판하지 않게
+      if (multi || e.type === 'touchmove') e.preventDefault();
+    }
+    lb.addEventListener('touchstart', blockZoom, { passive: false });
+    lb.addEventListener('touchmove', blockZoom, { passive: false });
+    ['gesturestart', 'gesturechange', 'gestureend'].forEach(function (t) { // iOS 전용 핀치 이벤트
+      lb.addEventListener(t, function (e) { e.preventDefault(); }, { passive: false });
+    });
   })();
 
   /* ============================================================
