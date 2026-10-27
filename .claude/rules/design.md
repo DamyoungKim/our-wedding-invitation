@@ -41,6 +41,7 @@
 - 첫 화면 손글씨가 써지는 동안에는 스크롤을 잠급니다(`html.is-locked`). 탭하면 건너뛰고, 7초 뒤에는 잠금이 무조건 풀립니다.
 - 스크롤 잠금(`overflow:hidden`)을 켜고 끌 때 PC 에서 스크롤바가 사라졌다 생기며 화면이 옆으로 튀지 않게, `html` 의 `scrollbar-gutter: stable` 을 유지합니다.
 - 모달 대신 인라인 아코디언(`<details class="fold">`)을 씁니다.
+- 갤러리 라이트박스(`#lightbox`)는 사진을 **화면에 꽉 채우고 확대는 막습니다**(사용자 요청 2026-10-27). `.lb-img` 는 `position:fixed; inset:0` 상자의 100%×100% 에 `object-fit: contain`(자르지 않고 가로 끝까지, 여백·둥근 모서리 없음, vh 미사용). 확대 금지는 `.lightbox { touch-action: none }` + `main.js` 의 두 손가락 touchstart·모든 touchmove·iOS `gesture*` preventDefault 로 이중 처리합니다(iOS 사파리는 touch-action 만으론 핀치를 못 막을 수 있음). 한 손가락 touchstart 는 막지 않습니다(막으면 버튼 click 이 안 생김).
 - 모션 줄이기(`prefers-reduced-motion`)와 JS 꺼짐 환경에서도 내용이 전부 보여야 합니다(점진적 향상).
 
 ## 콘텐츠
