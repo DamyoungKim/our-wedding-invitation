@@ -479,6 +479,7 @@
     var lb = doc.getElementById('lightbox');
     if (!lb || !items.length) return;
     var lbImg = doc.getElementById('lb-img');
+    var lbBg = doc.getElementById('lb-bg'); // 블러 배경(없어도 동작)
     var lbCounter = doc.getElementById('lb-counter');
     var current = 0;
     var lastFocus = null;
@@ -487,6 +488,7 @@
       current = (i + items.length) % items.length;
       lbImg.src = items[current].src;
       lbImg.alt = items[current].alt || '';
+      if (lbBg) lbBg.src = items[current].src; // 같은 파일이라 추가 다운로드 없음
       lbCounter.textContent = (current + 1) + ' / ' + items.length;
     }
     function open(i) {

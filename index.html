@@ -28,7 +28,7 @@
   <link rel="preload" as="image" href="./assets/img/cover.jpg?v=fd5cbed9" fetchpriority="high">
   <!-- 명조(Noto Serif KR)·Pretendard 셀프호스팅 — unicode-range 슬라이스라 쓰인 글자 조각만 다운로드됨 -->
   <link rel="stylesheet" href="./css/fonts.css?v=a97819ea">
-  <link rel="stylesheet" href="./css/style.css?v=1827707d">
+  <link rel="stylesheet" href="./css/style.css?v=5aae5d10">
 
   <!-- - html에 .js 부여: 리빌/손글씨 애니메이션은 .js 하위에서만 동작 (no-JS fail-open)
        - 새로고침해도 항상 맨 위(커버)부터 — 손글씨가 써지는 동안 스크롤을 잠그므로, 중간 위치로
@@ -326,6 +326,8 @@
   <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="사진 크게 보기" hidden>
     <button type="button" class="lb-close" id="lb-close" aria-label="닫기">&times;</button>
     <button type="button" class="lb-nav lb-prev" id="lb-prev" aria-label="이전 사진">&#8249;</button>
+    <!-- 블러 배경: 같은 사진을 흐리게 깔아 위아래 여백을 채움(사용자 선택 2026-10-28). 장식이라 보조기기에서 숨김 -->
+    <img class="lb-bg" id="lb-bg" alt="" aria-hidden="true" decoding="async">
     <img class="lb-img" id="lb-img" alt="">
     <button type="button" class="lb-nav lb-next" id="lb-next" aria-label="다음 사진">&#8250;</button>
     <p class="lb-counter" id="lb-counter"></p>
@@ -335,6 +337,6 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="./js/config.js?v=6ae19f60"></script>
-  <script src="./js/main.js?v=e5231a44"></script>
+  <script src="./js/main.js?v=f8573b17"></script>
 </body>
 </html>

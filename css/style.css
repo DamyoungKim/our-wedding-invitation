@@ -773,6 +773,7 @@ html.in-kakao-ios .cover-photo { aspect-ratio: 9 / 16; }
      iOS 사파리는 touch-action 만으로 부족할 수 있어 main.js 가 멀티터치·gesture 이벤트도 막는다. */
   touch-action: none;
   overscroll-behavior: contain;
+  overflow: hidden; /* 아래 .lb-bg 가 scale 로 화면 밖까지 커지므로 */
 }
 .lightbox[hidden] { display: none; }
 /* 사진은 화면에 꽉 차게(사용자 요청 2026-10-27): 자르지 않고(contain) 가로를 끝까지 채우고 세로는 비율대로.
@@ -781,6 +782,21 @@ html.in-kakao-ios .cover-photo { aspect-ratio: 9 / 16; }
   width: 100%;
   height: 100%;
   object-fit: contain;
+}
+/* 블러 배경(사용자 선택 2026-10-28, 비교 시안 B): 2:3 사진과 9:19.5 화면의 비율 차로 생기는 위아래 여백을
+   같은 사진을 흐리고 어둡게 깔아 채운다. 사진을 잘라 채우는 안(C)은 사진마다 잘리는 양이 달라 거절.
+   z-index:-1 — .lightbox(z-index:80) 스태킹 컨텍스트 안에서 배경색 위·.lb-img 와 버튼 아래.
+   scale(1.15) — 블러로 흐려지는 가장자리가 비치지 않게. 애니메이션 아님(정적 filter). */
+.lb-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(20px) brightness(0.5);
+  transform: scale(1.15);
+  pointer-events: none;
 }
 .lb-close, .lb-nav {
   position: absolute;
