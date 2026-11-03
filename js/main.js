@@ -467,10 +467,12 @@
     if (!extra) return;
     grid.classList.add('is-collapsed');
     more.hidden = false;
+    // 펼치면 버튼이 "접기"로 바뀜. 접을 때는 아래로 내려온 화면이 날짜 섹션 한가운데로 튀지 않게 갤러리 맨 위로 올려 줌
     more.addEventListener('click', function () {
-      grid.classList.remove('is-collapsed');
-      more.hidden = true;
-      more.setAttribute('aria-expanded', 'true');
+      var open = grid.classList.toggle('is-collapsed') === false;
+      more.textContent = open ? '접기' : '더보기';
+      more.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (!open) grid.parentNode.scrollIntoView({ block: 'start' });
     });
   })();
 
