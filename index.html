@@ -28,7 +28,7 @@
   <link rel="preload" as="image" href="./assets/img/cover.jpg?v=c08a367e" fetchpriority="high">
   <!-- 명조(Noto Serif KR)·Pretendard 셀프호스팅 — unicode-range 슬라이스라 쓰인 글자 조각만 다운로드됨 -->
   <link rel="stylesheet" href="./css/fonts.css?v=a97819ea">
-  <link rel="stylesheet" href="./css/style.css?v=d593597b">
+  <link rel="stylesheet" href="./css/style.css?v=b8597bea">
 
   <!-- - html에 .js 부여: 리빌/손글씨 애니메이션은 .js 하위에서만 동작 (no-JS fail-open)
        - 새로고침해도 항상 맨 위(커버)부터 — 손글씨가 써지는 동안 스크롤을 잠그므로, 중간 위치로
@@ -41,8 +41,8 @@
     (function () {
       var de = document.documentElement;
       de.className += ' js';
-      // 카카오톡 iOS 는 위아래 바가 커서 보이는 높이가 짧음 → 커버 상자를 16:9 로 (style.css .cover-photo 주석)
-      if (/iPhone|iPad|iPod/.test(navigator.userAgent) && /KAKAOTALK/i.test(navigator.userAgent)) de.className += ' in-kakao-ios';
+      // 카카오톡 인앱(iOS·안드로이드)은 위아래 바가 커서 보이는 높이가 짧음 → 커버 상자를 짧게 (style.css .cover-photo 주석)
+      if (/KAKAOTALK/i.test(navigator.userAgent)) de.className += /iPhone|iPad|iPod/.test(navigator.userAgent) ? ' in-kakao in-kakao-ios' : ' in-kakao';
       try { if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch (e) {}
       // 창 크기 기록 (?debug 확인용) — 인앱 툴바가 나타나는 시점 등
       var log = window.__coverLog = [];
@@ -57,7 +57,7 @@
         var run = [location.search || '-', new Date().toTimeString().slice(0, 8)], t0 = performance.now();
         var put = function (x) { run.push(Math.round(performance.now() - t0) + ' ' + x); };
         try { var nav = performance.getEntriesByType('navigation')[0]; put('nav ' + (nav ? nav.type : '?')); } catch (e) {}
-        put('win ' + innerWidth + 'x' + innerHeight + (de.className.indexOf('in-kakao-ios') > -1 ? ' kk' : ''));
+        put('win ' + innerWidth + 'x' + innerHeight + (de.className.indexOf('in-kakao') > -1 ? ' kk' : ''));
         var save = function () {
           try { var all = JSON.parse(localStorage.getItem('coverRuns') || '[]'); all.push(run); localStorage.setItem('coverRuns', JSON.stringify(all.slice(-3))); } catch (e) {}
         };

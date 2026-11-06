@@ -147,14 +147,18 @@ html.lb-open, html.lb-open body { overflow: hidden; }
   background: var(--cover-bg) url("data:image/jpeg;base64,/9j/2wBDAA4KCw0LCQ4NDA0QDw4RFiQXFhQUFiwgIRokNC43NjMuMjI6QVNGOj1OPjIySGJJTlZYXV5dOEVmbWVabFNbXVn/2wBDAQ8QEBYTFioXFypZOzI7WVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVn/wAARCAAfABgDASIAAhEBAxEB/8QAGQAAAgMBAAAAAAAAAAAAAAAAAAQBAwYF/8QAJhAAAgEDAgYCAwAAAAAAAAAAAQIDAAQRElEFEyEiMWFBcRUjsf/EABcBAQEBAQAAAAAAAAAAAAAAAAMBAAL/xAAaEQADAAMBAAAAAAAAAAAAAAAAARICEVFh/9oADAMBAAIRAxEAPwDI27GN8gsP4abivJFgCpkZ6DbzRcW8NrO8L5bwcafirlaxQdkUhXIO+DQvHYcNlfNuWj1ySNoUdo2HqimIViu9caa3ZRr7lxv7oqR1Gnwcnsk4hx24QzpCkUQdmfOMD6+6SjhhF+8DSgxjA5i9R89RvXaSyHMkkU/slQxszDPQ+aleCWzEdvg7CknY6y0VW1h+M4tJFI2tZLcOrAYyD6orQXscN9LE7xMpjTQCD1xRXUkrp//Z") right center / cover no-repeat;
 }
 /* 2026-11-06 사용자: "맨 처음에는 사진만 보여야" — 3:5 상자(카톡 iOS 보이는 높이에 맞춤)는 사파리·안드로이드에서 사진 아래 성함이
- * 첫 화면에 보여서 되돌림. 다시 기기 화면 비율 19.5:9(위 설명), 카카오톡 iOS 만 9:16, PC 는 100vh.
+ * 첫 화면에 보여서 되돌림. 다시 기기 화면 비율 19.5:9(위 설명), 카카오톡 인앱(iOS·안드로이드)은 9:16, PC 는 100vh.
  * 사진은 아래 아스팔트만 잘린 것(optimize-images COVER_KEEP)이라 19.5:9 에선 사진 폭의 60% 가 보이고(양옆 돌기둥은 잘림)
- * 두 사람(폭 20~81%)이 화면 폭을 거의 채움. 카톡 iOS 9:16 은 73%. 화면 높이를 재지 않는 이유는 위 설명 그대로 */
+ * 두 사람(폭 20~81%)이 화면 폭을 거의 채움. 카톡 9:16 은 73%. 화면 높이를 재지 않는 이유는 위 설명 그대로 */
 .cover-photo { aspect-ratio: 9 / 19.5; }
-html.in-kakao-ios .cover-photo { aspect-ratio: 9 / 16; }
+/* 카카오톡 인앱(iOS·안드로이드, index.html <head> 가 UA 로 html.in-kakao): 9:16. 390px 폰에서 693px, 보이는 높이 649(iOS)·~650(안드로이드).
+ * 이 사진은 두 사람이 사진 아래쪽(머리 71%·발 89%)에 있어서 상자가 보이는 높이보다 많이 길면 두 사람이 화면 밑으로 잘림 —
+ * 예전엔 iOS 만 9:16 이라 안드로이드 카톡은 19.5:9(845px)로 195px 가려져 허리 아래가 안 보였음(2026-11-06 시뮬레이션).
+ * 보이는 높이에 딱 맞추면(3:5) 프로맥스(430px, 보이는 높이 ~737)에서 사진 아래 성함이 비쳐서 9:16 — 390px 에서 발끝(617px)까지 보임 */
+html.in-kakao .cover-photo { aspect-ratio: 9 / 16; }
 @supports not (aspect-ratio: 1 / 1) {   /* iOS 14 이하 등: 비율 상자 폴백 */
   .cover-photo { height: 0; padding-bottom: 216.67%; }
-  html.in-kakao-ios .cover-photo { padding-bottom: 177.78%; }
+  html.in-kakao .cover-photo { padding-bottom: 177.78%; }
 }
 @media (hover: hover) and (pointer: fine) {
   .cover-photo { aspect-ratio: auto; height: 100vh; padding-bottom: 0; }
