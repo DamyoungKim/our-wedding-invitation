@@ -27,9 +27,9 @@ const out = (f) => path.join(OUT_DIR, f);
 // 커버: 첫 사진, 가로 최대 1600px(폰 화면 높이 전체를 채우므로 3배율 폰 기준), q80, 목표 <300KB
 const coverSrc = files[0];
 // 커버 아래쪽을 사진 높이 비율만큼 잘라냄(1 = 자르지 않음). 01-cover.jpg(대문 앞 인사)는 맨 아래 아스팔트 도로가 넓게 보여서
-// 아래 5% 를 자름(사용자 요청 2026-11-06). 9% 까지 시험했으나 폰 비율(9:19.5) 상자에서 사진이 더 확대돼 신랑 등·드레스 끝이 화면 끝에 붙음.
+// 사용자가 보낸 크롭대로 위는 그대로, 아래는 인도 끝까지만 남김(14.5% 자름, 2026-11-06). 좌우는 css .cover-photo(3:5 상자)가 정함.
 // 커버 사진을 바꾸면 1 로 되돌리거나 다시 맞춤(css/style.css .cover-photo img 의 object-position 도 같이)
-const COVER_KEEP = 0.95;
+const COVER_KEEP = 0.855;
 const coverImg = async () => {
   const img = sharp(src(coverSrc)).rotate();
   if (COVER_KEEP >= 1) return img;
