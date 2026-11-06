@@ -90,6 +90,17 @@
         document.addEventListener('DOMContentLoaded', function () { top0('dcl'); requestAnimationFrame(function () { top0('raf'); }); });
         window.addEventListener('pageshow', function () { top0('pageshow'); });
         window.addEventListener('load', function () { top0('load'); });
+        // 2차 영상(2026-11-06 14:18)에서도 같은 0.2초 장면이 남아 있어, 원인 구분용 기록: 페이지 스크롤(y)과
+        // 보이는 화면의 위치(visualViewport offsetTop/pageTop — 인앱이 위쪽 바 자리를 늦게 비울 때 바뀜)를 첫 2초 동안 샘플
+        var vv = window.visualViewport;
+        var pos = function (w) {
+          put(w + ' y' + Math.round(window.pageYOffset || 0) + (vv ? ' vv' + Math.round(vv.offsetTop) + '/' + Math.round(vv.pageTop) + ' h' + Math.round(vv.height) : ''));
+        };
+        pos('head');
+        document.addEventListener('DOMContentLoaded', function () { pos('dcl'); });
+        window.addEventListener('load', function () { pos('load'); });
+        [100, 300, 600, 1000, 1500, 2000].forEach(function (ms) { setTimeout(function () { pos('t' + ms); }, ms); });
+        if (vv) { vv.addEventListener('resize', function () { pos('vv-resize'); }); vv.addEventListener('scroll', function () { if (performance.now() - t0 < 3000) pos('vv-scroll'); }); }
         setTimeout(function () { if (ro) ro.disconnect(); save(); }, 4000);
         window.__coverRun = run;
       } catch (e) {}
