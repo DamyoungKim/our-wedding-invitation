@@ -76,6 +76,19 @@
         window.addEventListener('load', function () { put('load'); });
         try { new PerformanceObserver(function (l) { l.getEntries().forEach(function (en) { run.push(Math.round(en.startTime - t0) + ' ' + en.name); }); }).observe({ type: 'paint', buffered: true }); } catch (e) {}
         document.addEventListener('DOMContentLoaded', function () { put('hw=' + !!document.querySelector('#cover .hw') + ' main.js=' + !!document.querySelector('script[src*="main.js"]')); });
+        // 처음부터 맨 위(커버) — 카카오톡 iOS 에서 첫 0.3초가 110px 쯤 내려간 채 그려졌다가 맨 위로 튀는 걸
+        // 사용자가 영상으로 보냄(2026-11-06). 첫 3초 안에 내려가 있으면 바로 맨 위로 되돌리고 기록(어디서 내려갔는지 확인용)
+        var top0 = function (w) {
+          var y = Math.round(window.pageYOffset || 0);
+          if (y && performance.now() - t0 < 3000) { put(w + ' y' + y + '->0'); window.scrollTo(0, 0); }
+        };
+        document.addEventListener('DOMContentLoaded', function () { top0('dcl'); requestAnimationFrame(function () { top0('raf'); }); });
+        window.addEventListener('pageshow', function () { top0('pageshow'); });
+        window.addEventListener('load', function () { top0('load'); });
+        var nScroll = 0;
+        window.addEventListener('scroll', function () {
+          if (performance.now() - t0 < 3000 && nScroll++ < 12) { put('scroll y' + Math.round(window.pageYOffset)); top0('scroll'); }
+        }, { passive: true });
         setTimeout(function () { if (ro) ro.disconnect(); save(); }, 4000);
         window.__coverRun = run;
       } catch (e) {}
