@@ -44,7 +44,7 @@
 - 모달 대신 인라인 아코디언(`<details class="fold">`)을 씁니다.
 - 갤러리 라이트박스(`#lightbox`)는 사진을 **화면에 꽉 채우고 확대는 막습니다**(사용자 요청 2026-10-27). `.lb-img` 는 `position:fixed; inset:0` 상자의 100%×100% 에 `object-fit: contain`(자르지 않고 가로 끝까지, 여백·둥근 모서리 없음, vh 미사용). 확대 금지는 `.lightbox { touch-action: none }` + `main.js` 의 두 손가락 touchstart·모든 touchmove·iOS `gesture*` preventDefault 로 이중 처리합니다(iOS 사파리는 touch-action 만으론 핀치를 못 막을 수 있음). 한 손가락 touchstart 는 막지 않습니다(막으면 버튼 click 이 안 생김).
   - 위아래 여백(2:3 사진 vs 9:19.5 화면)은 **같은 사진을 블러로 깔아 채웁니다**(`.lb-bg`, `filter: blur(20px) brightness(0.5)`, `object-fit: cover`, `z-index:-1`, `scale(1.15)`). 사용자가 A 검은 여백 / B 블러 배경 / C 잘라서 채우기 비교 시안에서 B 를 골랐습니다(2026-10-28). C(잘라 채우기)는 사진마다 잘리는 양이 15~22% 로 달라 거절. 사진은 절대 자르지 않습니다. 카카오톡 iOS 인앱은 보이는 높이가 짧아 여백이 사파리보다 훨씬 작게 보입니다.
-- **페이지 전체 확대 금지**(사용자 요청 2026-11-06): viewport 메타 `maximum-scale=1, user-scalable=no`(카톡 인앱·안드로이드) + `body { touch-action: manipulation }`(두 번 탭) + `main.js initNoZoom`(iOS 사파리는 메타를 무시해서 두 손가락 touchmove·gesture* preventDefault). 한 손가락은 안 막음(스크롤·탭 유지). 갤러리 확대 화면은 위 라이트박스 규칙대로 따로.
+- **페이지 전체 확대 금지**(사용자 요청 2026-11-06): viewport 메타 `maximum-scale=1, user-scalable=no`(카톡 인앱·안드로이드) + `body { touch-action: manipulation }`(두 번 탭) + `main.js initNoZoom`(iOS 사파리는 메타를 무시해서 두 손가락 touchmove·gesture* preventDefault). 한 손가락은 안 막음(스크롤·탭 유지). 사용자가 폰에서 막힘 확인(2026-11-06). 갤러리 확대 화면은 위 라이트박스 규칙대로 따로.
 - 모션 줄이기(`prefers-reduced-motion`)와 JS 꺼짐 환경에서도 내용이 전부 보여야 합니다(점진적 향상).
 
 ## 콘텐츠
