@@ -26,8 +26,17 @@ const out = (f) => path.join(OUT_DIR, f);
 
 // 커버: 첫 사진, 가로 최대 1600px(폰 화면 높이 전체를 채우므로 3배율 폰 기준), q80, 목표 <300KB
 const coverSrc = files[0];
-await sharp(src(coverSrc))
-  .rotate() // EXIF 방향 반영
+// 커버 아래쪽을 사진 높이 비율만큼 잘라냄(1 = 자르지 않음). 01-cover.jpg(대문 앞 인사)는 맨 아래 아스팔트 도로가 넓게 보여서
+// 아래 5% 를 자름(사용자 요청 2026-11-06). 9% 까지 시험했으나 폰 비율(9:19.5) 상자에서 사진이 더 확대돼 신랑 등·드레스 끝이 화면 끝에 붙음.
+// 커버 사진을 바꾸면 1 로 되돌리거나 다시 맞춤(css/style.css .cover-photo img 의 object-position 도 같이)
+const COVER_KEEP = 0.95;
+const coverImg = async () => {
+  const img = sharp(src(coverSrc)).rotate();
+  if (COVER_KEEP >= 1) return img;
+  const { data, info } = await img.toBuffer({ resolveWithObject: true });
+  return sharp(data).extract({ left: 0, top: 0, width: info.width, height: Math.round(info.height * COVER_KEEP) });
+};
+await (await coverImg())
   .resize({ width: 1600, withoutEnlargement: true })
   .jpeg({ quality: 80, mozjpeg: true })
   .toFile(out('cover.jpg'));
@@ -43,7 +52,7 @@ await writeFile(HTML, html.replace(SIZE, `$1width="${cw}" height="${ch}"`));
 
 // 커버 축소본(LQIP): 사진이 받아지기 전 바탕으로 까는 24px 짜리 base64 → css/style.css 의 .cover-photo 배경에 넣음
 // (빈 단색 대신 사진 윤곽이 바로 보이게). 커버 사진을 바꾸면 이 스크립트를 다시 실행해야 바탕도 바뀜
-const tiny = await sharp(src(coverSrc)).rotate().resize({ width: 24 }).jpeg({ quality: 55 }).toBuffer();
+const tiny = await (await coverImg()).resize({ width: 24 }).jpeg({ quality: 55 }).toBuffer();
 const CSS = 'css/style.css';
 const css = await readFile(CSS, 'utf8');
 const LQIP = /(\.cover-photo \{[^}]*url\("data:image\/jpeg;base64,)[^"]*(")/;
@@ -53,7 +62,7 @@ await writeFile(CSS, css.replace(LQIP, `$1${tiny.toString('base64')}$2`));
 // OG(카카오톡 등 링크 미리보기): 1200x630, q80, 목표 <300KB
 // 세로 사진은 자동(attention) 크롭이 두 사람 대신 계단 같은 배경을 고를 때가 있어서, 자를 영역을
 // 사진 비율(0~1, 왼쪽·위·폭 — 높이는 1200:630 비율로 정해짐)로 직접 지정. 커버 사진을 바꾸면 다시 맞추거나 null(자동).
-const OG_CROP = { left: 0, top: 0.43, width: 1 }; // 01-cover.jpg(대문 앞 인사, DSC01548): 두 사람과 대문이 가운데 — 카톡이 정사각형 등으로 가운데를 잘라도 두 사람이 남게. 폭 전체(덜 확대)·발끝 바로 아래까지(사용자 요청 2026-11-06). 이전 커버 값은 { left: 0.245, top: 0.43, width: 0.75 }
+const OG_CROP = { left: 0.05, top: 0.5, width: 0.9 }; // 01-cover.jpg(대문 앞 인사, DSC01548): 두 사람과 대문이 가운데 — 카톡이 정사각형 등으로 가운데를 잘라도 두 사람이 남게. (폭 전체·top 0.43 으로 넓혀 봤으나 사용자가 이쪽이 낫다고 함, 2026-11-06). 이전 커버 값은 { left: 0.245, top: 0.43, width: 0.75 }
 const og = sharp(src(coverSrc)).rotate();
 if (OG_CROP) {
   const { width, height, orientation } = await sharp(src(coverSrc)).metadata();

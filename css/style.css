@@ -145,7 +145,7 @@ html.lb-open, html.lb-open body { overflow: hidden; }
   position: relative;
   overflow: hidden;
   aspect-ratio: 9 / 19.5;
-  background: var(--cover-bg) url("data:image/jpeg;base64,/9j/2wBDAA4KCw0LCQ4NDA0QDw4RFiQXFhQUFiwgIRokNC43NjMuMjI6QVNGOj1OPjIySGJJTlZYXV5dOEVmbWVabFNbXVn/2wBDAQ8QEBYTFioXFypZOzI7WVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVn/wAARCAAkABgDASIAAhEBAxEB/8QAGQABAAMBAQAAAAAAAAAAAAAAAAMEBQYC/8QAJBAAAgEDAgcBAQAAAAAAAAAAAQIDAAQREiEFEzFBUWFxkSL/xAAXAQEBAQEAAAAAAAAAAAAAAAADAAEC/8QAGREBAAMBAQAAAAAAAAAAAAAAAAEREgJR/9oADAMBAAIRAxEAPwDkYGMb5BZfedjVuK7kWABcjOw8daXFvDaTvC4Zuhxp7VMr2SD+IZCuQfODQzzbjEyj5lyY9ckjaVGwPb5SrEKxXeuNA7sq6/6XHmlZj1Znxdnso7/jtyjTpAkUQcswJGB8+1RjigF+8DSgxAgcxRkH2K3F4cwkkkVWDyIUZmXOx616TgMLYPKY4PilzZo6pBb2A4Xxd4nbWsluHVsYyD6pXQ3sMd9JE8kDKY00Ag70rcs0ykGepP7UqqAds/tKUwkoGO5/aUpUn//Z") right center / cover no-repeat;
+  background: var(--cover-bg) url("data:image/jpeg;base64,/9j/2wBDAA4KCw0LCQ4NDA0QDw4RFiQXFhQUFiwgIRokNC43NjMuMjI6QVNGOj1OPjIySGJJTlZYXV5dOEVmbWVabFNbXVn/2wBDAQ8QEBYTFioXFypZOzI7WVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVn/wAARCAAjABgDASIAAhEBAxEB/8QAGQABAAIDAAAAAAAAAAAAAAAAAAMEAgUG/8QAJxAAAgEDAwMDBQAAAAAAAAAAAQIDAAQRBRIxIVGRE2FxFCJBUvH/xAAWAQEBAQAAAAAAAAAAAAAAAAADAQD/xAAaEQEAAwEBAQAAAAAAAAAAAAAAARESAjFh/9oADAMBAAIRAxEAPwDkbdmjfILD54NXIb2RINqZGRgeaxntobWZ4ZCTwcBTxU6/QIMIJSuQfycd6GeLHi2BuLp4w0kjbEH2jsPalTxLFdB40ZpGUb8Fcd/elTF+w2fi5cWI1DXbhFmjiWOIOzSE4wP7VKO3jF+9u0q7RgeovVfkdxW6Wwb1ZZVBMksZjYupPQii6BE2Dsfoep20ubPHVIrTTzpurSQysGDwB1YDkGldFfwRX00UjRSI0cewEdqVcppq1ZjyzeTUisw4ZvJpSlElV2/ZvNKUqs//2Q==") right center / cover no-repeat;
 }
 html.in-kakao-ios .cover-photo { aspect-ratio: 9 / 16; }
 @supports not (aspect-ratio: 1 / 1) {   /* iOS 14 이하 등: 비율 상자 폴백 */
@@ -159,7 +159,7 @@ html.in-kakao-ios .cover-photo { aspect-ratio: 9 / 16; }
   position: absolute; top: 0; left: 0;
   width: 100%; height: 100%;
   object-fit: cover;
-  object-position: 60% center;   /* 대문 앞 인사 컷: 두 사람이 가운데쯤 오게(오른쪽 드레스 끝자락만 조금 잘림) — 사진 바꾸면 다시 맞춤. 이전 나무 계단 커버는 right center */
+  object-position: 56% center;   /* 대문 앞 인사 컷(아래 5% 자름, optimize-images COVER_KEEP): 신랑 등과 드레스 끝의 좌우 여백이 같게(54~58% 비교, 2026-11-06) — 사진 바꾸면 다시 맞춤. 이전 나무 계단 커버는 right center */
 }
 /* 손글씨가 사진 위쪽(나뭇잎·계단 등) 위에서도 읽히도록 위쪽만 살짝 어둡게 */
 .cover-photo::after {
