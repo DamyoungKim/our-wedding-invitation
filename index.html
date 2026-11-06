@@ -78,17 +78,18 @@
         document.addEventListener('DOMContentLoaded', function () { put('hw=' + !!document.querySelector('#cover .hw') + ' main.js=' + !!document.querySelector('script[src*="main.js"]')); });
         // 처음부터 맨 위(커버) — 카카오톡 iOS 에서 첫 0.3초가 110px 쯤 내려간 채 그려졌다가 맨 위로 튀는 걸
         // 사용자가 영상으로 보냄(2026-11-06). 첫 3초 안에 내려가 있으면 바로 맨 위로 되돌리고 기록(어디서 내려갔는지 확인용)
+        // 사용자가 손을 댄 뒤(터치·휠·키)에는 절대 건드리지 않음 — 손글씨를 탭으로 건너뛰고 바로 드래그하면
+        // 맨 위로 끌려 올라가던 버그(사용자 제보 2026-11-06). scroll 이벤트로는 되돌리지 않음(드래그와 구분 불가)
+        var touched = false;
+        var markTouched = function () { touched = true; };
+        ['touchstart', 'pointerdown', 'wheel', 'keydown'].forEach(function (ev) { window.addEventListener(ev, markTouched, { passive: true, capture: true }); });
         var top0 = function (w) {
           var y = Math.round(window.pageYOffset || 0);
-          if (y && performance.now() - t0 < 3000) { put(w + ' y' + y + '->0'); window.scrollTo(0, 0); }
+          if (y && !touched && performance.now() - t0 < 3000) { put(w + ' y' + y + '->0'); window.scrollTo(0, 0); }
         };
         document.addEventListener('DOMContentLoaded', function () { top0('dcl'); requestAnimationFrame(function () { top0('raf'); }); });
         window.addEventListener('pageshow', function () { top0('pageshow'); });
         window.addEventListener('load', function () { top0('load'); });
-        var nScroll = 0;
-        window.addEventListener('scroll', function () {
-          if (performance.now() - t0 < 3000 && nScroll++ < 12) { put('scroll y' + Math.round(window.pageYOffset)); top0('scroll'); }
-        }, { passive: true });
         setTimeout(function () { if (ro) ro.disconnect(); save(); }, 4000);
         window.__coverRun = run;
       } catch (e) {}
