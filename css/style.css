@@ -145,7 +145,7 @@ html.lb-open, html.lb-open body { overflow: hidden; }
   position: relative;
   overflow: hidden;
   aspect-ratio: 9 / 19.5;
-  background: var(--cover-bg) url("data:image/jpeg;base64,/9j/2wBDAA4KCw0LCQ4NDA0QDw4RFiQXFhQUFiwgIRokNC43NjMuMjI6QVNGOj1OPjIySGJJTlZYXV5dOEVmbWVabFNbXVn/2wBDAQ8QEBYTFioXFypZOzI7WVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVn/wAARCAAkABgDASIAAhEBAxEB/8QAGQABAAMBAQAAAAAAAAAAAAAAAAIEBgUD/8QAKRAAAgEDAwIEBwAAAAAAAAAAAQIDAAQRBSFBEjETUXGxFCIjcpHB0f/EABYBAQEBAAAAAAAAAAAAAAAAAAMCBP/EABcRAQEBAQAAAAAAAAAAAAAAAAABETH/2gAMAwEAAhEDEQA/AONpVgt5BM+/yHgeYzXhNahGyoOVOe1VgEimaN2usdIwsJxn1qDRIQcQXTfc9DYeN2rB7dCOVBpVPTnzptvsR9MbHilaZxlvWYuonm1doomZTgKxU4A2Hc0ks4YplLSSXEPThyHIw/rVWe6ZdVumU95Cvt/KheSRmSDcqOrL4osLtarTCkVhDEJC7KDnPG+wpXI0a68WWdwOlScKPIcUpZwVZ9iWupST3c5/Jrq2+lwTQiR2kJx2yMe1KUZEfF+A6lt0QZ5OT+6UpU7VyR//2Q==") right center / cover no-repeat;
+  background: var(--cover-bg) url("data:image/jpeg;base64,/9j/2wBDAA4KCw0LCQ4NDA0QDw4RFiQXFhQUFiwgIRokNC43NjMuMjI6QVNGOj1OPjIySGJJTlZYXV5dOEVmbWVabFNbXVn/2wBDAQ8QEBYTFioXFypZOzI7WVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVn/wAARCAAkABgDASIAAhEBAxEB/8QAGQABAAMBAQAAAAAAAAAAAAAAAAMEBQYC/8QAJBAAAgEDAgcBAQAAAAAAAAAAAQIDAAQREiEFEzFBUWFxkSL/xAAXAQEBAQEAAAAAAAAAAAAAAAADAAEC/8QAGREBAAMBAQAAAAAAAAAAAAAAAAEREgJR/9oADAMBAAIRAxEAPwDkYGMb5BZfedjVuK7kWABcjOw8daXFvDaTvC4Zuhxp7VMr2SD+IZCuQfODQzzbjEyj5lyY9ckjaVGwPb5SrEKxXeuNA7sq6/6XHmlZj1Znxdnso7/jtyjTpAkUQcswJGB8+1RjigF+8DSgxAgcxRkH2K3F4cwkkkVWDyIUZmXOx616TgMLYPKY4PilzZo6pBb2A4Xxd4nbWsluHVsYyD6pXQ3sMd9JE8kDKY00Ag70rcs0ykGepP7UqqAds/tKUwkoGO5/aUpUn//Z") right center / cover no-repeat;
 }
 html.in-kakao-ios .cover-photo { aspect-ratio: 9 / 16; }
 @supports not (aspect-ratio: 1 / 1) {   /* iOS 14 이하 등: 비율 상자 폴백 */
@@ -159,9 +159,9 @@ html.in-kakao-ios .cover-photo { aspect-ratio: 9 / 16; }
   position: absolute; top: 0; left: 0;
   width: 100%; height: 100%;
   object-fit: cover;
-  object-position: right center;   /* 왼쪽(난간 쪽)이 잘리고 두 사람이 가운데쯤 옴 — 사진 바꾸면 다시 맞춤 */
+  object-position: 60% center;   /* 대문 앞 인사 컷: 두 사람이 가운데쯤 오게(오른쪽 드레스 끝자락만 조금 잘림) — 사진 바꾸면 다시 맞춤. 이전 나무 계단 커버는 right center */
 }
-/* 손글씨가 계단 결 위에서도 읽히도록 위쪽만 살짝 어둡게 */
+/* 손글씨가 사진 위쪽(나뭇잎·계단 등) 위에서도 읽히도록 위쪽만 살짝 어둡게 */
 .cover-photo::after {
   content: "";
   position: absolute;

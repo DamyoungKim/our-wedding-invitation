@@ -53,7 +53,7 @@ await writeFile(CSS, css.replace(LQIP, `$1${tiny.toString('base64')}$2`));
 // OG(카카오톡 등 링크 미리보기): 1200x630, q80, 목표 <300KB
 // 세로 사진은 자동(attention) 크롭이 두 사람 대신 계단 같은 배경을 고를 때가 있어서, 자를 영역을
 // 사진 비율(0~1, 왼쪽·위·폭 — 높이는 1200:630 비율로 정해짐)로 직접 지정. 커버 사진을 바꾸면 다시 맞추거나 null(자동).
-const OG_CROP = { left: 0.245, top: 0.43, width: 0.75 }; // 01-cover.jpg: 두 사람 얼굴이 가운데 — 카톡이 정사각형 등으로 가운데를 잘라도 얼굴이 남게
+const OG_CROP = { left: 0.05, top: 0.5, width: 0.9 }; // 01-cover.jpg(대문 앞 인사, DSC01548): 두 사람과 대문이 가운데 — 카톡이 정사각형 등으로 가운데를 잘라도 두 사람이 남게. 이전 커버 값은 { left: 0.245, top: 0.43, width: 0.75 }
 const og = sharp(src(coverSrc)).rotate();
 if (OG_CROP) {
   const { width, height, orientation } = await sharp(src(coverSrc)).metadata();
