@@ -48,7 +48,7 @@
 ## 콘텐츠
 - 문구·연락처·계좌·예식 정보는 `js/config.js` 에서만 바꿉니다. 기준은 종이 청첩장(`청첩장.pdf`)입니다.
 - 방명록·참석 여부(RSVP)·공유 섹션은 넣지 않습니다 (사용자 결정).
-- `assets/img/cover.jpg` 는 웨딩 사진입니다(원본 `image/01-cover.jpg` — 2026-11-06 부터 대문 앞에서 둘이 인사하는 컷 DSC01548, 갤러리 2번과 같은 사진. 이전 나무 계단 커버는 `image/_old/cover-prev-wooden-stairs-20261106.jpg`, 되돌릴 땐 object-position `right`·OG_CROP `{ left: 0.245, top: 0.43, width: 0.75 }`·alt 도 같이 복원). `node scripts/optimize-images.mjs` 로 커버(가로 1600px)와 카톡 미리보기 `og-image.jpg`(1200×630)를 같이 만듭니다.
+- `assets/img/cover.jpg` 는 웨딩 사진입니다(원본 `image/01-cover.jpg` — 2026-11-06 부터 대문 앞에서 둘이 인사하는 컷 DSC01548, 갤러리 2번과 같은 사진. 이전 나무 계단 커버는 `image/_old/cover-prev-wooden-stairs-20261106.jpg`, 되돌릴 땐 object-position `right`·OG_CROP `{ left: 0.245, top: 0.43, width: 0.75 }`·alt 도 같이 복원). 지금 OG_CROP 은 `{ left: 0, top: 0.43, width: 1 }` — 사진 폭 전체(덜 확대)에 발끝 바로 아래까지, 아래 바닥은 덜·위는 더 보이게(사용자 요청 2026-11-06). `node scripts/optimize-images.mjs` 로 커버(가로 1600px)와 카톡 미리보기 `og-image.jpg`(1200×630)를 같이 만듭니다.
   - 폰에선 사진 양옆이 잘리고(`object-position: 60%`) 두 사람이 가운데쯤 옵니다(오른쪽 드레스 끝자락만 조금 잘림). 사진을 바꾸면 `object-position` 을 다시 맞춥니다.
   - 카톡 미리보기에는 두 사람 얼굴이 보여야 합니다(사용자 요청). 자동 크롭은 배경을 고를 때가 있어서, `optimize-images.mjs` 의 `OG_CROP` 으로 얼굴이 가운데 오게 직접 자릅니다. 카톡이 가운데를 정사각형으로 잘라도 얼굴이 남아야 합니다.
   - 갤러리 가로 사진은 `is-wide` 클래스로 2칸을 차지하게 합니다(사용자 요청, 2026-10-15). 새 가로 사진을 넣으면 index.html 의 해당 버튼에 `is-wide` 를 붙입니다.
