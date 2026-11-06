@@ -476,6 +476,21 @@
     });
   })();
 
+  /* ============================================================
+   * 7-0. 페이지 전체 확대 금지(사용자 요청 2026-11-06) — 핀치로 청첩장이 커지지 않게.
+   *      카톡 인앱·안드로이드는 viewport 메타(user-scalable=no)로 충분하고, iOS 사파리는 메타를 무시해서
+   *      두 손가락 touchmove 와 gesture* 를 preventDefault. 한 손가락은 건드리지 않아 스크롤·탭은 그대로.
+   *      갤러리 확대 화면(initLightbox)은 스크롤까지 막아야 해서 따로 처리.
+   * ============================================================ */
+  (function initNoZoom() {
+    doc.addEventListener('touchmove', function (e) {
+      if (e.touches && e.touches.length > 1) e.preventDefault();
+    }, { passive: false });
+    ['gesturestart', 'gesturechange'].forEach(function (t) {
+      doc.addEventListener(t, function (e) { e.preventDefault(); }, { passive: false });
+    });
+  })();
+
   (function initLightbox() {
     var items = $$('#gallery .gallery-item img');
     var lb = doc.getElementById('lightbox');

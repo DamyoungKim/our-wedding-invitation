@@ -2,7 +2,9 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <!-- 페이지 전체 확대 금지(사용자 요청 2026-11-06): 카톡 인앱(WKWebView)·안드로이드는 이 메타로 막힘. iOS 사파리는 무시하므로
+       js/main.js initNoZoom 이 두 손가락 터치·gesture 를 막음. 갤러리 확대 화면은 따로 더 세게 막음(initLightbox) -->
   <meta name="color-scheme" content="light">
   <meta name="description" content="김담영 · 박승혜 결혼합니다. 2026년 12월 12일 토요일 오후 12시 30분, 더채플 앳 청담 커티지홀 (3층).">
   <title>김담영 ♥ 박승혜 결혼합니다 — 2026. 12. 12.</title>
@@ -28,7 +30,7 @@
   <link rel="preload" as="image" href="./assets/img/cover.jpg?v=c08a367e" fetchpriority="high">
   <!-- 명조(Noto Serif KR)·Pretendard 셀프호스팅 — unicode-range 슬라이스라 쓰인 글자 조각만 다운로드됨 -->
   <link rel="stylesheet" href="./css/fonts.css?v=a97819ea">
-  <link rel="stylesheet" href="./css/style.css?v=b8597bea">
+  <link rel="stylesheet" href="./css/style.css?v=ebc2d5d4">
 
   <!-- - html에 .js 부여: 리빌/손글씨 애니메이션은 .js 하위에서만 동작 (no-JS fail-open)
        - 새로고침해도 항상 맨 위(커버)부터 — 손글씨가 써지는 동안 스크롤을 잠그므로, 중간 위치로
@@ -375,6 +377,6 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="./js/config.js?v=6ae19f60"></script>
-  <script src="./js/main.js?v=4246ebc7"></script>
+  <script src="./js/main.js?v=b3535b12"></script>
 </body>
 </html>

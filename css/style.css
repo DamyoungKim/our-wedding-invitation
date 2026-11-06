@@ -54,6 +54,7 @@
  * 생길 때 가운데 카드가 스크롤바 폭 절반만큼 왼쪽으로 튐 → 스크롤바 자리를 항상 비워 둠 (폰은 영향 없음) */
 html { -webkit-text-size-adjust: 100%; scrollbar-gutter: stable; }
 body {
+  touch-action: manipulation;   /* 두 번 탭 확대 금지(핀치는 viewport 메타 + main.js initNoZoom) — 사용자 요청 2026-11-06 */
   font-family: var(--font);
   background: var(--bg);
   color: var(--ink);
