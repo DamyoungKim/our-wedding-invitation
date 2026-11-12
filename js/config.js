@@ -93,7 +93,7 @@ window.WEDDING_CONFIG = {
    * 한 쪽의 계좌가 모두 비어 있으면 "추후 안내" 문구가 유지됩니다. */
   accounts: {
     groom: [
-      { label: '신랑', bank: '국민은행', number: '991502-01-127980', holder: '김담영' },
+      { label: '신랑', bank: '국민은행', number: '991502-01-127950', holder: '김담영' },
       { label: '아버지', bank: '농협', number: '003-02-188830', holder: '김종근' },
       { label: '어머니', bank: '국민은행', number: '778-21-0251-271', holder: '최연옥' }
     ],
